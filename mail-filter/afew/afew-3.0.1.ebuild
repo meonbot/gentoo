@@ -1,17 +1,16 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 DISTUTILS_SINGLE_IMPL=1
 DISTUTILS_USE_SETUPTOOLS=rdepend
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{10..11} )
 
-inherit distutils-r1
+inherit distutils-r1 pypi
 
 DESCRIPTION="Initial tagging script for Notmuch"
 HOMEPAGE="https://github.com/afewmail/afew"
-SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
 
 LICENSE="ISC"
 SLOT="0"
@@ -47,8 +46,11 @@ python_prepare_all() {
 }
 
 python_compile_all() {
-	esetup.py build_sphinx -b man --build-dir=docs/build
-	use doc && esetup.py build_sphinx -b html --build-dir=docs/build
+	sphinx-build -b man docs docs/build/man || die
+
+	if use doc ; then
+		sphinx-build -b html docs docs/build/html || die
+	fi
 }
 
 python_install_all() {

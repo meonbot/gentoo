@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="8"
@@ -11,7 +11,7 @@ HOMEPAGE="https://www.fefe.de/libowfat/"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~hppa ~sparc ~x86"
+KEYWORDS="amd64 hppa sparc x86"
 IUSE="diet"
 
 RDEPEND="diet? ( >=dev-libs/dietlibc-0.33_pre20090721 )"
@@ -38,10 +38,16 @@ src_prepare() {
 }
 
 src_compile() {
+	# Primary use case is for code by the same author. Which then fails with
+	# LTO errors.  It builds a static library only, anyway. Result: LTO can be
+	# used if you don't upgrade the compiler. If you do, the compiler errors,
+	# or if you are unlucky, ICEs. Just don't use LTO, there is no point...
+	filter-lto
+
 	emake \
-		CC=$(tc-getCC) \
-		AR=$(tc-getAR) \
-		RANLIB=$(tc-getRANLIB) \
+		CC="$(tc-getCC)" \
+		AR="$(tc-getAR)" \
+		RANLIB="$(tc-getRANLIB)" \
 		CFLAGS="-I. ${CFLAGS}" \
 		DIET="${EPREFIX}/usr/bin/diet -Os" \
 		prefix="${EPREFIX}/usr" \

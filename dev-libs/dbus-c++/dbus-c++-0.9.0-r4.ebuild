@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,8 +6,8 @@ EAPI=7
 inherit multilib-minimal
 
 DESCRIPTION="Provides a C++ API for D-BUS"
-HOMEPAGE="https://sourceforge.net/projects/dbus-cplusplus/ https://sourceforge.net/apps/mediawiki/dbus-cplusplus/index.php?title=Main_Page"
-SRC_URI="mirror://sourceforge/dbus-cplusplus/lib${P}.tar.gz"
+HOMEPAGE="https://sourceforge.net/projects/dbus-cplusplus/"
+SRC_URI="https://downloads.sourceforge.net/dbus-cplusplus/lib${P}.tar.gz"
 
 LICENSE="LGPL-2.1+"
 SLOT="0"
@@ -23,7 +23,7 @@ DEPEND="${RDEPEND}
 	dev-util/cppunit[${MULTILIB_USEDEP}]"
 BDEPEND="
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen )"
+	doc? ( app-text/doxygen )"
 
 S="${WORKDIR}/lib${P}"
 

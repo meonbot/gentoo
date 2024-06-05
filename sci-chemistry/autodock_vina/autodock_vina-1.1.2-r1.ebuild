@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -13,10 +13,10 @@ SRC_URI="http://vina.scripps.edu/download/${MY_P}.tgz"
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 ~x86"
 IUSE="debug"
 
-RDEPEND="dev-libs/boost:=[threads(+)]"
+RDEPEND="dev-libs/boost:="
 DEPEND="${RDEPEND}"
 
 S="${WORKDIR}"/${MY_P}/build/linux/release
@@ -33,7 +33,7 @@ src_prepare() {
 }
 
 src_configure() {
-	append-cxxflags -DBOOST_FILESYSTEM_VERSION=3 -std=c++11
+	append-cxxflags -DBOOST_FILESYSTEM_VERSION=3 -DBOOST_TIMER_ENABLE_DEPRECATED -std=c++14
 }
 
 src_compile() {

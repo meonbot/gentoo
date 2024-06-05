@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit cmake git-r3 tmpfiles
 
@@ -18,7 +18,7 @@ IUSE="doc fuse systemd tcpd"
 DEPEND="acct-user/apt-cacher-ng
 	acct-group/apt-cacher-ng
 	app-arch/bzip2
-	dev-libs/libevent:=[threads]
+	dev-libs/libevent:=[threads(+)]
 	dev-libs/openssl:0=
 	sys-libs/zlib
 	fuse? ( sys-fs/fuse:0 )

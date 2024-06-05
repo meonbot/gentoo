@@ -1,15 +1,15 @@
-BDEPEND=virtual/pkgconfig vala? ( || ( dev-lang/vala:0.54[vapigen(+)] dev-lang/vala:0.52[vapigen(+)] dev-lang/vala:0.50[vapigen(+)] dev-lang/vala:0.48[vapigen(+)] dev-lang/vala:0.46[vapigen(+)] ) ) >=dev-util/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array >=dev-vcs/git-1.8.2.1[curl]
+BDEPEND=virtual/pkgconfig vala? ( || ( dev-lang/vala:0.56[vapigen(+)] ) ) >=dev-build/meson-1.2.3 app-alternatives/ninja dev-build/meson-format-array >=dev-vcs/git-1.8.2.1[curl]
 DEFINED_PHASES=compile configure install prepare test unpack
-DEPEND=introspection? ( >=dev-libs/gobject-introspection-1.32:= ) lcms? ( >=media-libs/lcms-2.8:2 )
+DEPEND=introspection? ( >=dev-libs/gobject-introspection-1.72:= ) lcms? ( >=media-libs/lcms-2.13.1:2 )
 DESCRIPTION=A dynamic, any to any, pixel format conversion library
-EAPI=7
+EAPI=8
 HOMEPAGE=https://gegl.org/babl/
 INHERIT=meson gnome2-utils vala git-r3
 IUSE=introspection lcms vala cpu_flags_x86_avx2 cpu_flags_x86_f16c cpu_flags_x86_mmx cpu_flags_x86_sse cpu_flags_x86_sse2 cpu_flags_x86_sse4_1
 LICENSE=LGPL-3
 PROPERTIES=live
-RDEPEND=introspection? ( >=dev-libs/gobject-introspection-1.32:= ) lcms? ( >=media-libs/lcms-2.8:2 )
+RDEPEND=introspection? ( >=dev-libs/gobject-introspection-1.72:= ) lcms? ( >=media-libs/lcms-2.13.1:2 )
 REQUIRED_USE=vala? ( introspection )
 SLOT=0
-_eclasses_=multiprocessing	61c959fc55c15c00bbb1079d6a71370b	ninja-utils	a4dab848a4490e8e48cf0baab3e61bc2	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	python-utils-r1	54423f1e035828362c248fad528ebbba	meson	9f3e84959ae1d60e19bc91f212774dcc	xdg-utils	4f29a8b760a594a212abe9c2ba957c31	gnome2-utils	239e7afa214b50012f83b8bb61de7555	edos2unix	33e347e171066657f91f8b0c72ec8773	strip-linguas	ac3ee41ee2d31d8c41a77c0838320cc7	wrapper	4251d4c84c25f59094fd557e0063a974	eutils	dab5d8ec471d025b79c9e6906bcf3bff	vala	78150b86094c58851346877cbf691245	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=3a0aae4c674f3d4ea3fa1d5cadb5fcc1
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	meson	aecae905c2e0c201d7925fae52a5576d	xdg-utils	baea6080dd821f5562d715887954c9d3	gnome2-utils	30dbce54b89e77b86f366548f94419ad	vala	e477903dbe0105930c51f170a592dc16	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=9c2a5b2f6549ce444a444af4dbec1fa0

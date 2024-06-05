@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit linux-info systemd toolchain-funcs
 
@@ -18,7 +18,7 @@ fi
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE="tools"
+IUSE=""
 
 DEPEND="
 	>=sys-apps/util-linux-2.30.2
@@ -28,6 +28,10 @@ RDEPEND="${DEPEND}"
 
 CONFIG_CHECK="~BTRFS_FS"
 ERROR_BTRFS_FS="CONFIG_BTRFS_FS: bees does currently only work with btrfs"
+
+PATCHES=(
+	"${FILESDIR}/0001-HACK-crucible-Work-around-kernel-memory-fragmentatio.patch"
+)
 
 pkg_pretend() {
 	if [[ ${MERGE_TYPE} != buildonly ]]; then
@@ -42,6 +46,12 @@ pkg_pretend() {
 			ewarn "with more recent kernels:"
 			ewarn "# WARNING: CPU: 3 PID: 18172 at fs/btrfs/backref.c:1391 find_parent_nodes+0xc41/0x14e0"
 			ewarn
+		elif kernel_is -lt 5 7 0; then
+			ewarn "With kernel versions below 5.4.96 and 5.7, the kernel may hold file system"
+			ewarn "locks for a long time while at the same time CPU usage increases when bees is"
+			ewarn "operating. bees tries to avoid this behavior by excluding very common extents"
+			ewarn "from deduplication. This has only a minimal impact on dedupe effectiveness."
+			ewarn
 		fi
 		if kernel_is -lt 5 1 0; then
 			ewarn "IMPORTANT: With kernel versions below 5.1.0, you may experience data corruption"
@@ -51,14 +61,24 @@ pkg_pretend() {
 			ewarn "# commit 8e92821 btrfs: fix corruption reading shared and compressed extents after hole punching"
 			ewarn
 		fi
-		if kernel_is -lt 5 3 4; then
-			ewarn "With kernel versions below 5.3.4, bees may trigger a btrfs bug when running"
+		if kernel_is -lt 5 4 19; then
+			ewarn "With kernel versions below 5.4.19, bees may trigger a btrfs bug when running"
 			ewarn "btrfs-balance in parallel. This may lead to meta-data corruption in the worst"
 			ewarn "case. Especially, kernels 5.1.21 and 5.2.21 should be avoided. Kernels 5.0.x"
 			ewarn "after 5.0.21 should be safe. In the best case, affected kernels may force"
 			ewarn "the device RO without writing corrupted meta-data. More details:"
 			ewarn "https://github.com/Zygo/bees/blob/master/docs/btrfs-kernel.md"
 			ewarn
+		fi
+		if kernel_is -gt 5 15 106; then
+			if kernel_is -lt 6 3 10; then
+				ewarn "With kernel versions 5.15.107 or later, there is a memory fragmentation"
+				ewarn "issue with LOGICAL_INO which can lead to cache thrashing and cause IO"
+				ewarn "latency spikes. This version ships with a work-around at the cost of not"
+				ewarn "handling highly duplicated filesystems that well. More details:"
+				ewarn "https://github.com/Zygo/bees/issues/260"
+				ewarn
+			fi
 		fi
 
 		elog "Bees recommends running the latest current kernel for performance and"
@@ -82,9 +102,6 @@ src_configure() {
 	EOF
 	if [[ ${PV} != "9999" ]] ; then
 		echo BEES_VERSION=v${PV} >>localconf || die
-	fi
-	if use tools; then
-		echo OPTIONAL_INSTALL_TARGETS=install_tools >>localconf || die
 	fi
 }
 

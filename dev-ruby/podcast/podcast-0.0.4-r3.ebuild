@@ -1,8 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-USE_RUBY="ruby26 ruby27 ruby30"
+USE_RUBY="ruby31 ruby32 ruby33"
 
 RUBY_FAKEGEM_TASK_TEST=""
 RUBY_FAKEGEM_EXTRADOC="README"
@@ -10,7 +10,7 @@ RUBY_FAKEGEM_EXTRADOC="README"
 inherit ruby-fakegem
 
 DESCRIPTION="A pure Ruby library for generating podcasts from mp3 files"
-HOMEPAGE="http://podcast.rubyforge.org/"
+HOMEPAGE="https://github.com/boncey/ruby-podcast"
 
 LICENSE="GPL-2"
 SLOT="0"

@@ -1,16 +1,17 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7..9} )
-inherit distutils-r1
+PYTHON_COMPAT=( python3_{10..12} )
+DISTUTILS_USE_PEP517=setuptools
+PYPI_NO_NORMALIZE=1
+PYPI_PN="socketIO-client-nexus"
 
-MY_PN="socketIO-client-nexus"
+inherit distutils-r1 pypi
+
 DESCRIPTION="A socket.io 2.x client library for Python"
 HOMEPAGE="https://github.com/nexus-devs/socketIO-client-2.0.3/ https://pypi.org/project/socketIO-client-nexus/"
-S="${WORKDIR}/${MY_PN}-${PV}"
-SRC_URI="mirror://pypi/${MY_PN:0:1}/${MY_PN}/${MY_PN}-${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
@@ -19,6 +20,7 @@ KEYWORDS="~amd64 ~x86"
 # require network
 RESTRICT="test"
 
+BDEPEND="${DISTUTILS_DEPS}"
 RDEPEND="
 	dev-python/requests[${PYTHON_USEDEP}]
 	dev-python/six[${PYTHON_USEDEP}]

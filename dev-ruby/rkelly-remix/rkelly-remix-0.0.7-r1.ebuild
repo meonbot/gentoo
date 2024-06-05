@@ -1,16 +1,16 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-USE_RUBY="ruby26 ruby27 ruby30"
+USE_RUBY="ruby31 ruby32 ruby33"
 
 inherit ruby-fakegem
 
 DESCRIPTION="RKelly Remix is a fork of the RKelly JavaScript parser"
 HOMEPAGE="https://github.com/nene/rkelly-remix"
-LICENSE="MIT"
 
+LICENSE="MIT"
 KEYWORDS="~amd64 ~arm ~x86"
 SLOT="0"
 IUSE="doc"

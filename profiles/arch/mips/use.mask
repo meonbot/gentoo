@@ -1,15 +1,36 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # Unmask the flag which corresponds to ARCH.
 -mips
 
-# Matt Turner <mattst88@gentoo.org> (2018-03-25)
-# Unmask systemd since it is keyworded here.
--systemd
+# matoro <matoro_gentoo@matoro.tk> (2023-11-22)
+# KDE not keyworded here
+kde
+
+# matoro <matoro_gentoo@matoro.tk> (2023-11-22)
+# dev-db/redis fails test suite on BE at least
+redis
+
+# matoro <matoro_gentoo@matoro.tk> (2023-03-07)
+# GPU-related USE flags.  While hardware with PCIe host
+# capabilities exists, mask these by default to reduce burden
+# on maintainers of GPU-related packages.  Can be unmasked
+# in the future upon user request.
+vulkan
+vaapi
+frei0r
+
+# matoro <matoro_gentoo@matoro.tk> (2023-03-03)
+# app-crypt/tpm2-tss is not keyworded here
+tpm
+
+# Andreas K. Hüttel <dilfridge@gentoo.org> (2022-05-15)
+# rdma-core is not keyworded mips...
+rdma
 
 # Mart Raudsepp <leio@gentoo.org> (2018-02-11)
-# dev-util/valgrind is not keyworded here yet,
+# dev-debug/valgrind is not keyworded here yet,
 # though the MIPS platform is supported upstream
 valgrind
 
@@ -20,14 +41,6 @@ networkmanager
 # Michał Górny <mgorny@gentoo.org> (2018-01-23)
 # sci-geosciences/gpsd is not keyworded here.
 gps
-
-# Brian Evans <grknight@gentoo.org> (2018-01-15)
-# Mask tcmalloc as dev-util/google-perftools is unavailable
-tcmalloc
-
-# James Le Cuirot <chewi@gentoo.org> (2017-06-29)
-# Unmask as this profile is big endian.
--big-endian
 
 # Mart Raudsepp <leio@gentoo.org> (2017-05-27)
 # media-libs/libmtp not tested
@@ -40,11 +53,6 @@ gnome-online-accounts
 # Mart Raudsepp <leio@gentoo.org> (2017-05-27)
 # Keywords lost on net-fs/samba over time, use.mask until re-keyworded
 samba
-
-# Mart Raudsepp <leio@gentoo.org> (2017-02-07)
-# dev-libs/libappindicator not tested
-appindicator
-ayatana
 
 # Anthony G. Basile <blueness@gentoo.org> (2015-08-01)
 # There is no luajit support on mips.  Bug #554376.
@@ -93,21 +101,12 @@ gnome
 # some programs with this useflag are useful, e.g #227631
 mpi
 
-# Ryan Hill <dirtyepic@gentoo.org>
-# virtual/blas virtual/cblas and virtual/lapack not keyworded
-lapack
-blas
-
 # Alexander Færøy <eroyf@gentoo.org>
 # Clamav -- untested, masking for now.
 clamav
 
 # Untested on mips, masking for now.
 cdb
-
-# Until someone actually needs fuse, we'll mask it as
-# it holds up stablizing ntfsprogs
-fuse
 
 # Donnie Berkholz <dberkholz@gentoo.org> (2006-03-07)
 # Modular X: mask for architectures lacking direct rendering
@@ -121,7 +120,6 @@ dri
 # more modular X stuff
 video_cards_mga
 video_cards_nouveau
-video_cards_nv
 video_cards_r128
 video_cards_radeon
 input_devices_elographics
@@ -130,7 +128,6 @@ input_devices_vmmouse
 input_devices_void
 input_devices_wacom
 input_devices_joystick
-video_cards_glint
 video_cards_nvidia
 
 # Matt Turner <mattst88@gentoo.org>
@@ -178,7 +175,7 @@ jack
 
 # Paul de Vrieze <pauldv@gentoo.org>
 # There is no java in this profile (if there is it must be available). Without
-# this repoman will fail on apps like sys-libs/db
+# this, sys-libs/db has unresolvable dependencies
 java
 
 # Ciaran McCreesh <ciaranm@gentoo.org>
@@ -243,11 +240,7 @@ rpm
 # We don't have net-libs/libsmi keyworded
 smi
 
-# Matt Turner <mattst88@gentoo.org> (2010-12-13)
-# We don't have sys-devel/llvm
-llvm
-
-# Matt Turner <mattst88@gentoo.org (2011-06-14)
+# Matt Turner <mattst88@gentoo.org> (2011-06-14)
 # pdfannotextractor needs java
 pdfannotextractor
 
@@ -264,7 +257,6 @@ ocamlopt
 fluidsynth
 
 # Mips USE flags
--fixed-point
 -loongson2f
 
 # Chí-Thanh Christopher Nguyễn <chithanh@gentoo.org> (2013-08-22)
@@ -274,3 +266,4 @@ opencl
 # Ben de Groot <yngwin@gentoo.org> (2015-02-01)
 # please remove when keyworded
 qt5
+qt6

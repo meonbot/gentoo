@@ -18,6 +18,9 @@
     <flag name="client">
       Enable compilation of the clients to test and compare performance with reference libraries
     </flag>
+    <flag name="cuda">
+      Build with support for cuda instead of opencl (beta!)
+    </flag>
   </use>
   <upstream>
     <remote-id type="github">CNugteren/CLBlast</remote-id>

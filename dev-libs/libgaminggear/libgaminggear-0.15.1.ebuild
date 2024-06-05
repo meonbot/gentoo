@@ -1,14 +1,15 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit cmake xdg
 
 DESCRIPTION="Provides functionality for gaming input devices"
 
 HOMEPAGE="https://sourceforge.net/projects/libgaminggear/"
-SRC_URI="mirror://sourceforge/libgaminggear/${P}.tar.bz2"
+SRC_URI="https://downloads.sourceforge.net/libgaminggear/${P}.tar.bz2"
+
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
@@ -23,15 +24,13 @@ RDEPEND="
 	x11-libs/libnotify
 	x11-libs/pango
 "
-
-DEPEND="
-	${RDEPEND}
+DEPEND="${RDEPEND}
 	dev-libs/libgudev
 	media-libs/harfbuzz
 "
 BDEPEND="
 	dev-util/glib-utils
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 "
 
 PATCHES=(
@@ -39,30 +38,9 @@ PATCHES=(
 	"${FILESDIR}"/${P}-cmake-3.13.patch
 )
 
-# Required because xdg.eclass overrides src_prepare() from cmake.eclass
-src_prepare() {
-	cmake_src_prepare
-}
-
 src_configure() {
-	mycmakeargs=(
+	local mycmakeargs=(
 		-DWITH_DOC="$(usex doc)"
 	)
 	cmake_src_configure
-}
-
-src_install() {
-	cmake_src_install
-}
-
-pkg_preinst() {
-	xdg_pkg_preinst
-}
-
-pkg_postinst() {
-	xdg_pkg_postinst
-}
-
-pkg_postrm() {
-	xdg_pkg_postrm
 }

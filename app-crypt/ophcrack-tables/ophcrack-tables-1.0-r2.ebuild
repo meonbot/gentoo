@@ -1,14 +1,14 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 DESCRIPTION="Tables available for ophcrack"
-HOMEPAGE="http://ophcrack.sourceforge.net/"
+HOMEPAGE="https://ophcrack.sourceforge.io"
 SRC_URI="
-	xpfast? ( mirror://sourceforge/ophcrack/tables_xp_free_fast.zip )
-	xpsmall? ( mirror://sourceforge/ophcrack/tables_xp_free_small.zip )
-	vistafree? ( mirror://sourceforge/ophcrack/tables_vista_free.zip )"
+	xpfast? ( https://downloads.sourceforge.net/ophcrack/tables_xp_free_fast.zip )
+	xpsmall? ( https://downloads.sourceforge.net/ophcrack/tables_xp_free_small.zip )
+	vistafree? ( https://downloads.sourceforge.net/ophcrack/tables_vista_free.zip )"
 S="${WORKDIR}"
 
 LICENSE="GPL-2"

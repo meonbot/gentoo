@@ -1,10 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
+# RelWithDebInfo sets -Og -g
+CMAKE_BUILD_TYPE=Release
 LUA_COMPAT=( lua5-{1..2} luajit )
-
 inherit cmake lua-single optfeature xdg
 
 DESCRIPTION="Vim-fork focused on extensibility and agility"
@@ -15,29 +16,31 @@ if [[ ${PV} == 9999 ]]; then
 	EGIT_REPO_URI="https://github.com/neovim/neovim.git"
 else
 	SRC_URI="https://github.com/neovim/neovim/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~riscv ~x86 ~x64-macos"
+	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86 ~x64-macos"
 fi
 
 LICENSE="Apache-2.0 vim"
 SLOT="0"
-IUSE="+lto +nvimpager test +tui"
+IUSE="+nvimpager test"
 
-REQUIRED_USE="${LUA_REQUIRED_USE}"
 # Upstream say the test library needs LuaJIT
 # https://github.com/neovim/neovim/blob/91109ffda23d0ce61cec245b1f4ffb99e7591b62/CMakeLists.txt#L377
-REQUIRED_USE="test? ( lua_single_target_luajit )"
+REQUIRED_USE="${LUA_REQUIRED_USE} test? ( lua_single_target_luajit )"
 # TODO: Get tests running
 RESTRICT="!test? ( test ) test"
 
 # Upstream build scripts invoke the Lua interpreter
 BDEPEND="${LUA_DEPS}
-	dev-util/gperf
+	>=dev-util/gperf-3.1
+	>=sys-devel/gettext-0.20.1
 	virtual/libiconv
 	virtual/libintl
 	virtual/pkgconfig
 "
+# Check https://github.com/neovim/neovim/blob/master/third-party/CMakeLists.txt for
+# new dependency bounds and so on on bumps (obviously adjust for right branch/tag).
 DEPEND="${LUA_DEPS}
-	dev-lua/luv[${LUA_SINGLE_USEDEP}]
+	>=dev-lua/luv-1.45.0[${LUA_SINGLE_USEDEP}]
 	$(lua_gen_cond_dep '
 		dev-lua/lpeg[${LUA_USEDEP}]
 		dev-lua/mpack[${LUA_USEDEP}]
@@ -45,29 +48,25 @@ DEPEND="${LUA_DEPS}
 	$(lua_gen_cond_dep '
 		dev-lua/LuaBitOp[${LUA_USEDEP}]
 	' lua5-{1,2})
-	dev-libs/libuv:0=
-	>=dev-libs/libvterm-0.1.2
-	dev-libs/msgpack:0=
-	dev-libs/tree-sitter:=
-	tui? (
-		dev-libs/libtermkey
-		>=dev-libs/unibilium-2.0.0:0=
-	)
+	>=dev-libs/libuv-1.46.0:=
+	>=dev-libs/libvterm-0.3.3
+	>=dev-libs/msgpack-3.0.0:=
+	>=dev-libs/tree-sitter-0.22.6:=
+	>=dev-libs/unibilium-2.0.0:0=
 "
 RDEPEND="
 	${DEPEND}
 	app-eselect/eselect-vi
 "
-BDEPEND="
+BDEPEND+="
 	test? (
 		$(lua_gen_cond_dep 'dev-lua/busted[${LUA_USEDEP}]')
 	)
 "
 
 PATCHES=(
-	"${FILESDIR}/${PN}-0.4.4-cmake_lua_version.patch"
-	"${FILESDIR}/${PN}-0.4.4-cmake-release-type.patch"
-	"${FILESDIR}/${PN}-0.4.4-cmake-darwin.patch"
+	"${FILESDIR}/${PN}-0.9.0-cmake_lua_version.patch"
+	"${FILESDIR}/${PN}-9999-cmake-darwin.patch"
 )
 
 src_prepare() {
@@ -75,22 +74,19 @@ src_prepare() {
 	sed -e "/^# define SYS_VIMRC_FILE/s|\$VIM|${EPREFIX}/etc/vim|" \
 		-i src/nvim/globals.h || die
 
+	# https://forums.gentoo.org/viewtopic-p-8750050.html
+	xdg_environment_reset
 	cmake_src_prepare
 }
 
 src_configure() {
-	# Upstream default to LTO on non-debug builds
-	# Let's expose it as a USE flag because upstream
-	# have preferences for how we should use LTO
-	# if we want it on (not just -flto)
-	# ... but allow turning it off.
+	ln -s "${BROOT}"/usr/bin/luajit "${BUILD_DIR}"/luajit || die
 	# TODO: Investigate USE_BUNDLED, doesn't seem to be needed right now
 	local mycmakeargs=(
-		-DENABLE_LTO=$(usex lto)
-		-DFEAT_TUI=$(usex tui)
+		# appends -flto
+		-DENABLE_LTO=OFF
 		-DPREFER_LUA=$(usex lua_single_target_luajit no "$(lua_get_version)")
 		-DLUA_PRG="${ELUA}"
-		-DMIN_LOG_LEVEL=3
 	)
 	cmake_src_configure
 }
@@ -100,7 +96,7 @@ src_install() {
 
 	# install a default configuration file
 	insinto /etc/vim
-	doins "${FILESDIR}"/sysinit.vim
+	newins "${FILESDIR}"/sysinit.vim-r1 sysinit.vim
 
 	# conditionally install a symlink for nvimpager
 	if use nvimpager; then

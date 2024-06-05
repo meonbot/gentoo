@@ -1,37 +1,37 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=8
 
-inherit flag-o-matic multilib toolchain-funcs xdg-utils
+inherit flag-o-matic xdg-utils
 
 DESCRIPTION="A portable, bytecode-compiled implementation of Common Lisp"
 HOMEPAGE="https://clisp.sourceforge.io/"
 SRC_URI="mirror://gentoo/${P}.tar.bz2"
 
-LICENSE="GPL-2"
+LICENSE="GPL-2+"
 SLOT="2/8"
-KEYWORDS="~alpha amd64 ~ia64 ppc ~ppc64 ~sparc x86"
+KEYWORDS="~alpha amd64 ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
 IUSE="hyperspec X berkdb dbus fastcgi gdbm gtk +pcre postgres +readline svm threads +unicode +zlib"
 # "jit" disabled ATM
 
 RDEPEND=">=dev-lisp/asdf-2.33-r3
-         virtual/libcrypt:=
-		 virtual/libiconv
-		 >=dev-libs/libsigsegv-2.10
-		 >=dev-libs/ffcall-1.10
-		 dbus? ( sys-apps/dbus )
-		 fastcgi? ( dev-libs/fcgi )
-		 gdbm? ( sys-libs/gdbm:0= )
-		 gtk? ( >=x11-libs/gtk+-2.10:2 >=gnome-base/libglade-2.6 )
-		 postgres? ( >=dev-db/postgresql-8.0:* )
-		 readline? ( >=sys-libs/readline-7.0:0= )
-		 pcre? ( dev-libs/libpcre:3 )
-		 svm? ( sci-libs/libsvm )
-		 zlib? ( sys-libs/zlib )
-		 X? ( x11-libs/libXpm )
-		 hyperspec? ( dev-lisp/hyperspec )
-		 berkdb? ( sys-libs/db:4.8 )"
+	virtual/libcrypt:=
+	virtual/libiconv
+	>=dev-libs/libsigsegv-2.10
+	>=dev-libs/ffcall-1.10
+	dbus? ( sys-apps/dbus )
+	fastcgi? ( dev-libs/fcgi )
+	gdbm? ( sys-libs/gdbm:0= )
+	gtk? ( >=x11-libs/gtk+-2.10:2 >=gnome-base/libglade-2.6 )
+	postgres? ( >=dev-db/postgresql-8.0:* )
+	readline? ( >=sys-libs/readline-7.0:0= )
+	pcre? ( dev-libs/libpcre:3 )
+	svm? ( sci-libs/libsvm )
+	zlib? ( sys-libs/zlib )
+	X? ( x11-libs/libXpm )
+	hyperspec? ( dev-lisp/hyperspec )
+	berkdb? ( sys-libs/db:4.8 )"
 
 DEPEND="${RDEPEND}
 	X? ( x11-base/xorg-proto x11-misc/imake )"
@@ -65,6 +65,11 @@ src_prepare() {
 }
 
 src_configure() {
+	# -Werror=lto-type-mismatch
+	# https://bugs.gentoo.org/856103
+	# https://gitlab.com/gnu-clisp/clisp/-/issues/49
+	filter-lto
+
 	# We need this to build on alpha/ia64
 	if use alpha || use ia64; then
 		replace-flags -O? -O1
@@ -118,7 +123,7 @@ src_configure() {
 	einfo "${configure}"
 	${configure} || die "./configure failed"
 
-	IMPNOTES="file://${ROOT%/}/usr/share/doc/${PN}-${PVR}/html/impnotes.html"
+	IMPNOTES="file://${EPREFIX}/usr/share/doc/${PN}-${PVR}/html/impnotes.html"
 	sed -i "s,http://clisp.cons.org/impnotes/,${IMPNOTES},g" \
 		"${BUILDDIR}"/config.lisp || die "Cannot fix link to implementation notes"
 }
@@ -131,11 +136,12 @@ src_compile() {
 }
 
 src_install() {
-	pushd "${BUILDDIR}"
+	pushd "${BUILDDIR}" || die
 	make DESTDIR="${D}" prefix="${EPREFIX}"/usr install-bin || die "Installation failed"
 	doman clisp.1
 	dodoc ../SUMMARY README* ../src/NEWS ../unix/MAGIC.add ../ANNOUNCE
-	popd
-	dohtml doc/impnotes.{css,html} doc/regexp.html doc/clisp.png
+	popd || die
 	dodoc doc/{CLOS-guide,LISP-tutorial}.txt
+	docinto html
+	dodoc doc/impnotes.{css,html} doc/regexp.html doc/clisp.png
 }

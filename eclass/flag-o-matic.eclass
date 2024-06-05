@@ -1,19 +1,18 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: flag-o-matic.eclass
 # @MAINTAINER:
 # toolchain@gentoo.org
-# @SUPPORTED_EAPIS: 5 6 7 8
+# @SUPPORTED_EAPIS: 6 7 8
 # @BLURB: common functions to manipulate and query toolchain flags
 # @DESCRIPTION:
 # This eclass contains a suite of functions to help developers sanely
 # and safely manage toolchain flags in their builds.
 
-case ${EAPI:-0} in
-	0|1|2|3|4) die "flag-o-matic.eclass: EAPI ${EAPI} is too old." ;;
-	5|6|7|8) ;;
-	*) die "EAPI ${EAPI} is not supported by flag-o-matic.eclass." ;;
+case ${EAPI} in
+	6|7|8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
 if [[ -z ${_FLAG_O_MATIC_ECLASS} ]]; then
@@ -21,11 +20,11 @@ _FLAG_O_MATIC_ECLASS=1
 
 inherit toolchain-funcs
 
-[[ ${EAPI} == [567] ]] && inherit eutils
+[[ ${EAPI} == 6 ]] && inherit eqawarn
 
 # @FUNCTION: all-flag-vars
 # @DESCRIPTION:
-# Return all the flag variables that our high level funcs operate on.
+# Return all the flag variables that our high level functions operate on.
 all-flag-vars() {
 	echo {ADA,C,CPP,CXX,CCAS,F,FC,LD}FLAGS
 }
@@ -36,7 +35,7 @@ all-flag-vars() {
 # {C,CPP,CXX,CCAS,F,FC,LD}FLAGS that we allow in strip-flags
 # Note: shell globs and character lists are allowed
 setup-allowed-flags() {
-	[[ ${EAPI} == [567] ]] ||
+	[[ ${EAPI} == [67] ]] ||
 		die "Internal function ${FUNCNAME} is not available in EAPI ${EAPI}."
 	_setup-allowed-flags "$@"
 }
@@ -48,21 +47,46 @@ setup-allowed-flags() {
 # Note: shell globs and character lists are allowed
 _setup-allowed-flags() {
 	ALLOWED_FLAGS=(
-		-pipe -O '-O[12sg]' -mcpu -march -mtune
-		'-fstack-protector*'
-		'-fsanitize*' '-fno-sanitize*'
-		'-fstack-check*' -fno-stack-check
-		-fbounds-check -fbounds-checking -fno-strict-overflow
-		-fno-PIE -fno-pie -nopie -no-pie -fno-unit-at-a-time
+		-pipe -O '-O[123szg]' '-mcpu=*' '-march=*' '-mtune=*' '-mfpmath=*'
+		-flto '-flto=*' -fno-lto
 
-		# debugging symbols should generally be very safe to add
+		# Hardening flags
+		'-fstack-protector*'
+		-fstack-clash-protection
+		'-fcf-protection=*'
+		-fbounds-check -fbounds-checking
+		-fno-PIE -fno-pie -nopie -no-pie
+		-fharden-compares -fharden-conditional-branches
+		-fharden-control-flow-redundancy -fno-harden-control-flow-redundancy
+		-fhardcfr-skip-leaf -fhardcfr-check-exceptions -fhardcfr-check-returning-calls
+		'-fhardcfr-check-noreturn-calls=*'
+		# Spectre mitigations, bug #646076
+		'-mindirect-branch=*'
+		-mindirect-branch-register
+		'-mfunction-return=*'
+		-mretpoline
+		'-mharden-sls=*'
+		'-mbranch-protection=*'
+
+		# Misc
+		-fno-unit-at-a-time -fno-strict-overflow
+
+		# Sanitizers
+		'-fsanitize*' '-fno-sanitize*'
+
+		# Debugging symbols should generally be very safe to add
 		-g '-g[0-9]'
 		-ggdb '-ggdb[0-9]'
 		-gdwarf '-gdwarf-*'
 		-gstabs -gstabs+
 		-gz
+		-glldb
+		'-fdebug-default-version=*'
 
+		# Cosmetic/output related, see e.g. bug #830534
+		-fno-diagnostics-color '-fmessage-length=*'
 		-fno-ident -fpermissive -frecord-gcc-switches
+		-frecord-command-line
 		'-fdiagnostics*' '-fplugin*'
 		'-W*' -w
 
@@ -70,7 +94,7 @@ _setup-allowed-flags() {
 		'-[DUILR]*' '-Wl,*'
 
 		# Linker choice flag
-		'-fuse-ld'
+		'-fuse-ld=*'
 	)
 
 	# allow a bunch of flags that negate features / control ABI
@@ -78,21 +102,32 @@ _setup-allowed-flags() {
 		'-fno-stack-protector*' '-fabi-version=*'
 		-fno-strict-aliasing -fno-bounds-check -fno-bounds-checking -fstrict-overflow
 		-fno-omit-frame-pointer '-fno-builtin*'
+		-mno-omit-leaf-frame-pointer
 	)
 	ALLOWED_FLAGS+=(
-		-mregparm -mno-app-regs -mapp-regs -mno-mmx -mno-sse
+		'-mregparm=*' -mno-app-regs -mapp-regs -mno-mmx -mno-sse
 		-mno-sse2 -mno-sse3 -mno-ssse3 -mno-sse4 -mno-sse4.1 -mno-sse4.2
 		-mno-avx -mno-aes -mno-pclmul -mno-sse4a -mno-3dnow -mno-popcnt
 		-mno-abm -mips1 -mips2 -mips3 -mips4 -mips32 -mips64 -mips16 -mplt
-		-msoft-float -mno-soft-float -mhard-float -mno-hard-float -mfpu
-		-mieee -mieee-with-inexact -mschedule -mfloat-gprs -mspe -mno-spe
+		-msoft-float -mno-soft-float -mhard-float -mno-hard-float '-mfpu=*'
+		-mieee -mieee-with-inexact '-mschedule=*' -mfloat-gprs -mspe -mno-spe
 		-mtls-direct-seg-refs -mno-tls-direct-seg-refs -mflat -mno-flat
-		-mno-faster-structs -mfaster-structs -m32 -m64 -mx32 -mabi
-		-mlittle-endian -mbig-endian -EL -EB -fPIC -mlive-g0 -mcmodel
-		-mstack-bias -mno-stack-bias -msecure-plt '-m*-toc' -mfloat-abi
+		-mno-faster-structs -mfaster-structs -m32 -m64 -mx32 '-mabi=*'
+		-mlittle-endian -mbig-endian -EL -EB -fPIC -mlive-g0 '-mcmodel=*'
+		-mstack-bias -mno-stack-bias -msecure-plt '-m*-toc' '-mfloat-abi=*'
+
+		# This is default on for a bunch of arches except amd64 in GCC
+		# already, and amd64 itself is planned too.
+		'-mtls-dialect=*'
+
+		# MIPS errata
 		-mfix-r4000 -mno-fix-r4000 -mfix-r4400 -mno-fix-r4400
-		-mfix-rm7000 -mno-fix-rm7000 -mfix-r10000 -mno-fix-r10000
-		-mr10k-cache-barrier -mthumb -marm
+		-mfix-r10000 -mno-fix-r10000
+
+		'-mr10k-cache-barrier=*' -mthumb -marm
+
+		# needed for arm64 (and in particular SCS)
+		-ffixed-x18
 
 		# gcc 4.5
 		-mno-fma4 -mno-movbe -mno-xop -mno-lwp
@@ -104,6 +139,8 @@ _setup-allowed-flags() {
 		-mno-fxsr -mno-hle -mno-rtm -mno-xsave -mno-xsaveopt
 		# gcc 4.9
 		-mno-avx512cd -mno-avx512er -mno-avx512f -mno-avx512pf -mno-sha
+
+		-mevex512 -mno-evex512
 	)
 
 	# Allow some safe individual flags. Should come along with the bug reference.
@@ -111,6 +148,14 @@ _setup-allowed-flags() {
 		# Allow explicit stack realignment to run non-conformant
 		# binaries: bug #677852
 		-mstackrealign
+		'-mpreferred-stack-boundary=*'
+		'-mincoming-stack-boundary=*'
+	)
+	ALLOWED_FLAGS+=(
+		# Clang-only
+		'--unwindlib=*'
+		'--rtlib=*'
+		'--stdlib=*'
 	)
 }
 
@@ -127,7 +172,10 @@ _filter-hardened() {
 			# not -fPIC or -fpic, but too many places filter -fPIC without
 			# thinking about -fPIE.
 			-fPIC|-fpic|-fPIE|-fpie|-Wl,pie|-pie)
-				gcc-specs-pie || continue
+				if ! gcc-specs-pie && ! tc-enables-pie ; then
+					continue
+				fi
+
 				if ! is-flagq -nopie && ! is-flagq -no-pie ; then
 					# Support older Gentoo form first (-nopie) before falling
 					# back to the official gcc-6+ form (-no-pie).
@@ -138,15 +186,36 @@ _filter-hardened() {
 					fi
 				fi
 				;;
-			-fstack-protector)
-				gcc-specs-ssp || continue
-				is-flagq -fno-stack-protector || append-flags $(test-flags -fno-stack-protector);;
+
+			-fstack-protector|-fstack-protector-strong)
+				if ! gcc-specs-ssp && ! tc-enables-ssp && ! tc-enables-ssp-strong ; then
+					continue
+				fi
+
+				is-flagq -fno-stack-protector || append-flags $(test-flags -fno-stack-protector)
+				;;
 			-fstack-protector-all)
-				gcc-specs-ssp-to-all || continue
-				is-flagq -fno-stack-protector-all || append-flags $(test-flags -fno-stack-protector-all);;
+				if ! gcc-specs-ssp-to-all && ! tc-enables-ssp-all ; then
+					continue
+				fi
+
+				is-flagq -fno-stack-protector-all || append-flags $(test-flags -fno-stack-protector-all)
+				;;
 			-fno-strict-overflow)
 				gcc-specs-nostrict || continue
-				is-flagq -fstrict-overflow || append-flags $(test-flags -fstrict-overflow);;
+
+				is-flagq -fstrict-overflow || append-flags $(test-flags -fstrict-overflow)
+				;;
+			-D_GLIBCXX_ASSERTIONS|-D_LIBCPP_ENABLE_ASSERTIONS|-D_LIBCPP_ENABLE_HARDENED_MODE)
+				tc-enables-cxx-assertions || continue
+
+				append-cppflags -U_GLIBCXX_ASSERTIONS -U_LIBCPP_ENABLE_ASSERTIONS -U_LIBCPP_ENABLE_HARDENED_MODE
+				;;
+			-D_FORTIFY_SOURCE=*)
+				tc-enables-fortify-source || continue
+
+				append-cppflags -U_FORTIFY_SOURCE
+				;;
 		esac
 	done
 }
@@ -189,12 +258,21 @@ filter-flags() {
 # Remove flags that enable Large File Support.
 filter-lfs-flags() {
 	[[ $# -ne 0 ]] && die "filter-lfs-flags takes no arguments"
+
 	# http://www.gnu.org/s/libc/manual/html_node/Feature-Test-Macros.html
 	# _LARGEFILE_SOURCE: enable support for new LFS funcs (ftello/etc...)
 	# _LARGEFILE64_SOURCE: enable support for 64bit variants (off64_t/fseeko64/etc...)
 	# _FILE_OFFSET_BITS: default to 64bit variants (off_t is defined as off64_t)
 	# _TIME_BITS: default to 64bit time_t (requires _FILE_OFFSET_BITS=64)
 	filter-flags -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_TIME_BITS=64
+}
+
+# @FUNCTION: filter-lto
+# @DESCRIPTION:
+# Remove flags that enable LTO and those that depend on it
+filter-lto() {
+	[[ $# -ne 0 ]] && die "filter-lto takes no arguments"
+	filter-flags '-flto*' -fwhole-program-vtables '-fsanitize=cfi*'
 }
 
 # @FUNCTION: filter-ldflags
@@ -226,7 +304,7 @@ append-cppflags() {
 # @CODE
 append-cflags() {
 	[[ $# -eq 0 ]] && return 0
-	# Do not do automatic flag testing ourselves. #417047
+	# Do not do automatic flag testing ourselves, bug #417047
 	export CFLAGS+=" $*"
 	return 0
 }
@@ -241,7 +319,7 @@ append-cflags() {
 # @CODE
 append-cxxflags() {
 	[[ $# -eq 0 ]] && return 0
-	# Do not do automatic flag testing ourselves. #417047
+	# Do not do automatic flag testing ourselves, bug #417047
 	export CXXFLAGS+=" $*"
 	return 0
 }
@@ -256,7 +334,7 @@ append-cxxflags() {
 # @CODE
 append-fflags() {
 	[[ $# -eq 0 ]] && return 0
-	# Do not do automatic flag testing ourselves. #417047
+	# Do not do automatic flag testing ourselves, bug #417047
 	export FFLAGS+=" $*"
 	export FCFLAGS+=" $*"
 	return 0
@@ -267,7 +345,8 @@ append-fflags() {
 # Add flags that enable Large File Support.
 append-lfs-flags() {
 	[[ $# -ne 0 ]] && die "append-lfs-flags takes no arguments"
-	# see comments in filter-lfs-flags func for meaning of these
+
+	# See comments in filter-lfs-flags func for meaning of these
 	append-cppflags -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 }
 
@@ -294,9 +373,9 @@ append-ldflags() {
 append-flags() {
 	[[ $# -eq 0 ]] && return 0
 	case " $* " in
-	*' '-[DIU]*) eqawarn 'please use append-cppflags for preprocessor flags' ;;
+	*' '-[DIU]*) eqawarn 'Please use append-cppflags for preprocessor flags' ;;
 	*' '-L*|\
-	*' '-Wl,*)  eqawarn 'please use append-ldflags for linker flags' ;;
+	*' '-Wl,*)  eqawarn 'Please use append-ldflags for linker flags' ;;
 	esac
 	append-cflags "$@"
 	append-cxxflags "$@"
@@ -452,9 +531,8 @@ strip-flags() {
 		local new=()
 
 		for x in ${!var} ; do
-			local flag=${x%%=*}
 			for y in "${ALLOWED_FLAGS[@]}" ; do
-				if [[ -z ${flag%%${y}} ]] ; then
+				if [[ ${x} == ${y} ]] ; then
 					new+=( "${x}" )
 					break
 				fi
@@ -484,7 +562,7 @@ strip-flags() {
 # Returns shell true if <flag> is supported by given <compiler>,
 # else returns shell false.
 test-flag-PROG() {
-	[[ ${EAPI} == [567] ]] ||
+	[[ ${EAPI} == [67] ]] ||
 		die "Internal function ${FUNCNAME} is not available in EAPI ${EAPI}."
 	_test-flag-PROG "$@"
 }
@@ -545,6 +623,15 @@ _test-flag-PROG() {
 		c+ld)
 			in_ext='c'
 			in_src='int main(void) { return 0; }'
+
+			if is-ldflagq -fuse-ld=* ; then
+				# Respect linker chosen by user so we don't
+				# end up giving false results by checking
+				# with default linker. bug #832377
+				fuse_ld_value=$(get-flag -fuse-ld=*)
+				cmdline_extra+=(${fuse_ld_value})
+			fi
+
 			cmdline_extra+=(-xc)
 			;;
 	esac
@@ -554,7 +641,7 @@ _test-flag-PROG() {
 	printf "%s\n" "${in_src}" > "${test_in}" || die "Failed to create '${test_in}'"
 
 	# Currently we rely on warning-free output of a compiler
-	# before the flag to see if a flag prduces any warnings.
+	# before the flag to see if a flag produces any warnings.
 	# This has a few drawbacks:
 	# - if compiler already generates warnings we filter out
 	#   every single flag: bug #712488
@@ -563,11 +650,20 @@ _test-flag-PROG() {
 	#
 	# We can add more selective detection of no-op flags via
 	# '-Werror=ignored-optimization-argument' and similar error options
-	# similar to what we are doing with '-Qunused-arguments'.
+	# or accept unused flags with '-Qunused-arguments' like we
+	# used to for bug #627474. Since we now invoke the linker
+	# for testing linker flags, unused argument warnings aren't
+	# ignored; linker flags may no longer be accepted in CFLAGS.
+	#
+	# However, warnings emitted by a compiler for a clean source
+	# can break feature detection by CMake or autoconf since
+	# many checks use -Werror internally. See e.g. bug #714742.
 	local cmdline=(
 		"${comp[@]}"
 		# Clang will warn about unknown gcc flags but exit 0.
 		# Need -Werror to force it to exit non-zero.
+		#
+		# See also bug #712488 and bug #714742.
 		-Werror
 		"$@"
 		# -x<lang> options need to go before first source file
@@ -576,14 +672,7 @@ _test-flag-PROG() {
 		"${test_in}" -o "${test_out}"
 	)
 
-	if ! "${cmdline[@]}" &>/dev/null; then
-		# -Werror makes clang bail out on unused arguments as well;
-		# try to add -Qunused-arguments to work-around that
-		# other compilers don't support it but then, it's failure like
-		# any other
-		cmdline+=( -Qunused-arguments )
-		"${cmdline[@]}" &>/dev/null
-	fi
+	"${cmdline[@]}" &>/dev/null
 }
 
 # @FUNCTION: test-flag-CC
@@ -623,7 +712,7 @@ test-flag-CCLD() { _test-flag-PROG CC c+ld "$@"; }
 # Returns shell true if <flags> are supported by given <compiler>,
 # else returns shell false.
 test-flags-PROG() {
-	[[ ${EAPI} == [567] ]] ||
+	[[ ${EAPI} == [67] ]] ||
 		die "Internal function ${FUNCNAME} is not available in EAPI ${EAPI}."
 	_test-flags-PROG "$@"
 }
@@ -645,7 +734,7 @@ _test-flags-PROG() {
 
 	while (( $# )); do
 		case "$1" in
-			# '-B /foo': bug # 687198
+			# '-B /foo': bug #687198
 			--param|-B)
 				if test-flag-${comp} "$1" "$2"; then
 					flags+=( "$1" "$2" )
@@ -831,7 +920,7 @@ raw-ldflags() {
 			x=${x#-Wl,}
 			set -- "$@" ${x//,/ }
 			;;
-		*)	# Assume it's a compiler driver flag, so throw it away #441808
+		*)	# Assume it's a compiler driver flag, so throw it away, bug #441808
 			;;
 		esac
 	done
@@ -846,6 +935,109 @@ no-as-needed() {
 		*GNU*) # GNU ld
 		echo "-Wl,--no-as-needed" ;;
 	esac
+}
+
+# @FUNCTION: test-compile
+# @USAGE: <language> <code>
+# @DESCRIPTION:
+# Attempts to compile (and possibly link) the given program.  The first
+# <language> parameter corresponds to the standard -x compiler argument.
+# If the program should additionally be attempted to be linked, the string
+# "+ld" should be added to the <language> parameter.
+test-compile() {
+	local lang=$1
+	local code=$2
+	shift 2
+
+	[[ -z "${lang}" ]] && return 1
+	[[ -z "${code}" ]] && return 1
+
+	local compiler filename_in filename_out args=() libs=()
+	case "${lang}" in
+		c)
+			compiler="$(tc-getCC)"
+			filename_in="${T}/test.c"
+			filename_out="${T}/test.o"
+			args+=(${CFLAGS[@]} -xc -c)
+			;;
+		c++)
+			compiler="$(tc-getCXX)"
+			filename_in="${T}/test.cc"
+			filename_out="${T}/test.o"
+			args+=(${CXXFLAGS[@]} -xc++ -c)
+			;;
+		f77)
+			compiler="$(tc-getF77)"
+			filename_in="${T}/test.f"
+			filename_out="${T}/test.o"
+			args+=(${FFFLAGS[@]} -xf77 -c)
+			;;
+		f95)
+			compiler="$(tc-getFC)"
+			filename_in="${T}/test.f90"
+			filename_out="${T}/test.o"
+			args+=(${FCFLAGS[@]} -xf95 -c)
+			;;
+		c+ld)
+			compiler="$(tc-getCC)"
+			filename_in="${T}/test.c"
+			filename_out="${T}/test.exe"
+			args+=(${CFLAGS[@]} ${LDFLAGS[@]} -xc)
+			libs+=(${LIBS[@]})
+			;;
+		c+++ld)
+			compiler="$(tc-getCXX)"
+			filename_in="${T}/test.cc"
+			filename_out="${T}/test.exe"
+			args+=(${CXXFLAGS[@]} ${LDFLAGS[@]} -xc++)
+			libs+=(${LIBS[@]})
+			;;
+		f77+ld)
+			compiler="$(tc-getF77)"
+			filename_in="${T}/test.f"
+			filename_out="${T}/test.exe"
+			args+=(${FFLAGS[@]} ${LDFLAGS[@]} -xf77)
+			libs+=(${LIBS[@]})
+			;;
+		f95+ld)
+			compiler="$(tc-getFC)"
+			filename_in="${T}/test.f90"
+			filename_out="${T}/test.exe"
+			args+=(${FCFLAGS[@]} ${LDFLAGS[@]} -xf95)
+			libs+=(${LIBS[@]})
+			;;
+		*)
+			die "Unknown compiled language ${lang}"
+			;;
+	esac
+
+	printf "%s\n" "${code}" > "${filename_in}" || die "Failed to create '${test_in}'"
+
+	"${compiler}" ${args[@]} "${filename_in}" -o "${filename_out}" ${libs[@]} &>/dev/null
+}
+
+# @FUNCTION: append-atomic-flags
+# @DESCRIPTION:
+# Attempts to detect if appending -latomic works, and does so.
+append-atomic-flags() {
+	# Make sure that the flag is actually valid. If it isn't, then maybe the
+	# library both doesn't exist and is redundant, or maybe the toolchain is
+	# broken, but let the build succeed or fail on its own.
+	test-flags-CCLD "-latomic" &>/dev/null || return
+
+	# We unconditionally append this flag. In the case that it's needed, the
+	# flag is, well, needed. In the case that it's not needed, it causes no
+	# harm, because we ensure that this specific library is definitely
+	# certainly linked with as-needed.
+	#
+	# Really, this should be implemented directly in the compiler, including
+	# the use of push/pop for as-needed. It's exactly what the gcc spec file
+	# does for e.g. -lgcc_s, but gcc is concerned about doing so due to build
+	# system internals and as a result all users have to deal with this mess
+	# instead.
+	#
+	# See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81358
+	append-libs "-Wl,--push-state,--as-needed,-latomic,--pop-state"
 }
 
 fi

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -11,7 +11,7 @@ SRC_URI="https://github.com/5u623l20/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD GPL-3"
 SLOT="0"
-KEYWORDS="amd64 ppc x86"
+KEYWORDS="amd64 ~ppc x86"
 IUSE="debug mysql postgres ssl static-libs"
 
 RDEPEND="
@@ -28,8 +28,8 @@ DEPEND="
 "
 BDEPEND="
 	app-text/docbook-sgml-utils
-	sys-devel/bison
-	sys-devel/flex
+	app-alternatives/yacc
+	app-alternatives/lex
 "
 DOCS=( ChangeLog.old README README.fork SECURITY TODO TODO.old )
 PATCHES=(

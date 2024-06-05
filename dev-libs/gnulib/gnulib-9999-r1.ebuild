@@ -1,7 +1,7 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=8
 
 inherit git-r3
 
@@ -9,7 +9,7 @@ DESCRIPTION="Gnulib is a library of common routines intended to be shared at the
 HOMEPAGE="https://www.gnu.org/software/gnulib"
 
 EGIT_REPO_URI="https://git.savannah.gnu.org/r/${PN}.git"
-LICENSE="GPL-2"
+LICENSE="GPL-3+ LGPL-2.1+ FDL-1.3+"
 SLOT="0"
 KEYWORDS=""
 IUSE="doc"

@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
 
-inherit toolchain flag-o-matic autotools prefix toolchain-funcs
+inherit flag-o-matic autotools prefix toolchain-funcs
 
 GCC_VERS=${PV/_p*/}
 APPLE_VERS="${PV/*_p/}.3"
@@ -32,7 +32,7 @@ RDEPEND=">=sys-libs/zlib-1.1.4
 	)"
 DEPEND="${RDEPEND}
 	>=sys-apps/texinfo-4.2-r4
-	>=sys-devel/bison-1.875
+	app-alternatives/yacc
 	${CATEGORY}/binutils-apple
 	>=dev-libs/mpfr-2.2.0_p10"
 PDEPEND="sys-libs/csu"
@@ -41,6 +41,17 @@ S=${WORKDIR}/gcc-${APPLE_VERS}
 
 # TPREFIX is the prefix of the CTARGET installation
 export TPREFIX=${TPREFIX:-${EPREFIX}}
+
+export CTARGET=${CTARGET:-${CHOST}}
+if [[ ${CTARGET} = ${CHOST} ]] ; then
+	if [[ ${CATEGORY} == cross-* ]] ; then
+		export CTARGET=${CATEGORY#cross-}
+	fi
+fi
+
+is_crosscompile() {
+	[[ ${CHOST} != ${CTARGET} ]]
+}
 
 do_bootstrap() {
 	is_crosscompile && return 1
@@ -300,6 +311,8 @@ src_install() {
 	echo "INFOPATH=\"${EPREFIX}/usr/share/gcc-data/${CHOST}/${GCC_VERS}/info\"" >> ${gcc_envd_file}
 	echo "STDCXX_INCDIR=\"g++-v${GCC_VERS/\.*/}\"" >> ${gcc_envd_file}
 	is_crosscompile && echo "CTARGET=${CTARGET}" >> ${gcc_envd_file}
+
+	docompress /usr/share/gcc-data/${CTARGET}/${GCC_VERS}/{man,info}
 
 	# Move <cxxabi.h> to compiler-specific directories
 	[[ -f ${D}${STDCXX_INCDIR}/cxxabi.h ]] && \

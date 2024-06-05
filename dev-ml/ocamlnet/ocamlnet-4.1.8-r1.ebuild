@@ -13,7 +13,7 @@ S="${WORKDIR}/${MY_P}"
 
 LICENSE="ZLIB GPL-2+"
 SLOT="0/${PV}"
-KEYWORDS="amd64 ppc x86"
+KEYWORDS="amd64 ~ppc x86"
 IUSE="kerberos tk httpd +ocamlopt +pcre ssl zip"
 RESTRICT="installsources strip"
 
@@ -62,6 +62,7 @@ src_configure() {
 		$(ocamlnet_use_enable zip zip) \
 		$(ocamlnet_use_with httpd nethttpd) \
 		-cpp "$(tc-getPROG CPP cpp)" \
+		-equeue-tcl-libs -ltcl \
 		|| die "Error: econf failed!"
 }
 

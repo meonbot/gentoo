@@ -1,15 +1,15 @@
-BDEPEND=virtual/pkgconfig >=dev-util/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array test? ( x11-base/xorg-server[xvfb] x11-apps/xhost ) >=dev-vcs/git-1.8.2.1[curl]
-DEFINED_PHASES=compile configure install prepare test unpack
-DEPEND=dev-libs/glib:2 dev-libs/json-c:= >=x11-libs/gtk+-3.20:3 >=x11-libs/pango-1.14 libnotify? ( x11-libs/libnotify ) doc? ( app-doc/doxygen ) test? ( dev-libs/check )
+BDEPEND=virtual/pkgconfig doc? ( app-text/doxygen ) >=dev-build/meson-1.2.3 app-alternatives/ninja dev-build/meson-format-array test? ( x11-base/xorg-server[xvfb] x11-apps/xhost ) >=dev-vcs/git-1.8.2.1[curl]
+DEFINED_PHASES=compile configure install test unpack
+DEPEND=app-accessibility/at-spi2-core dev-libs/glib:2 dev-libs/json-glib:= media-libs/harfbuzz:= x11-libs/cairo[glib] x11-libs/gdk-pixbuf >=x11-libs/gtk+-3.20:3 x11-libs/pango test? ( dev-libs/check x11-base/xorg-proto x11-libs/gtk+:3[X] )
 DESCRIPTION=UI library that focuses on simplicity and minimalism
-EAPI=7
+EAPI=8
 HOMEPAGE=https://pwmt.org/projects/girara/
 INHERIT=meson virtualx git-r3
-IUSE=doc libnotify test test
+IUSE=doc test test
 LICENSE=ZLIB
 PROPERTIES=live
-RDEPEND=dev-libs/glib:2 dev-libs/json-c:= >=x11-libs/gtk+-3.20:3 >=x11-libs/pango-1.14 libnotify? ( x11-libs/libnotify )
-RESTRICT=!test? ( test )
+RDEPEND=app-accessibility/at-spi2-core dev-libs/glib:2 dev-libs/json-glib:= media-libs/harfbuzz:= x11-libs/cairo[glib] x11-libs/gdk-pixbuf >=x11-libs/gtk+-3.20:3 x11-libs/pango
+RESTRICT=!test? ( test ) !test? ( test )
 SLOT=0
-_eclasses_=multiprocessing	61c959fc55c15c00bbb1079d6a71370b	ninja-utils	a4dab848a4490e8e48cf0baab3e61bc2	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	python-utils-r1	54423f1e035828362c248fad528ebbba	meson	9f3e84959ae1d60e19bc91f212774dcc	virtualx	fa024aa649b6bd544144bf94893d402c	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=f50a6c0cbcadd7d7fd332dc525970a96
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	meson	aecae905c2e0c201d7925fae52a5576d	virtualx	817571665ee28575da44ee08135089e5	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=960f348ab92b730730d85fd0d06f7bd8

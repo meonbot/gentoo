@@ -1,14 +1,14 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 # deal.II uses its own FindLAPACK.cmake file that calls into the system
 # FindLAPACK.cmake module and does additional internal setup. Do not remove
 # any of these modules:
 CMAKE_REMOVE_MODULES_LIST=""
 
-inherit cmake flag-o-matic multilib
+inherit cmake flag-o-matic
 
 DESCRIPTION="Solving partial differential equations with the finite element method"
 HOMEPAGE="https://www.dealii.org/"
@@ -28,14 +28,15 @@ fi
 LICENSE="LGPL-2.1+"
 SLOT="0"
 IUSE="
-	adolc assimp arpack cpu_flags_x86_avx cpu_flags_x86_avx512f
+	adolc arborx assimp arpack cgal cpu_flags_x86_avx cpu_flags_x86_avx512f
 	cpu_flags_x86_sse2 cuda +debug doc +examples ginkgo gmsh +gsl hdf5
-	+lapack metis mpi muparser opencascade p4est petsc
-	scalapack slepc +sparse static-libs sundials symengine trilinos
+	+lapack metis mpi muparser opencascade p4est petsc scalapack slepc
+	+sparse sundials symengine trilinos
 "
 
 # TODO: add slepc use flag once slepc is packaged for gentoo-science
 REQUIRED_USE="
+	arborx? ( trilinos )
 	p4est? ( mpi )
 	slepc? ( petsc )
 	trilinos? ( mpi )"
@@ -43,16 +44,17 @@ REQUIRED_USE="
 RDEPEND="dev-libs/boost:=
 	app-arch/bzip2
 	sys-libs/zlib
-	dev-cpp/cpp-taskflow
 	dev-cpp/tbb:=
+	arborx? ( sci-libs/arborx[mpi=] )
 	adolc? ( sci-libs/adolc )
 	arpack? ( sci-libs/arpack[mpi=] )
-	assimp? ( media-libs/assimp )
+	assimp? ( media-libs/assimp:= )
+	cgal? ( sci-mathematics/cgal )
 	cuda? ( dev-util/nvidia-cuda-toolkit )
 	ginkgo? ( sci-libs/ginkgo )
 	gmsh? ( sci-libs/gmsh )
 	gsl? ( sci-libs/gsl:= )
-	hdf5? ( sci-libs/hdf5[mpi=] )
+	hdf5? ( sci-libs/hdf5:=[mpi=] )
 	lapack? ( virtual/lapack )
 	metis? (
 		>=sci-libs/metis-5
@@ -60,7 +62,7 @@ RDEPEND="dev-libs/boost:=
 	)
 	mpi? ( virtual/mpi[cxx] )
 	muparser? ( dev-cpp/muParser )
-	opencascade? ( >=sci-libs/opencascade-7.6.0:= )
+	opencascade? ( sci-libs/opencascade:= )
 	p4est? ( sci-libs/p4est[mpi] )
 	petsc? ( sci-mathematics/petsc[mpi=] )
 	scalapack? ( sci-libs/scalapack )
@@ -68,14 +70,18 @@ RDEPEND="dev-libs/boost:=
 	sparse? ( sci-libs/umfpack )
 	sundials? ( sci-libs/sundials:= )
 	symengine? ( >=sci-libs/symengine-0.4:= )
-	trilinos? ( sci-libs/trilinos )"
+	trilinos? ( sci-libs/trilinos )
+	|| (
+		dev-cpp/kokkos
+		sci-libs/trilinos
+	)
+	"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen[dot] dev-lang/perl )"
+	doc? ( app-text/doxygen[dot] dev-lang/perl )"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-9.1.1-no-ld-flags.patch
 )
 
 src_configure() {
@@ -86,6 +92,7 @@ src_configure() {
 		-DDEAL_II_PACKAGE_VERSION="${PV}"
 		-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=OFF
 		-DDEAL_II_ALLOW_AUTODETECTION=OFF
+		-DDEAL_II_ALLOW_BUNDLED=OFF
 		-DDEAL_II_ALLOW_PLATFORM_INTROSPECTION=OFF
 		-DDEAL_II_COMPILE_EXAMPLES=OFF
 		-DDEAL_II_DOCHTML_RELDIR="share/doc/${P}/html"
@@ -96,8 +103,10 @@ src_configure() {
 		-DDEAL_II_SHARE_RELDIR="share/${PN}"
 		-DDEAL_II_WITH_ZLIB=ON
 		-DDEAL_II_WITH_ADOLC="$(usex adolc)"
+		-DDEAL_II_WITH_ARBORX="$(usex arborx)"
 		-DDEAL_II_WITH_ASSIMP="$(usex assimp)"
 		-DDEAL_II_WITH_ARPACK="$(usex arpack)"
+		-DDEAL_II_WITH_CGAL="$(usex cgal)"
 		-DDEAL_II_WITH_CUDA="$(usex cuda)"
 		-DDEAL_II_WITH_GINKGO="$(usex ginkgo)"
 		-DDEAL_II_COMPONENT_DOCUMENTATION="$(usex doc)"
@@ -117,16 +126,13 @@ src_configure() {
 		-DDEAL_II_WITH_SUNDIALS="$(usex sundials)"
 		-DDEAL_II_WITH_SYMENGINE="$(usex symengine)"
 		-DDEAL_II_WITH_UMFPACK="$(usex sparse)"
-		-DBUILD_SHARED_LIBS="$(usex !static-libs)"
-		-DDEAL_II_PREFER_STATIC_LIBS="$(usex static-libs)"
 		-DDEAL_II_WITH_TBB=ON
-		-DDEAL_II_WITH_TASKFLOW=ON
+		-DDEAL_II_WITH_TASKFLOW=OFF
 		-DDEAL_II_WITH_TRILINOS="$(usex trilinos)"
 	)
 
-	# Do a little dance for purely cosmetic QA reasons.
 	use opencascade && mycmakeargs+=(
-		-DOPENCASCADE_DIR="${CASROOT}/$(get_libdir)/opencascade"
+		-DCMAKE_PREFIX_PATH="/usr/$(get_libdir)/opencascade"
 	)
 
 	# Do a little dance for purely cosmetic QA reasons. The build system

@@ -1,15 +1,15 @@
-BDEPEND=virtual/pkgconfig
+BDEPEND=virtual/pkgconfig X? ( sys-devel/gcc >=x11-misc/imake-1.0.8-r1 )
 DEFINED_PHASES=compile configure install prepare
-DEPEND=sys-libs/ncurses:0= X? ( x11-libs/libX11 ) X? ( >=x11-misc/imake-1.0.8-r1 )
+DEPEND=sys-libs/ncurses:= X? ( x11-libs/libX11 )
 DESCRIPTION=Shows currently transmitting beacons of the International Beacon Project (IBP)
 EAPI=7
-HOMEPAGE=http://wwwhome.cs.utwente.nl/~ptdeboer/ham/ibp.html
-INHERIT=toolchain-funcs
+HOMEPAGE=http://www.pa3fwm.nl/software/ibp/
+INHERIT=flag-o-matic toolchain-funcs
 IUSE=X
 KEYWORDS=amd64 x86
 LICENSE=GPL-2
-RDEPEND=sys-libs/ncurses:0= X? ( x11-libs/libX11 )
+RDEPEND=sys-libs/ncurses:= X? ( x11-libs/libX11 )
 SLOT=0
-SRC_URI=http://wwwhome.cs.utwente.nl/~ptdeboer/ham/ibp-0.21.tgz
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784
-_md5_=cd115dd6115506fb01eca10473122274
+SRC_URI=http://www.pa3fwm.nl/software/ibp/ibp-0.21.tgz
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653
+_md5_=517b49fcb17084cdb988a74226382fb4

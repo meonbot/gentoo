@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -16,7 +16,7 @@ IUSE="doc static-libs"
 RDEPEND=""
 DEPEND="${RDEPEND}
 	dev-libs/boost:=
-	doc? ( app-doc/doxygen[dot] )"
+	doc? ( app-text/doxygen[dot] )"
 
 src_configure() {
 	econf $(use_enable static-libs static)
@@ -35,7 +35,7 @@ src_install() {
 	fi
 
 	if use doc; then
-		insinto /usr/share/doc/${PF}
-		doins -r developer/html
+		dodoc -r developer/html
+		docompress -x /usr/share/doc/${PF}/html
 	fi
 }

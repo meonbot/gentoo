@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,11 +7,11 @@ inherit toolchain-funcs
 
 DESCRIPTION="A command-line tool for taking JPEG snapshots of VNC servers"
 HOMEPAGE="http://vncsnapshot.sourceforge.net/"
-SRC_URI="mirror://sourceforge/${PN}/${P}-src.tar.bz2"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${P}-src.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ppc x86"
+KEYWORDS="~amd64 ~arm64 ppc x86"
 
 DEPEND="
 	sys-libs/zlib

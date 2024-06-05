@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -7,11 +7,11 @@ inherit autotools
 
 DESCRIPTION="blackbox time watcher"
 HOMEPAGE="https://sourceforge.net/projects/bbtools/"
-SRC_URI="mirror://sourceforge/bbtools/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/bbtools/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~x86"
+KEYWORDS="amd64 ppc x86"
 IUSE=""
 
 RDEPEND="x11-libs/libX11"
@@ -23,6 +23,9 @@ PATCHES=( "${FILESDIR}"/${P}-asneeded.patch )
 src_prepare() {
 	default
 	mv configure.{in,ac} || die
+	sed -i \
+		-e 's|register ||' \
+		Image.cc || die
 	eautoreconf
 }
 

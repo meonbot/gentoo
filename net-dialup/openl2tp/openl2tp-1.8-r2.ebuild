@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,7 +7,7 @@ inherit linux-info
 
 DESCRIPTION="Userspace tools for kernel L2TP implementation"
 HOMEPAGE="https://sourceforge.net/projects/openl2tp/"
-SRC_URI="mirror://sourceforge/openl2tp/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/openl2tp/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -18,8 +18,8 @@ REQUIRED_USE="|| ( client server )"
 
 BDEPEND="
 	>=net-libs/rpcsvc-proto-1.3.1-r1
-	sys-devel/bison
-	sys-devel/flex
+	app-alternatives/yacc
+	app-alternatives/lex
 "
 DEPEND="
 	>=net-dialup/ppp-2.4.5

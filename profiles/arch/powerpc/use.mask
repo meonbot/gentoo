@@ -1,19 +1,24 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # PPC Specific use flags
 #
 
+# matoro <matoro_gentoo@matoro.tk> (2022-09-29)
+# dev-util/google-perftools is supported here
+-tcmalloc
+
 # Georgy Yakovlev <gyakovlev@gentoo.org> (2021-06-06)
 # XEN does not support ppc/ppc64 yet
 xen
 
-# David Seifert <soap@gentoo.org (2020-05-17)
+# David Seifert <soap@gentoo.org> (2020-05-17)
 # Mono is hopelessly broken on ppc32
 mono
 
 # Georgy Yakovlev <gyakovlev@gentoo.org> (2020-01-25)
 # Requires qtwebengine, which is not ported to any of powerpc arches yet
+pdfium
 webengine
 
 # Matt Turner <mattst88@gentoo.org> (2018-09-18)
@@ -30,10 +35,6 @@ fortune
 nagios-game
 physfs
 
-# James Le Cuirot <chewi@gentoo.org> (2017-06-29)
-# Unmask as this profile is big endian.
--big-endian
-
 # Matt Turner <mattst88@gentoo.org> (2017-03-24)
 # virtual/opencl is not keyworded
 opencl
@@ -45,19 +46,11 @@ video_cards_amdgpu
 video_cards_radeonsi
 clang
 
-# Jeroen Roovers <jer@gentoo.org> (2015-05-25)
-# PowerPC has no support for this bootloader (bug #550322)
-gnuefi
-
-# Patrick Lauer <patrick@gentoo.org> (2015-04-28)
-# dependencies not keyworded yet
-appindicator
-ayatana
-
 # These flags should only be used for ppc
--ppcsha1
-# Unmask the Altivec instruction set
--altivec
+-cpu_flags_ppc_altivec
+-cpu_flags_ppc_vsx
+-cpu_flags_ppc_vsx2
+-cpu_flags_ppc_vsx3
 
 # Incompatible Use Flags
 #
@@ -120,17 +113,9 @@ ios
 # and it's also masked in arch/powerpc/ppc64/32ul/package.mask
 lirc
 
-# Kacper Kowalik <xarthisius@gentoo.org> (2011-07-26)
-# ppc keywords were dropped for dev-libs/prelude
-prelude
-
 # Julian Ospald <hasufell@gentoo.org> (2012-04-25)
 # Masked because nvidia-texture-tools is not (tested) for PowerPC
 nvtt
 
 # fdk-aac is already keyworded here
 -fdk
-
-# Pacho Ramos <pacho@gentoo.org> (2014-01-08)
-# Unmask systemd since it is keyworded here.
--systemd

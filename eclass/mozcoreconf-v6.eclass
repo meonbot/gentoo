@@ -1,39 +1,32 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
-#
+
 # @ECLASS: mozcoreconf-v6.eclass
 # @MAINTAINER:
 # Mozilla team <mozilla@gentoo.org>
-# @SUPPORTED_EAPIS: 6 7 8
+# @SUPPORTED_EAPIS: 8
 # @BLURB: core options and configuration functions for mozilla
 # @DESCRIPTION:
 #
 # inherit mozconfig-v6.* or above for mozilla configuration support
 
-# @ECLASS-VARIABLE: MOZILLA_FIVE_HOME
+# @ECLASS_VARIABLE: MOZILLA_FIVE_HOME
 # @DESCRIPTION:
 # This is an eclass-generated variable that defines the rpath that the mozilla
 # product will be installed in.  Read-only
 
-if [[ ! ${_MOZCORECONF} ]]; then
+case ${EAPI} in
+	8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
+esac
+
+if [[ ! ${_MOZCORECONF_V6_ECLASS} ]]; then
+_MOZCORECONF_V6_ECLASS=1
 
 inherit toolchain-funcs flag-o-matic python-any-r1
 
 BDEPEND="virtual/pkgconfig
-	dev-lang/python:2.7[ncurses,sqlite,ssl,threads(+)]
 	${PYTHON_DEPS}"
-
-case "${EAPI:-0}" in
-	6)
-		inherit multilib versionator
-		DEPEND+=" ${BDEPEND}"
-		;;
-	7|8)
-		;;
-	*)
-		die "EAPI ${EAPI} is not supported, contact eclass maintainers"
-		;;
-esac
 
 IUSE="${IUSE} custom-cflags custom-optimization"
 
@@ -76,31 +69,19 @@ mozconfig_use_with() {
 	mozconfig_annotate "$(use $1 && echo +$1 || echo -$1)" "${flag}"
 }
 
-# @FUNCTION: mozconfig_use_extension
-# @DESCRIPTION:
-# enable or disable an extension based on a USE-flag
-#
-# Example:
-# mozconfig_use_extension gnome gnomevfs
-# => ac_add_options --enable-extensions=gnomevfs
-mozconfig_use_extension() {
-	declare minus=$(use $1 || echo -)
-	mozconfig_annotate "${minus:-+}$1" --enable-extensions=${minus}${2}
-}
-
 moz_pkgsetup() {
 	# Ensure we use C locale when building
-	export LANG="C"
-	export LC_ALL="C"
-	export LC_MESSAGES="C"
-	export LC_CTYPE="C"
+	export LANG="C.UTF-8"
+	export LC_ALL="C.UTF-8"
+	export LC_MESSAGES="C.UTF-8"
+	export LC_CTYPE="C.UTF-8"
 
 	# Ensure we use correct toolchain
 	export HOST_CC="$(tc-getBUILD_CC)"
 	export HOST_CXX="$(tc-getBUILD_CXX)"
 	tc-export CC CXX LD PKG_CONFIG AR RANLIB
 
-	# Ensure that we have a sane build enviroment
+	# Ensure that we have a sane build environment
 	export MOZILLA_CLIENT=1
 	export BUILD_OPT=1
 	export NO_STATIC_LIB=1
@@ -117,12 +98,6 @@ moz_pkgsetup() {
 	export QA_CONFIGURE_OPTIONS=".*"
 
 	python-any-r1_pkg_setup
-	# workaround to set python3 into PYTHON3 until mozilla doesn't need py2
-	if [[ "${PYTHON_COMPAT[@]}" != "${PYTHON_COMPAT[@]#python3*}" ]]; then
-		export PYTHON3=${PYTHON}
-		export PYTHON=python2.7
-		export EPYTHON="${EPREFIX}"/usr/bin/python2.7
-	fi
 }
 
 # @FUNCTION: mozconfig_init
@@ -207,10 +182,6 @@ mozconfig_init() {
 	# Strip optimization so it does not end up in compile string
 	filter-flags '-O*'
 
-	if is-flagq '-g*' ; then
-		mozconfig_annotate 'elf-hack broken with -g* flags' --disable-elf-hack
-	fi
-
 	# Strip over-aggressive CFLAGS
 	use custom-cflags || strip-flags
 
@@ -289,13 +260,6 @@ mozconfig_final() {
 	done
 	echo "=========================================================="
 	echo
-
-	# Resolve multiple --enable-extensions down to one
-	declare exts=$(sed -n 's/^ac_add_options --enable-extensions=\([^ ]*\).*/\1/p' \
-		.mozconfig | xargs)
-	sed -i '/^ac_add_options --enable-extensions/d' .mozconfig
-	echo "ac_add_options --enable-extensions=${exts// /,}" >> .mozconfig
 }
 
-_MOZCORECONF=1
 fi

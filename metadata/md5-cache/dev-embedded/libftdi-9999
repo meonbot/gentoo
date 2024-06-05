@@ -1,16 +1,16 @@
-BDEPEND=doc? ( app-doc/doxygen ) python? ( dev-lang/swig ) dev-util/ninja >=dev-util/cmake-3.20.5 >=dev-vcs/git-1.8.2.1[curl]
+BDEPEND=doc? ( app-text/doxygen ) python? ( >=dev-lang/swig-4.2.0 ) app-alternatives/ninja >=dev-build/cmake-3.20.5 >=dev-vcs/git-1.8.2.1[curl]
 DEFINED_PHASES=compile configure install prepare setup test unpack
-DEPEND=virtual/libusb:1 cxx? ( dev-libs/boost ) python? ( python_single_target_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9 ) ) tools? ( !<dev-embedded/ftdi_eeprom-1.0 dev-libs/confuse:= ) test? ( dev-libs/boost )
+DEPEND=virtual/libusb:1 cxx? ( dev-libs/boost ) python? ( python_single_target_python3_10? ( dev-lang/python:3.10 ) python_single_target_python3_11? ( dev-lang/python:3.11 ) python_single_target_python3_12? ( dev-lang/python:3.12 ) ) tools? ( dev-libs/confuse:= ) test? ( dev-libs/boost )
 DESCRIPTION=Userspace access to FTDI USB interface chips
-EAPI=7
+EAPI=8
 HOMEPAGE=https://www.intra2net.com/en/developer/libftdi/
 INHERIT=cmake python-single-r1 git-r3
-IUSE=cxx doc examples python test tools python_single_target_python3_8 python_single_target_python3_9
+IUSE=cxx doc examples python test tools python_single_target_python3_10 python_single_target_python3_11 python_single_target_python3_12
 LICENSE=LGPL-2
 PROPERTIES=live
-RDEPEND=virtual/libusb:1 cxx? ( dev-libs/boost ) python? ( python_single_target_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9 ) ) tools? ( !<dev-embedded/ftdi_eeprom-1.0 dev-libs/confuse:= )
-REQUIRED_USE=python? ( ^^ ( python_single_target_python3_8 python_single_target_python3_9 ) )
+RDEPEND=virtual/libusb:1 cxx? ( dev-libs/boost ) python? ( python_single_target_python3_10? ( dev-lang/python:3.10 ) python_single_target_python3_11? ( dev-lang/python:3.11 ) python_single_target_python3_12? ( dev-lang/python:3.12 ) ) tools? ( dev-libs/confuse:= )
+REQUIRED_USE=python? ( ^^ ( python_single_target_python3_10 python_single_target_python3_11 python_single_target_python3_12 ) )
 RESTRICT=!test? ( test )
 SLOT=1
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	edos2unix	33e347e171066657f91f8b0c72ec8773	strip-linguas	ac3ee41ee2d31d8c41a77c0838320cc7	wrapper	4251d4c84c25f59094fd557e0063a974	eutils	dab5d8ec471d025b79c9e6906bcf3bff	flag-o-matic	d5e1306543bc457213f68bb18f830d14	multiprocessing	61c959fc55c15c00bbb1079d6a71370b	ninja-utils	a4dab848a4490e8e48cf0baab3e61bc2	xdg-utils	4f29a8b760a594a212abe9c2ba957c31	cmake	11fee991ab428a3370e5c20fa8231fb6	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	python-utils-r1	54423f1e035828362c248fad528ebbba	python-single-r1	9783802d3840cbbd78c02b313df760cc	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=4610b3165323be0d52bcc8698a316a44
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	xdg-utils	baea6080dd821f5562d715887954c9d3	cmake	c7c9a62d6232cac66d4ea32d575c3e7c	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	python-single-r1	75118e916668a74c660a13b0ecb22562	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=6c291f2ac16b77052b060dd9812a4e3a

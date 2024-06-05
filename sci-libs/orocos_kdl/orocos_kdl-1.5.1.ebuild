@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -14,7 +14,7 @@ if [[ ${PV} = *9999 ]]; then
 	S="${WORKDIR}/${P}/${PN}"
 else
 	SRC_URI="https://github.com/orocos/orocos_kinematics_dynamics/archive/v${PV}.tar.gz -> orocos_kinematics_dynamics-${PV}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~x86"
+	KEYWORDS="amd64 ~arm ~x86"
 	S="${WORKDIR}/orocos_kinematics_dynamics-${PV}/${PN}"
 fi
 
@@ -27,7 +27,7 @@ RESTRICT="!test? ( test )"
 RDEPEND="dev-cpp/eigen:3"
 DEPEND="${RDEPEND}"
 BDEPEND="
-	doc? ( app-doc/doxygen[dot] )
+	doc? ( app-text/doxygen[dot] )
 	test? ( dev-util/cppunit )
 "
 

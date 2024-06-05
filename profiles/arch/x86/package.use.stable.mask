@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # When you add an entry to the top of this file, add your name, the date, and
@@ -16,6 +16,59 @@
 #
 
 #--- END OF EXAMPLES ---
+
+# Sam James <sam@gentoo.org> (2024-04-30)
+# sys-block/nbdkit is not yet marked stable here
+app-emulation/libvirt nbd
+
+# Matt Turner <mattst88@gentoo.org> (2024-04-25)
+# spirv-llvm-translator is not stable on x86.
+dev-libs/libclc spirv
+
+# Andrew Ammerlaan <andrewammerlaan@gentoo.org> (2024-03-21)
+# Experimental, virt-firmware is keyworded only unstable
+sys-kernel/installkernel efistub
+
+# Andrew Ammerlaan <andrewammerlaan@gentoo.org> (2023-12-18)
+# This is still experimental, prebuilt images may not boot on all systems.
+sys-kernel/gentoo-kernel generic-uki
+sys-kernel/gentoo-kernel-bin generic-uki
+
+# Arthur Zamarin <arthurzam@gentoo.org> (2023-06-03)
+# Destabilizing x86 keywords on sci-*/* packages
+app-metrics/collectd collectd_plugins_gps collectd_plugins_sigrok
+dev-games/openscenegraph las
+dev-libs/efl physics
+media-libs/a52dec djbfft
+dev-python/graphviz test
+kde-apps/cantor R
+dev-python/sympy symengine
+kde-apps/gwenview fits
+kde-apps/marble gps
+kde-plasma/plasma-workspace gps
+media-gfx/graphviz gts
+media-libs/libpano13 suitesparse
+media-libs/opencv gdal lapack
+media-libs/openimageio dicom
+sci-libs/cholmod partition
+sci-libs/gdal armadillo fits geos hdf5 netcdf ogdi
+sci-libs/gsl cblas-external
+sci-libs/hdf szip test
+sci-libs/hdf5 szip
+
+# Hans de Graaff <graaff@gentoo.org> (2023-03-28)
+# dev-ruby/stringex is not marked stable here yet
+dev-ruby/kramdown unicode
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2022-09-14)
+# sci-libs/vtk is not stable on x86 and we don't want to complicate
+# newer maxima and geant stabilisation, bug #867547, #886975
+sci-mathematics/maxima vtk
+sci-physics/geant vtk
+
+# Sam James <sam@gentoo.org> (2022-07-06)
+# sci-libs/sundials is not marked stable on x86
+sci-mathematics/octave sundials
 
 # Marek Szuba <marecki@gentoo.org> (2022-01-03)
 # no stable media-libs/rnnoise on this arch yet
@@ -39,14 +92,6 @@ dev-util/diffoscope haskell
 # large amount of fabric. bug #763954
 sys-block/open-iscsi infiniband
 
-# Andreas Sturmlechner <asturm@gentoo.org> (2020-10-05)
-# REQUIRED_USE="base? ( firebird )", dev-db/firebird is not stable
-app-office/libreoffice base
-
-# Thomas Deutschmann <whissi@gentoo.org> (2020-08-05)
-# sys-cluster/slurm has no stable keywords
-app-metrics/collectd collectd_plugins_slurm
-
 # Amy Liffey <amynka@gentoo.org> (2019-01-15)
 # Mask experimental contrib repo
 # (except what's needed by digikam, dilfridge)
@@ -55,13 +100,10 @@ media-libs/opencv contribcvv contribhdf contribsfm contribxfeatures2d gflags glo
 # Mikle Kolyada <zlogene@gentoo.org> (2018-11-07)
 # unmask sssd for sudo
 app-admin/sudo -sssd
+sys-auth/pambase -sssd
 
 # Thomas Deutschmann <whissi@gentoo.org> (2018-06-01)
 net-analyzer/wireshark -doc
-
-# Andreas Sturmlechner <asturm@gentoo.org> (2017-11-21)
-# Requires not yet stabilised media-libs/qtav
-media-gfx/digikam mediaplayer
 
 # Thomas Deutschmann <whissi@gentoo.org> (2017-10-01)
 # Stable mask dev-ruby/haml test till rails is stabilized.
@@ -69,11 +111,11 @@ dev-ruby/haml test
 
 # Adam Feldman <NP-Hardass@gentoo.org> (2017-09-27)
 # patchset variants are not stable
-virtual/wine staging
+virtual/wine proton staging
 
 # Christoph Junghans <junghans@gentoo.org> (2017-02-26)
 # Stable mask some fabrics (bug #525534)
-sys-cluster/openmpi openmpi_fabrics_knem openmpi_fabrics_ofed openmpi_fabrics_dapl openmpi_rm_pbs openmpi_rm_slurm openmpi_ofed_features_rdmacm openmpi_ofed_features_control-hdr-padding openmpi_ofed_features_connectx-xrc openmpi_ofed_features_udcm openmpi_ofed_features_dynamic-sl openmpi_ofed_features_failover
+sys-cluster/openmpi openmpi_fabrics_knem openmpi_fabrics_ofed openmpi_rm_pbs openmpi_ofed_features_rdmacm openmpi_ofed_features_control-hdr-padding openmpi_ofed_features_udcm openmpi_ofed_features_dynamic-sl
 
 # Brian Evans <grknight@gentoo.org> (2017-01-17)
 # Stable mask groonga on mariadb as I don't know how stable

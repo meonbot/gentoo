@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,15 +7,15 @@ MY_P="${P/_/}"
 inherit font
 
 DESCRIPTION="Japanese bitmap and TrueType fonts suitable for browsing 2ch"
-HOMEPAGE="http://monafont.sourceforge.net/"
+HOMEPAGE="https://monafont.sourceforge.net/"
 SRC_URI="
-	mirror://sourceforge/${PN}/${MY_P}.tar.bz2
-	truetype? ( mirror://sourceforge/${PN}/${PN}-ttf-${PV}.zip )"
+	https://downloads.sourceforge.net/${PN}/${MY_P}.tar.bz2
+	truetype? ( https://downloads.sourceforge.net/${PN}/${PN}-ttf-${PV}.zip )"
 S="${WORKDIR}/${MY_P}"
 
 LICENSE="public-domain"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ppc ppc64 ~s390 sparc x86"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~loong ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="truetype"
 # Only installs fonts
 RESTRICT="strip binchecks"
@@ -52,7 +52,7 @@ src_install() {
 	dodoc README.{ascii,euc}
 
 	if use truetype; then
-		local DOCS=( ${WORKDIR}/README-ttf.txt )
+		local DOCS=( "${WORKDIR}"/README-ttf.txt )
 		font_src_install
 	fi
 }

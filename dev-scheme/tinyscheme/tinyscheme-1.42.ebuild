@@ -1,17 +1,17 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="8"
 
-inherit flag-o-matic multilib toolchain-funcs
+inherit multilib toolchain-funcs
 
 DESCRIPTION="Lightweight scheme interpreter"
 HOMEPAGE="https://tinyscheme.sourceforge.net/"
-SRC_URI="mirror://sourceforge/${PN}/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~x86"
+KEYWORDS="amd64 ppc x86"
 IUSE="static-libs"
 
 RDEPEND=""
@@ -22,8 +22,8 @@ DOCS=( CHANGES {Manual,MiniSCHEMETribute,hack}.txt )
 
 src_compile() {
 	emake \
-		AR=$(tc-getAR) \
-		CC=$(tc-getCC) \
+		AR="$(tc-getAR)" \
+		CC="$(tc-getCC)" \
 		LDFLAGS="${LDFLAGS}"
 }
 

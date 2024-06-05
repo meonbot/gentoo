@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 ECM_TEST="true"
 ECM_HANDBOOK="forceoptional"
@@ -19,7 +19,6 @@ SLOT="5"
 KEYWORDS="amd64 ~arm64 x86"
 IUSE="crypt git"
 
-BDEPEND="git? ( virtual/pkgconfig )"
 RDEPEND="
 	>=dev-qt/qtdbus-${QTMIN}:5
 	>=dev-qt/qtgui-${QTMIN}:5
@@ -56,6 +55,7 @@ RDEPEND="
 DEPEND="${RDEPEND}
 	>=dev-qt/qtconcurrent-${QTMIN}:5
 "
+BDEPEND="git? ( virtual/pkgconfig )"
 
 PATCHES=(
 	"${FILESDIR}/${P}-xdg_mime_install_dir.patch"
@@ -63,7 +63,12 @@ PATCHES=(
 )
 
 src_prepare() {
+	if has_version ">=dev-libs/libgit2-1.8"; then
+		PATCHES+=( "${FILESDIR}/${P}-libgit2-1.8.patch" ) # bug #928338
+	fi
+
 	ecm_src_prepare
+
 	if ! use test; then
 		sed -e "/add_subdirectory(tests/s/^/#DONT/" -i src/CMakeLists.txt || die
 	fi

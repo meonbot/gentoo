@@ -12,9 +12,10 @@
   daylight savings, which you can read more about in the Python
   Library Reference (datetime.tzinfo).
   Amost all (over 540) of the Olson timezones are supported.
-</longdescription>
+  </longdescription>
   <stabilize-allarches/>
   <upstream>
+    <remote-id type="github">stub42/pytz</remote-id>
     <remote-id type="pypi">pytz</remote-id>
   </upstream>
 </pkgmetadata>

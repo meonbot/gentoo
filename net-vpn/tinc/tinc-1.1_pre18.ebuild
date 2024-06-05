@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,16 +6,16 @@ EAPI=7
 MY_PV=${PV/_/}
 MY_P=${PN}-${MY_PV}
 
-inherit autotools systemd
+inherit autotools flag-o-matic systemd
 
 DESCRIPTION="tinc is an easy to configure VPN implementation"
-HOMEPAGE="http://www.tinc-vpn.org/"
+HOMEPAGE="https://www.tinc-vpn.org/"
 
-SRC_URI="http://www.tinc-vpn.org/packages/${MY_P}.tar.gz"
+SRC_URI="https://www.tinc-vpn.org/packages/${MY_P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos"
+KEYWORDS="~amd64 ~arm ~arm64 ~loong ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos"
 IUSE="+lzo +ncurses +readline +ssl uml vde upnp +zlib"
 
 DEPEND="
@@ -38,16 +38,24 @@ PATCHES+=(
 
 src_prepare() {
 	default
-	eautoreconf
 
 	# Fix the static (failing UNKNOWN) version in the autoconf
 	# NOTE: When updating the ebuild, make sure to check that this
 	# line number hasn't changed in the upstream sources.
-	sed -i "6d" configure.ac
-	sed -i "6iAC_INIT([tinc], ${PVR})" configure.ac
+	sed -i "6d" configure.ac || die
+	sed -i "6iAC_INIT([tinc], ${PVR})" configure.ac || die
+
+        eautoreconf
 }
 
 src_configure() {
+	# -Werror=lto-type-mismatch
+	# https://bugs.gentoo.org/877743
+	#
+	# Fixed upstream:
+	# https://github.com/gsliepen/tinc/commit/28b7a53b693f6b4e70218a926e68a36ece54cda1
+	filter-lto
+
 	econf \
 		--enable-jumbograms \
 		--enable-legacy-protocol \

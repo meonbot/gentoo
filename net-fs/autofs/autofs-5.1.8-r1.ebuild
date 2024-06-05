@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,21 +6,22 @@ EAPI=7
 inherit linux-info systemd toolchain-funcs
 
 DESCRIPTION="Kernel based automounter"
-HOMEPAGE="https://web.archive.org/web/*/http://www.linux-consulting.com/Amd_AutoFS/autofs.html"
+HOMEPAGE="https://web.archive.org/web/*/http://www.linux-consulting.com/Amd_AutoFS/autofs.html https://git.kernel.org/pub/scm/linux/storage/autofs/autofs.git"
 SRC_URI="https://www.kernel.org/pub/linux/daemons/${PN}/v5/${P}.tar.xz
 	https://dev.gentoo.org/~dlan/distfiles/${CATEGORY}/${PN}/${P}-patches-0.tar.xz"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm ~arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv sparc x86"
-IUSE="dmalloc ldap +libtirpc mount-locking sasl systemd"
+IUSE="dmalloc ldap +libtirpc mount-locking sasl selinux systemd"
 
 # currently, sasl code assumes the presence of kerberosV
 RDEPEND="
 	net-libs/libnsl:=
 	>=sys-apps/util-linux-2.20
 	dmalloc? ( dev-libs/dmalloc[threads] )
-	ldap? ( >=net-nds/openldap-2.0
+	ldap? (
+		>=net-nds/openldap-2.0:=
 		sasl? (
 			dev-libs/cyrus-sasl
 			dev-libs/libxml2
@@ -28,22 +29,24 @@ RDEPEND="
 		)
 	)
 	systemd? ( sys-apps/systemd )
-	libtirpc? ( net-libs/libtirpc )
+	libtirpc? ( net-libs/libtirpc:= )
 	!libtirpc? ( elibc_glibc? ( sys-libs/glibc[rpc(-)] ) )
 "
 DEPEND="${RDEPEND}
 	libtirpc? ( net-libs/rpcsvc-proto )
 "
 BDEPEND="
-	sys-devel/flex
+	app-alternatives/lex
 	virtual/pkgconfig
-	virtual/yacc
+	app-alternatives/yacc
 "
+RDEPEND+=" selinux? ( sec-policy/selinux-automount )"
 
 PATCHES=(
 	"${WORKDIR}"/${P}-patches/
 	"${FILESDIR}/${P}-dmalloc.patch"
 	"${FILESDIR}/${P}-nfsv4-mount.patch"
+	"${FILESDIR}/${P}-mount_conflict.patch"
 )
 
 pkg_setup() {

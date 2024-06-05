@@ -1,18 +1,18 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-USE_RUBY="ruby26 ruby27 ruby30"
+USE_RUBY="ruby31 ruby32 ruby33"
 
 inherit ruby-fakegem
 
 DESCRIPTION="An HTTP/1.1 pipelining implementation atop Net::HTTP"
-HOMEPAGE="http://docs.seattlerb.org/net-http-pipeline/"
+HOMEPAGE="https://docs.seattlerb.org/net-http-pipeline/"
 
 LICENSE="MIT"
 SLOT="1"
 KEYWORDS="~amd64"
-IUSE=""
+IUSE="test"
 
 ruby_add_bdepend "
 	test? ( dev-ruby/minitest )
@@ -20,6 +20,9 @@ ruby_add_bdepend "
 
 all_ruby_prepare() {
 	eapply -p0 "${FILESDIR}/${PN}-accept-encoding.patch"
+
+	sed -e 's/MiniTest::Unit::TestCase/Minitest::Test/' \
+		-i test/test_net_http_pipeline.rb || die
 }
 
 each_ruby_test() {

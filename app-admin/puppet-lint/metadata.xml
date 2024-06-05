@@ -9,4 +9,8 @@
 	<email>ruby@gentoo.org</email>
 	<name>Gentoo Ruby Project</name>
 </maintainer>
+<upstream>
+	<remote-id type="github">puppetlabs/puppet-lint</remote-id>
+	<remote-id type="rubygems">puppetlabs-puppet-lint</remote-id>
+</upstream>
 </pkgmetadata>

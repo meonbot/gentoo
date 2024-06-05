@@ -1,6 +1,6 @@
-BDEPEND=virtual/pkgconfig sys-devel/make >=dev-util/cmake-3.20.5 >=dev-vcs/git-1.8.2.1[curl] virtual/pkgconfig
+BDEPEND=virtual/pkgconfig app-alternatives/ninja >=dev-build/cmake-3.20.5 >=dev-vcs/git-1.8.2.1[curl] virtual/pkgconfig
 DEFINED_PHASES=compile configure install postinst prepare test unpack
-DEPEND=acct-group/h2o acct-user/h2o dev-lang/perl !sci-libs/libh2o sys-libs/zlib libh2o? ( dev-libs/libuv ) dev-libs/openssl:0= mruby? ( || ( dev-lang/ruby:2.6 dev-lang/ruby:2.7 ) virtual/rubygems || ( dev-libs/onigmo dev-libs/oniguruma ) sys-devel/bison )
+DEPEND=acct-group/h2o acct-user/h2o dev-lang/perl dev-libs/openssl:0= !sci-libs/libh2o sys-libs/libcap sys-libs/zlib libh2o? ( app-arch/brotli dev-libs/libuv ) mruby? ( || ( ( dev-lang/ruby:3.1 virtual/rubygems[ruby_targets_ruby31(-)] ) ( dev-lang/ruby:3.2 virtual/rubygems[ruby_targets_ruby32(-)] ) ) || ( dev-libs/onigmo dev-libs/oniguruma ) app-alternatives/yacc )
 DESCRIPTION=H2O - the optimized HTTP/1, HTTP/2 server
 EAPI=8
 HOMEPAGE=https://h2o.examp1e.net/
@@ -8,7 +8,7 @@ INHERIT=cmake git-r3 ruby-single ssl-cert systemd toolchain-funcs
 IUSE=libh2o +mruby
 LICENSE=MIT
 PROPERTIES=live
-RDEPEND=acct-group/h2o acct-user/h2o dev-lang/perl !sci-libs/libh2o sys-libs/zlib libh2o? ( dev-libs/libuv ) dev-libs/openssl:0=
+RDEPEND=acct-group/h2o acct-user/h2o dev-lang/perl dev-libs/openssl:0= !sci-libs/libh2o sys-libs/libcap sys-libs/zlib libh2o? ( app-arch/brotli dev-libs/libuv )
 SLOT=0
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	flag-o-matic	d5e1306543bc457213f68bb18f830d14	multiprocessing	61c959fc55c15c00bbb1079d6a71370b	ninja-utils	a4dab848a4490e8e48cf0baab3e61bc2	xdg-utils	4f29a8b760a594a212abe9c2ba957c31	cmake	11fee991ab428a3370e5c20fa8231fb6	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da	ruby-utils	08ae6f9c60b19aabce3f66a30cce9a2d	ruby-single	214d0508e74b80c85efcef39699cb9a2	ssl-cert	1283a22296251a63df6c137c9b929269	systemd	2736b403a83f194b59b767f3b344c2c1
-_md5_=c45928f7557e2944838ece5fb615eea3
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	xdg-utils	baea6080dd821f5562d715887954c9d3	cmake	c7c9a62d6232cac66d4ea32d575c3e7c	git-r3	fbb2889c81f3a05910c1524db69425c1	ruby-utils	820207a5d3f0e2e31c28080f131f2037	ruby-single	e045ee439d34b230e588900a87a11904	ssl-cert	c6ea4108da6e229ed3a7d2d949f72a26	systemd	c8b03e8df84486aa991d4396686e8942
+_md5_=96a32a5da5502a41b3ded3561b391440

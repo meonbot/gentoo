@@ -1,31 +1,35 @@
-# Copyright 2017-2021 Gentoo Authors
+# Copyright 2017-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{10..11} )
+MY_COMMIT=""
 
-inherit desktop python-any-r1 scons-utils toolchain-funcs xdg
+# Games under Gentoo are marked as 'testing' by convention
+#
+# Other architectures are reported to work, but not tested regularly by
+# the core team.
+#
+# Raspberry Pi support is tested by an outside contributor, and his
+# fixes are merged into the main source by upstream.
+#
+# Cross-compilation to Windows is also supported.
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+
+inherit desktop flag-o-matic python-any-r1 scons-utils toolchain-funcs xdg
 
 if [[ "${PV}" = 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/dxx-rebirth/dxx-rebirth"
-else
-	MY_COMMIT=''
+	unset KEYWORDS
+elif [[ -n ${MY_COMMIT} ]]; then
 	S="${WORKDIR}/${PN}-${MY_COMMIT}"
 	SRC_URI="https://codeload.github.com/dxx-rebirth/dxx-rebirth/tar.gz/${MY_COMMIT} -> ${PN}-${PVR}.tar.gz"
 	unset MY_COMMIT
-
-	# Games under Gentoo are marked as 'testing' by convention
-	#
-	# Other architectures are reported to work, but not tested regularly by
-	# the core team.
-	#
-	# Raspberry Pi support is tested by an outside contributor, and his
-	# fixes are merged into the main source by upstream.
-	#
-	# Cross-compilation to Windows is also supported.
-	KEYWORDS="~amd64 ~x86"
+else
+	S="${WORKDIR}/${PN}_${PV##*_pre}-src"
+	SRC_URI="https://www.dxx-rebirth.com/download/dxx/rebirth/${PN}_${PV##*_pre}-src.tar.xz"
 fi
 
 DESCRIPTION="Descent Rebirth - enhanced Descent 1 & 2 engine"
@@ -128,7 +132,7 @@ unset DXX_RDEPEND_USE_SDL_VERSION_FRAGMENT
 # dependency is only in DEPEND, instead of being in both DEPEND and
 # RDEPEND.
 DEPEND+='
-	valgrind? ( dev-util/valgrind )
+	valgrind? ( dev-debug/valgrind )
 '
 
 # This ebuild builds d1x-rebirth, d2x-rebirth, or both.  Building none
@@ -217,6 +221,7 @@ dxx_scons() {
 
 src_compile() {
 	tc-export CXX PKG_CONFIG
+	replace-flags -O3 -O2 #831896
 	dxx_scons register_install_target=0 build
 }
 

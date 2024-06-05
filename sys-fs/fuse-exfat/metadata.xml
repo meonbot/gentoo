@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-<maintainer type="person">
-	<email>floppym@gentoo.org</email>
-</maintainer>
 <maintainer type="project">
 	<email>base-system@gentoo.org</email>
 	<name>Gentoo Base System</name>
@@ -11,5 +8,6 @@
 <upstream>
 	<remote-id type="google-code">exfat</remote-id>
 	<remote-id type="github">relan/exfat</remote-id>
+	<remote-id type="cpe">cpe:/a:exfat_project:exfat</remote-id>
 </upstream>
 </pkgmetadata>

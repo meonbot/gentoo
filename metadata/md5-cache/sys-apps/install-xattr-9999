@@ -1,11 +1,11 @@
 BDEPEND=>=dev-vcs/git-1.8.2.1[curl]
-DEFINED_PHASES=compile install prepare test unpack
-DESCRIPTION=Wrapper to coreutil's install to preserve Filesystem Extended Attributes
-EAPI=7
+DEFINED_PHASES=compile install prepare unpack
+DESCRIPTION=Wrapper to coreutils install to preserve Filesystem Extended Attributes
+EAPI=8
 HOMEPAGE=https://dev.gentoo.org/~blueness/install-xattr/
 INHERIT=flag-o-matic toolchain-funcs git-r3
 LICENSE=GPL-3
 PROPERTIES=live
 SLOT=0
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	edos2unix	33e347e171066657f91f8b0c72ec8773	strip-linguas	ac3ee41ee2d31d8c41a77c0838320cc7	wrapper	4251d4c84c25f59094fd557e0063a974	eutils	dab5d8ec471d025b79c9e6906bcf3bff	flag-o-matic	d5e1306543bc457213f68bb18f830d14	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=e20725281562fc9b0e71ce231d69e97b
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=f282f191041e9ec7bc56c90b7f1eca2f

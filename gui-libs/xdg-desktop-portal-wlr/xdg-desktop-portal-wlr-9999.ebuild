@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit meson
 
@@ -13,37 +13,39 @@ if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
 else
 	SRC_URI="https://github.com/emersion/${PN}/releases/download/v${PV}/${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
+	KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
 fi
 
 LICENSE="MIT"
-SLOT="0/9999"
+SLOT="0"
 IUSE="elogind systemd"
 REQUIRED_USE="?? ( elogind systemd )"
 
 DEPEND="
-	>=media-video/pipewire-0.3.34:=
+	>=media-video/pipewire-0.3.62:=
 	dev-libs/inih
 	dev-libs/wayland
+	media-libs/mesa
+	x11-libs/libdrm
 	|| (
 		systemd? ( >=sys-apps/systemd-237 )
 		elogind? ( >=sys-auth/elogind-237 )
 		sys-libs/basu
 	)
 "
+# mesa is needed for gbm dep (which it hards sets to 'on')
 RDEPEND="
 	${DEPEND}
 	sys-apps/xdg-desktop-portal
 "
 BDEPEND="
-	dev-libs/wayland-protocols
+	>=dev-libs/wayland-protocols-1.24
 	virtual/pkgconfig
 "
 
 src_configure() {
-	local emesonargs=(
-		"-Dwerror=false"
-	)
+	local emesonargs=()
+
 	if use systemd; then
 		emesonargs+=(-Dsd-bus-provider=libsystemd)
 	elif use elogind; then
@@ -52,4 +54,12 @@ src_configure() {
 		emesonargs+=(-Dsd-bus-provider=basu)
 	fi
 	meson_src_configure
+}
+
+src_install() {
+	meson_src_install
+
+	# bug #915702
+	insinto /usr/share/xdg-desktop-portal
+	doins "${WORKDIR}/${P}/contrib/wlroots-portals.conf"
 }

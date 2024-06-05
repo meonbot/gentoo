@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,11 +7,11 @@ MY_PN="d2demo"
 DEMO="${MY_PN}${PV//.}.zip"
 
 DESCRIPTION="Demo data files for Descent 2"
-HOMEPAGE="http://www.interplay.com/games/descent.php"
+HOMEPAGE="https://www.interplay.com"
 SRC_URI="ftp://ftp.funet.fi/pub/msdos/games/interplay/${DEMO}"
 LICENSE="free-noncomm"
 SLOT="0"
-KEYWORDS="~amd64 ~arm64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 
 # <d2x-0.2.5-r3 may include the data.
 RDEPEND="!<games-action/d2x-0.2.5-r3

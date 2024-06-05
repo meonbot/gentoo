@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -7,7 +7,7 @@ inherit elisp-common
 
 DESCRIPTION="C function call hierarchy analyzer"
 HOMEPAGE="https://www.gnu.org/software/cflow/"
-SRC_URI="http://ftp.gnu.org/gnu/cflow/${P}.tar.bz2"
+SRC_URI="mirror://gnu/${PN}/${P}.tar.xz"
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -18,7 +18,7 @@ RDEPEND="emacs? ( >=app-editors/emacs-23.1:* )
 	nls? ( virtual/libintl virtual/libiconv )"
 DEPEND="nls? ( virtual/libintl virtual/libiconv )"
 BDEPEND="emacs? ( >=app-editors/emacs-23.1:* )
-	sys-devel/flex
+	app-alternatives/lex
 	nls? ( sys-devel/gettext )"
 
 SITEFILE="50${PN}-gentoo.el"

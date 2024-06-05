@@ -1,16 +1,16 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 inherit gnustep-base
 
 DESCRIPTION="Cairo back-end component for the GNUstep GUI Library"
-HOMEPAGE="http://www.gnustep.org"
+HOMEPAGE="https://gnustep.github.io"
 SRC_URI="ftp://ftp.gnustep.org/pub/gnustep/core/gnustep-back-${PV}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~sparc ~x86 ~amd64-linux ~x86-linux ~x86-solaris"
+KEYWORDS="amd64 ppc sparc x86 ~amd64-linux ~x86-linux"
 IUSE="opengl xim"
 
 RDEPEND="${GNUSTEP_CORE_DEPEND}
@@ -31,7 +31,8 @@ RDEPEND="${GNUSTEP_CORE_DEPEND}
 	!gnustep-base/gnustep-back-art
 	!gnustep-base/gnustep-back-xlib"
 DEPEND="${RDEPEND}
-	virtual/pkgconfig"
+	virtual/pkgconfig
+	x11-base/xorg-proto"
 
 S=${WORKDIR}/gnustep-back-${PV}
 

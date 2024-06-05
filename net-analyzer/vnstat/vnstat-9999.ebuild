@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit systemd tmpfiles
 
@@ -12,13 +12,19 @@ if [[ ${PV} == *9999 ]] ; then
 	EGIT_REPO_URI="https://github.com/vergoh/vnstat"
 	inherit git-r3
 else
-	VERIFY_SIG_OPENPGP_KEY_PATH=${BROOT}/usr/share/openpgp-keys/teemutoivola.asc
+	VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/teemutoivola.asc
 	inherit verify-sig
 
-	SRC_URI="https://humdi.net/vnstat/${P}.tar.gz"
-	SRC_URI+=" verify-sig? ( https://humdi.net/vnstat/${P}.tar.gz.asc )"
+	SRC_URI="
+		https://humdi.net/vnstat/${P}.tar.gz
+		https://github.com/vergoh/vnstat/releases/download/v${PV}/${P}.tar.gz
+		verify-sig? (
+			https://humdi.net/vnstat/${P}.tar.gz.asc
+			https://github.com/vergoh/vnstat/releases/download/v${PV}/${P}.tar.gz.asc
+		)
+	"
 
-	KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~mips ~ppc ~ppc64 ~sparc ~x86"
+	KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86"
 
 	BDEPEND="verify-sig? ( sec-keys/openpgp-keys-teemutoivola )"
 fi
@@ -41,16 +47,14 @@ DEPEND="
 RDEPEND+=" selinux? ( sec-policy/selinux-vnstatd )"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-2.2-conf.patch
-	"${FILESDIR}"/${PN}-2.2-drop-root.patch
-	"${FILESDIR}"/${PN}-2.2-run.patch
+	"${FILESDIR}"/${PN}-2.9-conf.patch
 )
 
 src_compile() {
 	emake \
 		${PN} \
 		${PN}d \
-		$(usex gd ${PN}i '')
+		$(usev gd ${PN}i)
 }
 
 src_install() {

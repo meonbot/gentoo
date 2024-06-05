@@ -1,13 +1,13 @@
-BDEPEND=>=app-editors/emacs-23.1:*
-DEFINED_PHASES=compile configure install postinst postrm prepare setup unpack
+BDEPEND=>=app-editors/emacs-25.3:*
+DEFINED_PHASES=compile configure install postinst postrm prepare setup test unpack
 DESCRIPTION=When you start Emacs, Session restores various variables from your last session
 EAPI=7
 HOMEPAGE=http://emacs-session.sourceforge.net/
 INHERIT=elisp readme.gentoo-r1
 KEYWORDS=amd64 ppc x86
 LICENSE=GPL-3+
-RDEPEND=>=app-editors/emacs-23.1:*
+RDEPEND=>=app-editors/emacs-25.3:*
 SLOT=0
-SRC_URI=mirror://sourceforge/emacs-session/session-2.4b.tar.gz
-_eclasses_=elisp-common	cf4fd1b0835b9f3e638724840468064a	elisp	532fa549a4f54b2a3f83b827b272a4a9	readme.gentoo-r1	eebd0164fe61f4f7b64a683e83fdceb1
-_md5_=ecc272b50db98a62134bc1c44d6d8b5e
+SRC_URI=https://downloads.sourceforge.net/emacs-session/session-2.4b.tar.gz
+_eclasses_=elisp-common	abb2dda42f680fce87602c8273f832c7	elisp	fbefa95f5e9ab880a34bc69832b7c0d7	readme.gentoo-r1	204091a2cde6179cd9d3db26d09412d3
+_md5_=987558620577e90b162afcd0d2559411

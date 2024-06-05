@@ -1,9 +1,10 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
+PYTHON_COMPAT=( python3_{9..10} )
 
-inherit bash-completion-r1 cmake
+inherit bash-completion-r1 cmake python-single-r1
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
@@ -25,20 +26,22 @@ HOMEPAGE="https://www.votca.org/"
 LICENSE="Apache-2.0"
 SLOT="0"
 IUSE="+gromacs test"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 RESTRICT="!test? ( test )"
 
 RDEPEND="
 	!sci-libs/votca-tools
 	!sci-chemistry/votca-csg
 	!sci-chemistry/votca-xtp
+	${PYTHON_DEPS}
 	app-shells/bash:*
 	>=dev-cpp/eigen-3.3
 	dev-libs/boost:=
 	dev-libs/expat
 	sci-libs/fftw:3.0=
 	dev-lang/perl
-	gromacs? ( sci-chemistry/gromacs:= )
-	sci-libs/hdf5[cxx]
+	gromacs? ( sci-chemistry/gromacs:=[gmxapi-legacy(+)] )
+	sci-libs/hdf5:=[cxx]
 	sci-libs/libxc
 	sci-libs/libint:2
 "
@@ -46,6 +49,13 @@ DEPEND="${RDEPEND}"
 BDEPEND="virtual/pkgconfig"
 
 DOCS=( README.rst NOTICE.rst CHANGELOG.rst )
+
+src_prepare() {
+	# espressopp was removed from gentoo
+	rm -r ./csg-tutorials/spce/ibi_espressopp || die
+	python_fix_shebang .
+	cmake_src_prepare
+}
 
 src_configure() {
 	local mycmakeargs=(

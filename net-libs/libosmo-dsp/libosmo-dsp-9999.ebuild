@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -23,7 +23,7 @@ IUSE="doc static-libs"
 RDEPEND="sci-libs/fftw:3.0"
 DEPEND="${RDEPEND}"
 BDEPEND="
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 	virtual/pkgconfig
 "
 
@@ -40,4 +40,5 @@ src_configure() {
 src_install() {
 	default_src_install
 	use static-libs || rm "${ED}"/usr/$(get_libdir)/libosmodsp.a
+	use static-libs || rm "${ED}"/usr/$(get_libdir)/libosmodsp.la
 }

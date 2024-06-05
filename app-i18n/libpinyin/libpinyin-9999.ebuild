@@ -1,7 +1,7 @@
-# Copyright 2012-2020 Gentoo Authors
+# Copyright 2012-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
+EAPI=8
 
 inherit autotools
 
@@ -20,7 +20,7 @@ if [[ "${PV}" == "9999" ]]; then
 else
 	SRC_URI="https://github.com/libpinyin/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 fi
-SRC_URI+=" mirror://sourceforge/${PN}/models/model${LIBPINYIN_MODEL_VERSION}.text.tar.gz -> ${PN}-model${LIBPINYIN_MODEL_VERSION}.text.tar.gz"
+SRC_URI+=" https://downloads.sourceforge.net/${PN}/models/model${LIBPINYIN_MODEL_VERSION}.text.tar.gz -> ${PN}-model${LIBPINYIN_MODEL_VERSION}.text.tar.gz"
 
 LICENSE="GPL-3+"
 SLOT="0/13"
@@ -57,5 +57,5 @@ src_configure() {
 
 src_install() {
 	default
-	find "${ED}" -name "*.la" -delete || die
+	find "${D}" -name "*.la" -delete || die
 }

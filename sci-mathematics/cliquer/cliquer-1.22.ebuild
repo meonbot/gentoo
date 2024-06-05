@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -14,9 +14,10 @@ HOMEPAGE="https://users.aalto.fi/~pat/cliquer.html
 # the ./configure script).
 SRC_URI="http://files.sagemath.org/spkg/upstream/${PN}/${P}.tar.gz"
 
-LICENSE="GPL-2"
+# The README has "or (at your option) any later version"
+LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="amd64 ~arm ~riscv x86"
+KEYWORDS="amd64 ~arm ~riscv ~x86"
 IUSE="static-libs"
 
 src_configure() {

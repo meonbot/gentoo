@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -11,7 +11,7 @@ EGIT_REPO_URI="https://github.com/lavv17/lftp"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS=""
-IUSE="convert-mozilla-cookies +gnutls idn ipv6 nls socks5 +ssl verify-file"
+IUSE="convert-mozilla-cookies +gnutls idn nls socks5 +ssl verify-file"
 
 RDEPEND="
 	>=sys-libs/ncurses-5.1:=
@@ -37,7 +37,7 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	dev-libs/gnulib
-	=sys-devel/libtool-2*
+	=dev-build/libtool-2*
 	app-arch/xz-utils
 	nls? ( >=sys-devel/gettext-0.19 )
 	virtual/pkgconfig
@@ -57,8 +57,14 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-4.9.1-libdir-readline.patch
 )
 
+# Gnulib false positive #900064
+QA_CONFIG_IMPL_DECL_SKIP="( MIN )"
+
 src_prepare() {
 	default
+
+	# bug #875692
+	sed -e '/#include/s/cmath/math.h/' -i trio/*.c || die
 
 	gnulib-tool --update || die
 
@@ -70,12 +76,12 @@ src_prepare() {
 
 src_configure() {
 	econf \
-		$(use_enable ipv6) \
 		$(use_enable nls) \
 		$(use_with idn libidn2) \
 		$(use_with socks5 socksdante "${EPREFIX}"/usr) \
-		$(usex ssl "$(use_with !gnutls openssl ${EPREFIX}/usr)" '--without-openssl') \
+		$(usex ssl "$(use_with !gnutls openssl "${EPREFIX}"/usr)" '--without-openssl') \
 		$(usex ssl "$(use_with gnutls)" '--without-gnutls') \
+		--enable-ipv6
 		--enable-packager-mode \
 		--sysconfdir="${EPREFIX}"/etc/${PN} \
 		--with-modules \

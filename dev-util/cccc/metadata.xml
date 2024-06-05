@@ -4,7 +4,7 @@
 	<!-- maintainer-needed -->
 	<longdescription lang="en">
 		cccc provides source code metrics (line counts, complexity,
-		object-oriented, and structural metrics) for Java and C++
+		object-oriented, and structural metrics) for Java, C, and C++
 	</longdescription>
 	<upstream>
 		<remote-id type="github">sarnold/cccc</remote-id>

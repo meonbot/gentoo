@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -13,14 +13,14 @@ SRC_URI="ftp://ftp.atnf.csiro.au/pub/software/${PN}/${P}.tar.bz2"
 
 SLOT="0/7"
 LICENSE="LGPL-3"
-KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 ~x86 ~amd64-linux ~x86-linux"
 IUSE="doc fortran fits pgplot static-libs +tools"
 
 RDEPEND="
 	fits? ( sci-libs/cfitsio:0= )
 	pgplot? ( sci-libs/pgplot:0= )"
 DEPEND="${RDEPEND}
-	sys-devel/flex
+	app-alternatives/lex
 	virtual/pkgconfig"
 
 src_configure() {

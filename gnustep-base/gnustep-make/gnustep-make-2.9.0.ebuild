@@ -1,20 +1,20 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 inherit gnustep-base prefix toolchain-funcs
 
 DESCRIPTION="GNUstep Makefile Package"
-HOMEPAGE="http://www.gnustep.org"
+HOMEPAGE="https://gnustep.github.io"
 SRC_URI="ftp://ftp.gnustep.org/pub/gnustep/core/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-linux ~x86-linux ~sparc-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 ppc ppc64 sparc x86 ~amd64-linux ~x86-linux"
 IUSE="libobjc2 native-exceptions"
 
 DEPEND="${GNUSTEP_CORE_DEPEND}
-	>=sys-devel/make-3.75
+	>=dev-build/make-3.75
 	libobjc2? ( gnustep-base/libobjc2
 		sys-devel/clang:* )
 	!libobjc2? ( !!gnustep-base/libobjc2
@@ -23,6 +23,8 @@ DEPEND="${GNUSTEP_CORE_DEPEND}
 			sys-devel/clang:*
 		) )"
 RDEPEND="${DEPEND}"
+
+PATCHES=( "${FILESDIR}"/${P}-no_compress_man_pages.patch )
 
 pkg_setup() {
 	# Determine libobjc.so to use

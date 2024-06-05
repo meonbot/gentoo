@@ -1,11 +1,13 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
+inherit toolchain-funcs
+
 DESCRIPTION="A simple pager docklet for the WindowMaker window manager"
-HOMEPAGE="http://wmpager.sourceforge.net/"
-SRC_URI="mirror://sourceforge/wmpager/${P}.tar.gz"
+HOMEPAGE="https://wmpager.sourceforge.net/"
+SRC_URI="https://downloads.sourceforge.net/wmpager/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
@@ -21,10 +23,15 @@ src_prepare() {
 	sed -i "s:\(WMPAGER_DEFAULT_INSTALL_DIR \).*:\1\"/usr/share/wmpager\":" \
 		src/wmpager.c || die
 
-	#Honour Gentoo CFLAGS and LDFLAGS, see bug #337604
-	sed -i -e "s/-g/${CFLAGS}/" \
+	#Honour Gentoo CC, CFLAGS and LDFLAGS, see bug #337604 and #726286
+	sed -i -e "s/-g/\${CFLAGS}/" \
 		-e "s/\${LIBS}/\${LIBS} \${LDFLAGS}/" \
+		-e "s/gcc/\$(CC)/" \
 		src/Makefile || die
+}
+
+src_compile() {
+	emake CC="$(tc-getCC)"
 }
 
 src_install() {

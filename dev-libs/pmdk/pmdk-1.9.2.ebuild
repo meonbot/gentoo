@@ -1,4 +1,4 @@
-# Copyright 2021 Gentoo Authors
+# Copyright 2022-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -19,7 +19,7 @@ DEPEND="
 "
 RDEPEND="${DEPEND}"
 BDEPEND="
-	app-text/pandoc
+	virtual/pandoc
 	virtual/pkgconfig
 "
 
@@ -46,7 +46,7 @@ src_configure() {
 }
 
 src_compile() {
-	emake DEBUG= CC=$(tc-getCC) CXX=$(tc-getCXX) LD=$(tc-getLD) AR=$(tc-getAR)
+	emake DEBUG= CC="$(tc-getCC)" CXX="$(tc-getCXX)" LD="$(tc-getLD)" AR="$(tc-getAR)"
 }
 
 src_install() {

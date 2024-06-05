@@ -1,7 +1,7 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit cmake fcaps git-r3
 
@@ -14,23 +14,30 @@ SLOT="0"
 IUSE="redis"
 
 RDEPEND="
-	dev-libs/gmp:0
+	dev-libs/gmp:=
 	net-libs/libpcap
 	dev-libs/json-c:=
-	redis? ( dev-libs/hiredis )"
-DEPEND="${RDEPEND}
+	redis? ( dev-libs/hiredis:= )
+"
+DEPEND="${RDEPEND}"
+BDEPEND="
 	dev-util/gengetopt
-	sys-devel/flex
+	app-alternatives/lex
 	dev-util/byacc
 "
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-2.1.1-always-install-config.patch
+)
+
+FILECAPS=( cap_net_raw=ep usr/sbin/zmap )
 
 src_configure() {
 	local mycmakeargs=(
 		-DENABLE_DEVELOPMENT=OFF
 		-DWITH_WERROR=OFF
 		-DWITH_REDIS="$(usex redis)"
-		)
+	)
+
 	cmake_src_configure
 }
-
-FILECAPS=( cap_net_raw=ep usr/sbin/zmap )

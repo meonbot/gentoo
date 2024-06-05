@@ -1,15 +1,16 @@
-BDEPEND=sys-devel/gnuconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.2-r1:1.16 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4 >=dev-vcs/git-1.8.2.1[curl] filecaps? ( sys-libs/libcap )
-DEFINED_PHASES=postinst prepare unpack
-DEPEND=net-libs/libpcap net-libs/libnet:1.1 !net-misc/iputils[arping(+)] test? ( dev-libs/check dev-python/subunit )
-DESCRIPTION=A utility to see if a specific IP is taken and what MAC owns it
-EAPI=7
-HOMEPAGE=http://www.habets.pp.se/synscan/programs.php?prog=arping
-INHERIT=autotools git-r3 fcaps
-IUSE=test +filecaps
-LICENSE=GPL-2
+BDEPEND=>=app-portage/elt-patches-20240116 sys-devel/gnuconfig || ( >=dev-build/automake-1.16.5:1.16 ) || ( >=dev-build/autoconf-2.72-r1:2.72 >=dev-build/autoconf-2.71-r6:2.71 ) >=dev-build/libtool-2.4.7-r3 >=dev-vcs/git-1.8.2.1[curl]
+DEFINED_PHASES=configure postinst prepare unpack
+DEPEND=net-libs/libpcap net-libs/libnet:1.1 sys-libs/libcap seccomp? ( sys-libs/libseccomp ) !net-misc/iputils[arping(+)] test? ( dev-libs/check dev-python/subunit )
+DESCRIPTION=Utility to see if a specific IP is taken and what MAC owns it
+EAPI=8
+HOMEPAGE=https://www.habets.pp.se/synscan/programs.php?prog=arping
+IDEPEND=filecaps? ( sys-libs/libcap )
+INHERIT=autotools fcaps git-r3
+IUSE=+seccomp test +filecaps
+LICENSE=GPL-2+
 PROPERTIES=live
-RDEPEND=net-libs/libpcap net-libs/libnet:1.1 !net-misc/iputils[arping(+)] filecaps? ( sys-libs/libcap )
+RDEPEND=net-libs/libpcap net-libs/libnet:1.1 sys-libs/libcap seccomp? ( sys-libs/libseccomp ) !net-misc/iputils[arping(+)]
 RESTRICT=!test? ( test )
 SLOT=2
-_eclasses_=gnuconfig	262062cef0ba4f22b397193da514a350	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	libtool	241a8f577b9781a42a7421e53448a44e	autotools	c9df06c186913b43eb211100ef5fe2cf	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da	fcaps	ac252c3cc67b265cd7ea456f8d58e150
-_md5_=22d113367c65fe91da038fbda253bde0
+_eclasses_=gnuconfig	a397adda6984a4c423e28ac274c1ba98	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	libtool	5f49a16f67f81bdf873e3d1f10b10001	autotools	dc70c1dc473b68317fc4a86f5fbfc57d	fcaps	c0a086b957a1b183a8d136eabf02f191	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=5184627c546e6cfbca89bb37bfed7f09

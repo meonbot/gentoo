@@ -1,4 +1,4 @@
-BDEPEND=doc? ( dev-util/gtk-doc ) dev-util/gdbus-codegen dev-util/glib-utils virtual/pkgconfig >=dev-util/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array
+BDEPEND=doc? ( dev-util/gtk-doc ) dev-util/gdbus-codegen dev-util/glib-utils virtual/pkgconfig >=dev-build/meson-1.2.3 app-alternatives/ninja dev-build/meson-format-array
 DEFINED_PHASES=compile configure install test
 DEPEND=dev-libs/glib:2 introspection? ( dev-libs/gobject-introspection:= )
 DESCRIPTION=A CLI utility to control media players over MPRIS
@@ -12,5 +12,5 @@ RDEPEND=dev-libs/glib:2 introspection? ( dev-libs/gobject-introspection:= )
 RESTRICT=test
 SLOT=0
 SRC_URI=https://github.com/acrisci/playerctl/archive/v2.3.1.tar.gz -> playerctl-2.3.1.tar.gz
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	bash-completion-r1	d3a60385655d9b402be765a6de333245	xdg-utils	4f29a8b760a594a212abe9c2ba957c31	multiprocessing	61c959fc55c15c00bbb1079d6a71370b	ninja-utils	a4dab848a4490e8e48cf0baab3e61bc2	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	python-utils-r1	54423f1e035828362c248fad528ebbba	meson	9f3e84959ae1d60e19bc91f212774dcc
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	bash-completion-r1	f5e7a020fd9c741740756aac61bf75ff	xdg-utils	baea6080dd821f5562d715887954c9d3	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	eapi8-dosym	5ac4857ad078256d939c44f7c64197a9	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	meson	aecae905c2e0c201d7925fae52a5576d
 _md5_=53e9d0f3ea877651604db80215e5f995

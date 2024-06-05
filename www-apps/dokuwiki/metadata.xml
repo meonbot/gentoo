@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-	<maintainer type="person">
-		<email>jmbsvicetto@gentoo.org</email>
-		<name>Jorge Manuel B. S. Vicetto</name>
-	</maintainer>
 	<maintainer type="project">
 		<email>web-apps@gentoo.org</email>
 		<name>Gentoo Webapps</name>
@@ -18,4 +14,7 @@
 		eases the creation of structured texts. All data is stored in plain text
 		files - no database is required.
 	</longdescription>
+	<upstream>
+		<remote-id type="github">dokuwiki/dokuwiki</remote-id>
+	</upstream>
 </pkgmetadata>

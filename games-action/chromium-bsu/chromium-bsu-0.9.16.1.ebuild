@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,8 +6,8 @@ EAPI=7
 inherit flag-o-matic xdg
 
 DESCRIPTION="Fast paced, arcade-style, top-scrolling space shooter"
-HOMEPAGE="http://chromium-bsu.sourceforge.net/"
-SRC_URI="mirror://sourceforge/chromium-bsu/${P}.tar.gz"
+HOMEPAGE="https://chromium-bsu.sourceforge.io"
+SRC_URI="https://downloads.sourceforge.net/chromium-bsu/${P}.tar.gz"
 
 LICENSE="Clarified-Artistic"
 SLOT="0"

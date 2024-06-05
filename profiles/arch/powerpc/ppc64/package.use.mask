@@ -1,5 +1,71 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
+
+# Sam James <sam@gentoo.org> (2024-05-19)
+# media-libs/jasper not yet keyworded here: https://bugs.gentoo.org/921559
+media-gfx/graphicsmagick jpeg2k
+
+# José de Paula R. N. Assis <espinafre@gmail.com> (2024-03-25)
+# No PyQt6 (which is needed by USE=qt6 for qscintilla-python) on ppc64.
+>=dev-python/qscintilla-python-2.14.1-r1 qt6
+
+# Sam James <sam@gentoo.org> (2024-03-23)
+# dev-qt/qtwebengine not available here
+dev-python/QtPy webengine test
+
+# Michal Privoznik <michal.privoznik@gmail.com> (2024-01-21)
+# virtiofsd is available here
+app-emulation/libvirt -virtiofsd
+
+# Ionen Wolkens <ionen@gentoo.org> (2023-10-09)
+# media-libs/shaderc is keyworded here.
+media-libs/libplacebo -shaderc
+
+# Sam James <sam@gentoo.org> (2023-09-22)
+# Qt 6 not keyworded here.
+dev-build/cmake gui
+
+# Joonas Niilola <juippis@gentoo.org> (2023-08-24)
+# media-video/libva-utils is masked on ppc64, so hwaccel on Firefox
+# wouldn't work.
+www-client/firefox hwaccel
+
+# Alexey Sokolov <alexey+gentoo@asokolov.org> (2023-08-14)
+# OpenMW is only playtested with LuaJIT, and in fact unit tests fail with Lua-5.
+# Therefore apply mask/force to override the profile's defaults, and invert on
+# arches where luajit is not keyworded.
+# Done this way also avoids conflicts for users using another default.
+games-engines/openmw -lua_single_target_lua5-1 lua_single_target_luajit
+games-engines/openmw -lua_single_target_lua5-3 -lua_single_target_lua5-4
+
+# Sam James <sam@gentoo.org> (2023-04-14)
+# Needs dev-python/sympy which is not yet keyworded, see bug #892183
+dev-python/nbval test
+
+# Michał Górny <mgorny@gentoo.org> (2023-01-24)
+# libomptarget is only supported on 64-bit architectures.
+>=sys-libs/libomp-16.0.0_pre20230124 -offload
+
+# Niccolò Belli <niccolo.belli@linuxsystems.it> (2022-11-29)
+# media-libs/webrtc-audio-processing only has amd64, x86 and ppc64 keywords
+media-video/pipewire -echo-cancel
+
+# Sam James <sam@gentoo.org> (2022-10-13)
+# Causes segfaults, bug #871921
+sci-libs/symengine tcmalloc
+
+# Georgy Yakovlev <gyakovlev@gentoo.org> (2022-09-29)
+# USE=fix requires ring crate, which is not portable
+# https://github.com/rustsec/rustsec/issues/707
+dev-util/cargo-audit fix
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2022-07-17)
+# dev-python/pyside2 is not keyworded
+www-client/falkon python
+
+# Jimi Huotari <chiitoo@gentoo.org> (2022-05-08)
+# Not keyworded here yet.
+lxqt-base/lxqt-meta desktop-portal
 
 # Michał Górny <mgorny@gentoo.org> (2021-12-31)
 # Don't apply stable masks to python-exec since we're forcing every
@@ -10,17 +76,9 @@ dev-lang/python-exec -python_targets_pypy3
 # telepathy stack is not keyworded
 dev-util/kdevelop reviewboard
 
-# Georgy Yakovlev <gyakovlev@gentoo.org> (2021-11-01)
-# requires sys-apps/dbus-broker, which is keyworded here.
-sys-apps/systemd -hostnamed-fallback
-
 # Sam James <sam@gentoo.org> (2021-10-17)
 # Go doesn't support pie on ppc64, bug #818529
 net-dns/dnscrypt-proxy pie
-
-# Sam James <sam@gentoo.org> (2021-09-23)
-# Needs media-libs/libldac which builds on ppc64le, but not be
-media-video/pipewire -bluetooth
 
 # Marek Szuba <marecki@gentoo.org> (2021-07-18)
 # media-plugins/zam-plugins not keyworded here
@@ -30,17 +88,9 @@ media-sound/easyeffects zamaudio
 # Feature currently relies on amd64 prebuilt binaries.
 media-video/obs-studio browser
 
-# Joonas Niilola <juippis@gentoo.org> (2021-06-23)
-# Pandoc is a required dep, and not keyworded.
-sys-apps/exa man
-
 # Matt Turner <mattst88@gentoo.org> (2021-06-10)
 # dev-python/django is not keyworded here
 dev-python/diskcache test
-
-# Mike Gilbert <floppym@gentoo.org> (2021-03-29)
-# Unmask TPM on supported archs.
-sys-apps/systemd -tpm
 
 # Georgy Yakovlev <gyakovlev@gentoo.org> (2021-02-25)
 # depends on ring crate, which is not so portable
@@ -75,8 +125,7 @@ sci-mathematics/gmp-ecm -custom-tune
 
 # Georgy Yakovlev <gyakovlev@gentoo.org> (2020-10-05)
 # dropbox requires binaries unavaliable for ppc64
-# webengine flag requires unkeyworded plasma-telepathy-meta
-kde-apps/kdenetwork-meta dropbox webengine
+kde-apps/kdenetwork-meta dropbox
 
 # Georgy Yakovlev <gyakovlev@gentoo.org> (2020-08-20)
 # zfs is keyworded on ppc64
@@ -95,7 +144,7 @@ media-video/ffmpeg -rav1e
 # media-libs/libplacebo is keyworded
 media-video/vlc -libplacebo
 
-# Georgy Yakovlev <gyakovlev@gentoo.org (2020-06-07)
+# Georgy Yakovlev <gyakovlev@gentoo.org> (2020-06-07)
 # works on ppc64
 app-emulation/qemu -spice -usbredir
 
@@ -142,32 +191,17 @@ net-analyzer/snort open-appid
 # Incomplete support, bug #605878.
 net-vpn/tor seccomp
 
-# Robin H. Johnson <robbat2@gentoo.org> (2016-11-18)
-# dev-lang/luajit lacks ppc64 keyword. luajit upstream does not support ppc64
-dev-db/redis luajit
-
 # Arfrever Frehtes Taifersar Arahesis <arfrever.fta@gmail.com> (2016-08-01)
 # kde-frameworks/*:5 not keyworded.
 net-irc/kvirc kde
 app-arch/p7zip kde
 dev-vcs/subversion kwallet
 
-# Alexandre Rostovtsev <tetromino@gentoo.org> (2016-06-28)
-# Missing keywords on app-text/gspell - bug #587368
->=app-editors/gedit-3.20 spell
-
-# Patrice Clement <monsieurp@gentoo.org> (2016-02-08)
-# I would need to keyword an awful lot of packages on ppc64
-# that would need Java 7 otherwise.
-dev-java/batik python
-dev-java/bsf python
-dev-java/ant-apache-bsf python
-
 # Jeroen Roovers <jer@gentoo.org> (2015-12-26)
 # Mask until >sys-cluster/ceph-0.94 goes stable
 net-analyzer/rrdtool rados
 
-# Michael Sterrett <mr_bones_@gentoo.org (2013-11-12)
+# Michael Sterrett <mr_bones_@gentoo.org> (2013-11-12)
 # Mask openmedia use flag because the content generation tools
 # are missing keywords.
 games-simulation/openttd openmedia
@@ -176,11 +210,6 @@ games-simulation/openttd openmedia
 # sys-cluster/ploop can not be build on ppc64, bug #447644
 # Masking USE-dep on it
 sys-cluster/vzctl ploop
-
-# Alexandre Rostovtsev <tetromino@gentoo.org> (2012-12-31)
-# requires app-office/unoconv, which requires virtual/ooo, which is not
-# keyworded here. Remove mask if this situation changes.
-gnome-extra/sushi office
 
 # Kacper Kowalik <xarthisius@gentoo.org> (2011-09-02)
 # Mask www-client/seamonkey[ipc] on ppc64 wrt #381191
@@ -193,3 +222,6 @@ x11-misc/rss-glx quesoglc
 # Joseph Jezak <josejx@gentoo.org> (2010-02-12)
 # Mask unstable pidgin deps until we can mark them stable (farsight2)
 net-im/pidgin gstreamer
+
+# mask custom-cpuopts and cpudetection on ppc64 for mplayer - bug #234629
+media-video/mplayer cpudetection

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -13,11 +13,11 @@ inherit java-pkg-2 java-pkg-simple
 
 DESCRIPTION="Core classes of jBitcollider: org.bitpedia.collider.core"
 HOMEPAGE="http://bitcollider.sourceforge.net/"
-SRC_URI="mirror://sourceforge/project/bitcollider/jBitcollider%20%28Java%29/${PV}/${MY_P}.zip"
+SRC_URI="https://downloads.sourceforge.net/project/bitcollider/jBitcollider%20%28Java%29/${PV}/${MY_P}.zip"
 
 LICENSE="public-domain"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 ~arm ~arm64 x86"
 
 DEPEND=">=virtual/jdk-1.8:*"
 RDEPEND=">=virtual/jre-1.8:*"

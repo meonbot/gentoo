@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,8 +8,8 @@ inherit autotools desktop
 MY_PN=${PN/emilia-/}
 MY_P=${MY_PN}-${PV}
 DESCRIPTION="SDL OpenGL pinball game"
-HOMEPAGE="http://pinball.sourceforge.net/"
-SRC_URI="mirror://sourceforge/pinball/${MY_P}.tar.gz"
+HOMEPAGE="https://pinball.sourceforge.net/"
+SRC_URI="https://downloads.sourceforge.net/pinball/${MY_P}.tar.gz"
 S="${WORKDIR}"/${MY_P}
 
 LICENSE="GPL-2"

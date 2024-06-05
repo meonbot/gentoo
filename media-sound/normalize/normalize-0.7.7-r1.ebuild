@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -13,7 +13,7 @@ SRC_URI="
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 ppc ppc64 ~riscv sparc x86"
+KEYWORDS="amd64 ~arm64 ppc ppc64 ~riscv sparc x86"
 IUSE="audiofile mad nls"
 
 RDEPEND="
@@ -40,4 +40,10 @@ src_configure() {
 		$(use_with mad) \
 		$(use_enable nls) \
 		--disable-xmms
+}
+
+src_test() {
+	# .sh tests missing a dep on ../src/mktestwav but ancient autoconf/automake
+	# so too mmuch hassle to patch, bug #740488.
+	emake -j1 check
 }

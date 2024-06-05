@@ -9,14 +9,7 @@
 		<email>williamh@gentoo.org</email>
 		<name>William Hubbs</name>
 	</maintainer>
-	<maintainer type="person">
-		<email>gyakovlev@gentoo.org</email>
-		<name>Georgy Yakovlev</name>
-	</maintainer>
 	<use>
-		<flag name="apparmor">
-			Enable AppArmor support.
-		</flag>
 		<flag name="kmem">
 			Enable Kernel Memory Accounting.
 		</flag>

@@ -1,13 +1,13 @@
-BDEPEND=>=app-editors/emacs-24.5:*
-DEFINED_PHASES=compile configure install postinst postrm prepare setup unpack
+BDEPEND=>=app-editors/emacs-25.3:*
+DEFINED_PHASES=compile configure install postinst postrm prepare setup test unpack
 DESCRIPTION=Major mode for Emacs buffers where ebuild commands run
 EAPI=8
 HOMEPAGE=https://gitlab.com/akater/emacs-ebuild-run-mode
 INHERIT=elisp
 KEYWORDS=~amd64 ~x86
 LICENSE=GPL-2+
-RDEPEND=>=app-emacs/ebuild-mode-1.53 >=app-editors/emacs-24.5:*
+RDEPEND=>=app-emacs/ebuild-mode-1.53 >=app-editors/emacs-25.3:*
 SLOT=0
 SRC_URI=https://gitlab.com/akater/emacs-ebuild-run-mode/-/archive/v20210713/emacs-ebuild-run-mode-v20210713.tar.gz
-_eclasses_=elisp-common	cf4fd1b0835b9f3e638724840468064a	elisp	532fa549a4f54b2a3f83b827b272a4a9
-_md5_=16ccef65393baab3927330d3b9ba1c26
+_eclasses_=elisp-common	abb2dda42f680fce87602c8273f832c7	elisp	fbefa95f5e9ab880a34bc69832b7c0d7
+_md5_=280bc0ba66178b5c111f462a1a94eb46

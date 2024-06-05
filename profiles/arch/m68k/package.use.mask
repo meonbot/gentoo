@@ -1,5 +1,35 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
+
+# Michał Górny <mgorny@gentoo.org> (2024-05-08)
+# Requires sys-devel/{clang,llvm}:16.
+dev-lang/python jit
+
+# James Le Cuirot (2023-12-12)
+# USE=bpf depends on sys-devel/clang which is not keyworded on m68k
+media-libs/libv4l bpf
+
+# Violet Purcell <vimproved@inventati.org> (2023-10-12)
+# dev-build/samurai is not keyworded here.
+app-alternatives/ninja samurai
+
+# Sam James <sam@gentoo.org> (2023-06-18)
+# Qt 5 not keyworded here
+app-text/ansifilter gui
+app-text/highlight gui
+
+# Stijn Tintel <stijn@linux-ipv6.be> (2023-02-02)
+# Dependency not keyworded
+# https://bugs.gentoo.org/show_bug.cgi?id=892389
+net-misc/openvswitch unwind
+
+# Andreas K. Hüttel <dilfridge@gentoo.org> (2022-05-29)
+# No TMP here, no xkb here
+sys-apps/systemd tpm xkb
+
+# Adel Kara Slimane <adel.ks@zegrapher.com> (2022-03-14)
+# Untested useflag on other arches, needs keywording
+media-video/ffmpeg vmaf
 
 # James Le Cuirot <chewi@gentoo.org> (2022-01-09)
 # Most usage of KMS requires GBM, which is provided by Mesa, which currently
@@ -19,13 +49,9 @@ app-editors/emacs gui mailutils
 # Needs a lot of Perl packages to be keyworded.
 dev-vcs/git doc
 
-# James Le Cuirot <chewi@gentoo.org> (2021-09-20)
-# Requires zstd, which is currently broken on m68k.
-dev-util/cmake test
-
 # James Le Cuirot <chewi@gentoo.org> (2021-09-19)
 # Avoid having to keyword Poppler and X11 libraries for now.
-media-gfx/graphviz lefty pdf
+media-gfx/graphviz pdf
 
 # James Le Cuirot <chewi@gentoo.org> (2021-09-19)
 # Requires Rust, which is currently unavailable on m68k.
@@ -41,7 +67,8 @@ sys-block/thin-provisioning-tools test
 
 # James Le Cuirot <chewi@gentoo.org> (2021-09-19)
 # Requires texlive and friends to be keyworded.
-app-doc/doxygen doc
+app-text/doxygen doc
+app-text/po4a test
 dev-libs/libcbor doc
 media-libs/libcaca doc
 
@@ -50,12 +77,13 @@ media-libs/libcaca doc
 dev-python/argcomplete test
 dev-python/distlib test
 dev-python/fonttools test
+dev-python/hatchling test
 dev-python/isort test
-dev-python/jsonschema test
-dev-python/nose test
+dev-python/numpydoc test
+dev-python/objgraph test
+dev-python/pip-run test
 dev-python/pytest-regressions test
 dev-python/requests test
-dev-python/setuptools test
 dev-python/sphinx test
 dev-python/urllib3 test
 
@@ -77,7 +105,7 @@ dev-python/numpy lapack
 net-misc/openssh security-key
 
 # Sergei Trofimovich <slyfox@gentoo.org> (2019-12-02)
-# dev-util/systemtap is not keyworded on m68k
+# dev-debug/systemtap is not keyworded on m68k
 sys-libs/glibc systemtap
 
 # Sergei Trofimovich <slyfox@gentoo.org> (2019-12-02)
@@ -96,4 +124,4 @@ dev-libs/libpcre2 jit
 # Ryan Hill <dirtyepic@gentoo.org> (2011-07-20)
 # graphite requires dev-libs/ppl & dev-libs/cloog-ppl
 # (bugs #269087 and #269088)
-sys-devel/gcc graphite awt
+sys-devel/gcc graphite

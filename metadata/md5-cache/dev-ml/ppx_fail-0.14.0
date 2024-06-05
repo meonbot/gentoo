@@ -1,4 +1,4 @@
-BDEPEND=dev-ml/dune dev-lang/ocaml
+BDEPEND=dev-lang/ocaml dev-ml/dune
 DEFINED_PHASES=compile install test
 DEPEND=>=dev-ml/base-0.14.0:= >=dev-ml/ppx_here-0.14.0:= >=dev-ml/ppxlib-0.18.0:= >=dev-ml/ocaml-migrate-parsetree-2.0.0:= dev-ml/cinaps:= >=dev-lang/ocaml-4:=[ocamlopt?] dev-ml/dune:=
 DESCRIPTION=Add location to calls to failwiths
@@ -6,10 +6,10 @@ EAPI=7
 HOMEPAGE=https://github.com/janestreet/ppx_fail
 INHERIT=dune
 IUSE=+ocamlopt
-KEYWORDS=amd64 arm arm64 ppc ppc64 x86
+KEYWORDS=amd64 arm arm64 ~ppc ppc64 ~riscv x86
 LICENSE=Apache-2.0
 RDEPEND=>=dev-ml/base-0.14.0:= >=dev-ml/ppx_here-0.14.0:= >=dev-ml/ppxlib-0.18.0:= >=dev-ml/ocaml-migrate-parsetree-2.0.0:= dev-ml/cinaps:= >=dev-lang/ocaml-4:=[ocamlopt?] dev-ml/dune:=
 SLOT=0/0.14.0
 SRC_URI=https://github.com/janestreet/ppx_fail/archive/v0.14.0.tar.gz -> ppx_fail-0.14.0.tar.gz
-_eclasses_=dune	45f8b4ed9487a03522a647f3f33cb404
-_md5_=cbd7de4e980f015920cb3245d30c2573
+_eclasses_=edo	367e103a74bf77e6a8da7894d999fa3c	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	dune	339df00cc31668d437589817d093748d
+_md5_=56c16f31ebe36d60c969340aea83f1d7

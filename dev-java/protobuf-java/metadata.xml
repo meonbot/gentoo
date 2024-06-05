@@ -6,13 +6,18 @@
 		<name>Arfrever Frehtes Taifersar Arahesis</name>
 	</maintainer>
 	<maintainer type="project">
-		<email>java@gentoo.org</email>
-		<name>Java</name>
+		<email>cjk@gentoo.org</email>
+		<name>Cjk</name>
 	</maintainer>
-	<slots>
-		<subslots>Soname version number of Protobuf</subslots>
-	</slots>
+	<maintainer type="project">
+		<email>java@gentoo.org</email>
+	</maintainer>
 	<upstream>
+		<bugs-to>https://github.com/protocolbuffers/protobuf/issues</bugs-to>
+		<doc>https://protobuf.dev/getting-started/javatutorial/</doc>
 		<remote-id type="github">protocolbuffers/protobuf</remote-id>
 	</upstream>
+	<use>
+		<flag name="system-protoc">Use protoc provided by dev-libs/protobuf</flag>
+	</use>
 </pkgmetadata>

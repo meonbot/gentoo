@@ -1,27 +1,30 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
-PYTHON_COMPAT=( python3_7 python3_8 python3_9 )
+EAPI=8
+
+PYTHON_COMPAT=( python3_{9..11} )
+DISTUTILS_USE_PEP517=setuptools
 
 inherit desktop distutils-r1
 
 DESCRIPTION="A lightweight DLNA/UPNP/Chromecast streaming server for PulseAudio"
-HOMEPAGE="https://github.com/masmu/pulseaudio-dlna"
+HOMEPAGE="https://github.com/Cygn/pulseaudio-dlna"
 
 if [[ ${PV} == *9999 ]];then
+	EGIT_REPO_URI="https://github.com/Cygn/pulseaudio-dlna"
 	inherit git-r3
-	SRC_URI=""
-	EGIT_REPO_URI="https://github.com/masmu/pulseaudio-dlna"
-	EGIT_BRANCH="python3"
 else
-	SRC_URI="https://github.com/masmu/pulseaudio-dlna/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+	MY_P=${PN}-${PV/_p/-}
+
+	SRC_URI="https://github.com/Cygn/pulseaudio-dlna/archive/refs/tags/${MY_P}.tar.gz"
+	S="${WORKDIR}"/${PN}-${MY_P}
+
 	KEYWORDS="~amd64 ~x86"
 fi
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE=""
 
 RDEPEND=">=dev-python/protobuf-python-2.5.0[${PYTHON_USEDEP}]
 	>=dev-python/docopt-0.6.1[${PYTHON_USEDEP}]
@@ -33,13 +36,13 @@ RDEPEND=">=dev-python/protobuf-python-2.5.0[${PYTHON_USEDEP}]
 	>=dev-python/pyroute2-0.3.5[${PYTHON_USEDEP}]
 	>=dev-python/netifaces-0.10.0[${PYTHON_USEDEP}]
 	>=dev-python/lxml-3[${PYTHON_USEDEP}]
-	>=dev-python/pychromecast-2.3.0[${PYTHON_USEDEP}]
-	dev-python/pygobject:3[${PYTHON_USEDEP}]
+	>=dev-python/pychromecast-10[${PYTHON_USEDEP}]
+	dev-python/pygobject:3[cairo,${PYTHON_USEDEP}]
 	>=dev-python/dbus-python-1.0.0[${PYTHON_USEDEP}]
 	>=dev-python/zeroconf-0.17.4[${PYTHON_USEDEP}]
-	dev-python/pygobject[cairo,${PYTHON_USEDEP}]
 	gnome-base/librsvg[introspection]
 	x11-libs/gtk+:3[introspection]
+	media-sound/pulseaudio-daemon
 	|| (
 		|| (
 			media-video/ffmpeg[encode,mp3,opus,vorbis]
@@ -54,20 +57,14 @@ RDEPEND=">=dev-python/protobuf-python-2.5.0[${PYTHON_USEDEP}]
 		)
 	)"
 
-DEPEND="${RDEPEND}
-	dev-python/setuptools[${PYTHON_USEDEP}]
-	media-sound/pulseaudio"
-
 python_prepare_all() {
-	sed -i '/dbus-python/d' setup.py || die
-	sed -i '/notify2/d' setup.py || die
-	sed -i '/docopt/d' setup.py || die
-	sed -i '/pychromecast/d' setup.py || die
+	sed -i -e 's/.gz//' setup.py || die
+
 	distutils-r1_python_prepare_all
 }
 
 src_install() {
 	distutils-r1_src_install
 
-	domenu "${FILESDIR}/${PN}.desktop"
+	domenu "${FILESDIR}"/${PN}.desktop
 }

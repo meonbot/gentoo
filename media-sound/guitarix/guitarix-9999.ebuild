@@ -1,23 +1,23 @@
-# Copyright 2019-2021 Gentoo Authors
+# Copyright 2019-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..12} )
 PYTHON_REQ_USE='threads(+)'
 
-inherit python-any-r1 waf-utils xdg git-r3
+EGIT_OVERRIDE_REPO_ENYOJS_BOOTPLATE="https://github.com/enyojs/bootplate.git"
+EGIT_OVERRIDE_BRANCH_ENYOJS_BOOTPLATE="master"
 
-MY_P="${PN}2-${PV}"
+inherit multiprocessing python-any-r1 waf-utils xdg git-r3
 
 DESCRIPTION="Virtual guitar amplifier for Linux"
 HOMEPAGE="https://guitarix.org/"
-EGIT_REPO_URI="https://git.code.sf.net/p/guitarix/git"
+EGIT_REPO_URI="https://github.com/brummer10/${PN}.git"
 S="${WORKDIR}/${P}/trunk"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS=""
 IUSE="bluetooth debug lv2 nls nsm +standalone zeroconf"
 REQUIRED_USE="|| ( lv2 standalone )"
 
@@ -65,7 +65,10 @@ BDEPEND="
 DOCS=( changelog README )
 
 src_configure() {
+	export -n {CXX,LD}FLAGS
+
 	local myconf=(
+		--cxxflags="${CXXFLAGS}"
 		--cxxflags-debug=""
 		--cxxflags-release="-DNDEBUG"
 		--ldflags="${LDFLAGS}"
@@ -75,6 +78,7 @@ src_configure() {
 		--no-faust
 		--no-ldconfig
 		--shared-lib
+		--jobs=$(makeopts_jobs)
 		$(use_enable nls)
 		$(usex bluetooth "" "--no-bluez")
 		$(usex debug "--debug" "")

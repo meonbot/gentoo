@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -16,13 +16,13 @@ S="${WORKDIR}"/${PN}-${MY_PV}
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 arm ~arm64 ppc x86"
+KEYWORDS="amd64 arm ~arm64 ~loong ppc ~riscv x86"
 IUSE="debug staticsocket"
 
 RDEPEND="sys-apps/kmod[tools]"
 DEPEND="${RDEPEND}
-	virtual/yacc
-	sys-devel/flex"
+	app-alternatives/yacc
+	app-alternatives/lex"
 
 PATCHES=(
 	"${WORKDIR}"/debian/patches/no-modprobe-rules.patch

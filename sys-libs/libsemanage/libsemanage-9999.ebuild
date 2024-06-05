@@ -1,8 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{10..11} )
 
 inherit python-r1 toolchain-funcs multilib-minimal
 
@@ -18,7 +18,7 @@ if [[ ${PV} == 9999 ]]; then
 	S="${WORKDIR}/${P}/${PN}"
 else
 	SRC_URI="https://github.com/SELinuxProject/selinux/releases/download/${MY_PV}/${MY_P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~mips ~x86"
+	KEYWORDS="~amd64 ~arm ~arm64 ~mips ~riscv ~x86"
 	S="${WORKDIR}/${MY_P}"
 fi
 
@@ -26,14 +26,15 @@ LICENSE="GPL-2"
 SLOT="0/2"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
-RDEPEND=">=sys-libs/libsepol-${PV}:=[${MULTILIB_USEDEP}]
+RDEPEND="app-arch/bzip2[${MULTILIB_USEDEP}]
+	>=sys-libs/libsepol-${PV}:=[${MULTILIB_USEDEP}]
 	>=sys-libs/libselinux-${PV}:=[${MULTILIB_USEDEP}]
 	>=sys-process/audit-2.2.2[${MULTILIB_USEDEP}]
 	${PYTHON_DEPS}"
 DEPEND="${RDEPEND}"
 BDEPEND=">=dev-lang/swig-2.0.4-r1
-	sys-devel/bison
-	sys-devel/flex
+	app-alternatives/yacc
+	app-alternatives/lex
 	virtual/pkgconfig"
 
 # tests are not meant to be run outside of the
@@ -84,6 +85,7 @@ multilib_src_compile() {
 			emake \
 				AR="$(tc-getAR)" \
 				CC="$(tc-getCC)" \
+				PKG_CONFIG="$(tc-getPKG_CONFIG)" \
 				LIBDIR="${EPREFIX}/usr/$(get_libdir)" \
 				"$@"
 		}
@@ -101,6 +103,7 @@ multilib_src_install() {
 		installation_py() {
 			emake DESTDIR="${ED}" \
 				LIBDIR="${EPREFIX}/usr/$(get_libdir)" \
+				PKG_CONFIG="$(tc-getPKG_CONFIG)" \
 				install-pywrap
 			python_optimize # bug 531638
 		}

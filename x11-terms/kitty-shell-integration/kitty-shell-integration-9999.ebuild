@@ -1,4 +1,4 @@
-# Copyright 2022 Gentoo Authors
+# Copyright 2022-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -23,7 +23,7 @@ src_install() {
 	insinto /usr/share/kitty
 	doins -r shell-integration
 
-	dosym -r {/usr/share/kitty/shell-integration/bash,/etc/bash/bashrc.d}/kitty.bash
+	dosym -r {/usr/share/kitty/shell-integration/bash/,/etc/bash/bashrc.d/90-}kitty.bash
 
 	dosym -r /usr/share/{kitty/shell-integration/fish,fish}/vendor_completions.d/kitty.fish
 	dosym -r /usr/share/{kitty/shell-integration/fish,fish}/vendor_conf.d/kitty-shell-integration.fish
@@ -31,4 +31,7 @@ src_install() {
 	dosym -r /usr/share/{kitty/shell-integration/zsh/completions,zsh/site-functions}/_kitty
 	# zsh integration is handled automatically without needing to modify rc files,
 	# but may require user intervention depending on zsh invocation or if remote
+
+	# this is used internally by the ssh kitten and is not useful there
+	rm -r "${ED}"/usr/share/kitty/shell-integration/ssh || die
 }

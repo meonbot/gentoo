@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit webapp autotools qmail
+inherit webapp qmail
 
 DESCRIPTION="A web based control pannel to manage Virtual Qmail Domains"
 HOMEPAGE="http://www.inter7.com/index.php?page=vqadmin"
@@ -12,7 +12,7 @@ SRC_URI="http://www.inter7.com/vqadmin/${P}.tar.gz"
 LICENSE="GPL-2"
 SLOT="0"
 WEBAPP_MANUAL_SLOT="yes"
-KEYWORDS="~amd64 ~ppc ~sparc ~x86"
+KEYWORDS="~amd64 ~sparc ~x86"
 IUSE=""
 
 DEPEND="virtual/libcrypt:=

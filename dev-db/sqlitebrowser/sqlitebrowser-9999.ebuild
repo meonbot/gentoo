@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit cmake xdg
+inherit cmake flag-o-matic xdg
 
 DESCRIPTION="A light GUI editor for SQLite databases"
 HOMEPAGE="https://sqlitebrowser.org/"
@@ -13,12 +13,12 @@ if [[ "${PV}" = *9999* ]]; then
 	EGIT_REPO_URI="https://github.com/${PN}/${PN}.git"
 else
 	SRC_URI="https://github.com/${PN}/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~x86"
+	KEYWORDS="amd64 x86"
 fi
 
 LICENSE="GPL-3+ MPL-2.0"
 SLOT="0"
-IUSE="test"
+IUSE="sqlcipher test"
 RESTRICT="!test? ( test )"
 
 DEPEND="
@@ -32,7 +32,8 @@ DEPEND="
 	>=dev-qt/qtprintsupport-5.5:5
 	>=dev-qt/qtwidgets-5.5:5
 	>=dev-qt/qtxml-5.5:5
-	>=x11-libs/qscintilla-2.8.10:=
+	>=x11-libs/qscintilla-2.8.10:=[qt5(+)]
+	sqlcipher? ( dev-db/sqlcipher )
 "
 
 BDEPEND="
@@ -61,7 +62,12 @@ src_configure() {
 		-DENABLE_TESTING=$(usex test)
 		-DFORCE_INTERNAL_QCUSTOMPLOT=OFF
 		-DFORCE_INTERNAL_QHEXEDIT=OFF
+		-Dsqlcipher=$(usex sqlcipher)
 	)
+
+	# https://bugs.gentoo.org/855254
+	append-flags -fno-strict-aliasing
+	filter-lto
 
 	cmake_src_configure
 }

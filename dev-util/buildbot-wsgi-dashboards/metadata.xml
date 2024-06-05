@@ -2,8 +2,8 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>dolsen@gentoo.org</email>
-		<name>Brian Dolbec</name>
+		<email>zorry@gentoo.org</email>
+		<name>Magnus Granberg</name>
 	</maintainer>
 	<longdescription lang="en">
 		The buildbot-wsgi-dashboards plugin is the user interface code used to

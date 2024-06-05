@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -13,7 +13,7 @@ SRC_URI="
 
 LICENSE="procheck"
 SLOT="0"
-KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 ~x86 ~amd64-linux ~x86-linux"
 IUSE="doc"
 
 RDEPEND="app-shells/tcsh"
@@ -40,8 +40,8 @@ PATCHES=(
 
 src_compile() {
 	emake \
-		F77=$(tc-getFC) \
-		CC=$(tc-getCC) \
+		F77="$(tc-getFC)" \
+		CC="$(tc-getCC)" \
 		COPTS="${CFLAGS}" \
 		FOPTS="${FFLAGS} -std=legacy"
 }

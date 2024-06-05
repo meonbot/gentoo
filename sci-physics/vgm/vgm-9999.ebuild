@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit cmake
 
@@ -24,14 +24,16 @@ IUSE="doc examples +geant4 +root test"
 
 RDEPEND="
 	sci-physics/clhep:=
-	geant4? ( sci-physics/geant[c++17] )
-	root? ( sci-physics/root:=[c++17] )"
+	geant4? ( sci-physics/geant:= )
+	root? ( sci-physics/root:= )"
 DEPEND="${RDEPEND}
-	doc? ( app-doc/doxygen[dot] )
 	test? (
-		sci-physics/geant[gdml]
+		sci-physics/geant:=[gdml]
 		sci-physics/geant4_vmc[g4root]
 	)"
+BDEPEND="
+	doc? ( app-text/doxygen[dot] )
+"
 RESTRICT="
 	!geant4? ( test )
 	!root? ( test )
@@ -40,10 +42,7 @@ RESTRICT="
 
 DOCS=(
 	doc/README
-	doc/todo.txt
 	doc/VGMhistory.txt
-	doc/VGM.html
-	doc/VGMversions.html
 )
 
 src_configure() {
@@ -66,15 +65,12 @@ src_configure() {
 src_compile() {
 	cmake_src_compile
 	if use doc; then
-		cd packages
-		doxygen || die
+		doxygen packages/Doxyfile || die
 	fi
 }
 
 src_test() {
 	cd "${BUILD_DIR}"/test || die
-	# See upstream issue: https://github.com/vmc-project/vgm/issues/5
-	sed -i 's/ ScaledSolids / /' test3_suite.sh || die
 	PATH="${BUILD_DIR}"/test:${PATH} ./test_suite.sh || die
 }
 

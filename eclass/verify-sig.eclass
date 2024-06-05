@@ -1,4 +1,4 @@
-# Copyright 2020-2021 Gentoo Authors
+# Copyright 2020-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: verify-sig.eclass
@@ -16,12 +16,16 @@
 # the developer's work.
 #
 # To use the eclass, start by packaging the upstream's key
-# as app-crypt/openpgp-keys-*.  Then inherit the eclass, add detached
+# as sec-keys/openpgp-keys-*.  Then inherit the eclass, add detached
 # signatures to SRC_URI and set VERIFY_SIG_OPENPGP_KEY_PATH.  The eclass
 # provides verify-sig USE flag to toggle the verification.
 #
 # If you need to use signify, you may want to copy distfiles into WORKDIR to
 # work around "Too many levels of symbolic links" error.
+#
+# A more complete guide can be found at:
+# https://mgorny.pl/articles/verify-sig-by-example.html
+#
 # @EXAMPLE:
 # Example use:
 #
@@ -31,9 +35,9 @@
 # SRC_URI="https://example.org/${P}.tar.gz
 #   verify-sig? ( https://example.org/${P}.tar.gz.sig )"
 # BDEPEND="
-#   verify-sig? ( app-crypt/openpgp-keys-example )"
+#   verify-sig? ( sec-keys/openpgp-keys-example )"
 #
-# VERIFY_SIG_OPENPGP_KEY_PATH=${BROOT}/usr/share/openpgp-keys/example.asc
+# VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/example.asc
 # @CODE
 
 case ${EAPI} in
@@ -41,28 +45,32 @@ case ${EAPI} in
 	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-EXPORT_FUNCTIONS src_unpack
-
-if [[ ! ${_VERIFY_SIG_ECLASS} ]]; then
+if [[ -z ${_VERIFY_SIG_ECLASS} ]]; then
+_VERIFY_SIG_ECLASS=1
 
 IUSE="verify-sig"
 
-# @ECLASS-VARIABLE: VERIFY_SIG_METHOD
+# @ECLASS_VARIABLE: VERIFY_SIG_METHOD
 # @PRE_INHERIT
 # @DESCRIPTION:
 # Signature verification method to use.  The allowed value are:
 #
-# - openpgp -- verify PGP signatures using app-crypt/gnupg (the default)
-# - signify -- verify signatures with Ed25519 public key using app-crypt/signify
-: ${VERIFY_SIG_METHOD:=openpgp}
+#  - minisig -- verify signatures with (base64) Ed25519 public key using app-crypt/minisign
+#  - openpgp -- verify PGP signatures using app-crypt/gnupg (the default)
+#  - signify -- verify signatures with Ed25519 public key using app-crypt/signify
+: "${VERIFY_SIG_METHOD:=openpgp}"
 
 case ${VERIFY_SIG_METHOD} in
+	minisig)
+		BDEPEND="verify-sig? ( app-crypt/minisign )"
+		;;
 	openpgp)
 		BDEPEND="
 			verify-sig? (
 				app-crypt/gnupg
-				>=app-portage/gemato-16
-			)"
+				>=app-portage/gemato-20
+			)
+		"
 		;;
 	signify)
 		BDEPEND="verify-sig? ( app-crypt/signify )"
@@ -72,17 +80,19 @@ case ${VERIFY_SIG_METHOD} in
 		;;
 esac
 
-# @ECLASS-VARIABLE: VERIFY_SIG_OPENPGP_KEY_PATH
+# @ECLASS_VARIABLE: VERIFY_SIG_OPENPGP_KEY_PATH
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Path to key bundle used to perform the verification.  This is required
 # when using default src_unpack.  Alternatively, the key path can be
 # passed directly to the verification functions.
 #
+# The value of BROOT will be prepended to this path automatically.
+#
 # NB: this variable is also used for non-OpenPGP signatures.  The name
 # contains "OPENPGP" for historical reasons.
 
-# @ECLASS-VARIABLE: VERIFY_SIG_OPENPGP_KEYSERVER
+# @ECLASS_VARIABLE: VERIFY_SIG_OPENPGP_KEYSERVER
 # @DEFAULT_UNSET
 # @DESCRIPTION:
 # Keyserver used to refresh keys.  If not specified, the keyserver
@@ -91,7 +101,7 @@ esac
 #
 # Supported for OpenPGP only.
 
-# @ECLASS-VARIABLE: VERIFY_SIG_OPENPGP_KEY_REFRESH
+# @ECLASS_VARIABLE: VERIFY_SIG_OPENPGP_KEY_REFRESH
 # @USER_VARIABLE
 # @DESCRIPTION:
 # Attempt to refresh keys via WKD/keyserver.  Set it to "yes"
@@ -99,7 +109,7 @@ esac
 # connection.
 #
 # Supported for OpenPGP only.
-: ${VERIFY_SIG_OPENPGP_KEY_REFRESH:=no}
+: "${VERIFY_SIG_OPENPGP_KEY_REFRESH:=no}"
 
 # @FUNCTION: verify-sig_verify_detached
 # @USAGE: <file> <sig-file> [<key-file>]
@@ -111,10 +121,15 @@ esac
 verify-sig_verify_detached() {
 	local file=${1}
 	local sig=${2}
-	local key=${3:-${VERIFY_SIG_OPENPGP_KEY_PATH}}
+	local key=${3}
 
-	[[ -n ${key} ]] ||
-		die "${FUNCNAME}: no key passed and VERIFY_SIG_OPENPGP_KEY_PATH unset"
+	if [[ -z ${key} ]]; then
+		if [[ -z ${VERIFY_SIG_OPENPGP_KEY_PATH} ]]; then
+			die "${FUNCNAME}: no key passed and VERIFY_SIG_OPENPGP_KEY_PATH unset"
+		else
+			key="${BROOT}${VERIFY_SIG_OPENPGP_KEY_PATH}"
+		fi
+	fi
 
 	local extra_args=()
 	[[ ${VERIFY_SIG_OPENPGP_KEY_REFRESH} == yes ]] || extra_args+=( -R )
@@ -136,9 +151,17 @@ verify-sig_verify_detached() {
 	[[ ${file} == - ]] && filename='(stdin)'
 	einfo "Verifying ${filename} ..."
 	case ${VERIFY_SIG_METHOD} in
+		minisig)
+			minisign -V -P "$(<"${key}")" -x "${sig}" -m "${file}" ||
+				die "minisig signature verification failed"
+			;;
 		openpgp)
-			gemato gpg-wrap -K "${key}" "${extra_args[@]}" -- \
-				gpg --verify "${sig}" "${file}" ||
+			# gpg can't handle very long TMPDIR
+			# https://bugs.gentoo.org/854492
+			local -x TMPDIR=/tmp
+			gemato openpgp-verify-detached -K "${key}" \
+				"${extra_args[@]}" --no-require-all-good \
+				"${sig}" "${file}" ||
 				die "PGP signature verification failed"
 			;;
 		signify)
@@ -160,10 +183,15 @@ verify-sig_verify_detached() {
 verify-sig_verify_message() {
 	local file=${1}
 	local output_file=${2}
-	local key=${3:-${VERIFY_SIG_OPENPGP_KEY_PATH}}
+	local key=${3}
 
-	[[ -n ${key} ]] ||
-		die "${FUNCNAME}: no key passed and VERIFY_SIG_OPENPGP_KEY_PATH unset"
+	if [[ -z ${key} ]]; then
+		if [[ -z ${VERIFY_SIG_OPENPGP_KEY_PATH} ]]; then
+			die "${FUNCNAME}: no key passed and VERIFY_SIG_OPENPGP_KEY_PATH unset"
+		else
+			key="${BROOT}${VERIFY_SIG_OPENPGP_KEY_PATH}"
+		fi
+	fi
 
 	local extra_args=()
 	[[ ${VERIFY_SIG_OPENPGP_KEY_REFRESH} == yes ]] || extra_args+=( -R )
@@ -185,7 +213,14 @@ verify-sig_verify_message() {
 	[[ ${file} == - ]] && filename='(stdin)'
 	einfo "Verifying ${filename} ..."
 	case ${VERIFY_SIG_METHOD} in
+		minisig)
+			minisign -V -P "$(<"${key}")" -x "${sig}" -o "${output_file}" -m "${file}" ||
+				die "minisig signature verification failed"
+			;;
 		openpgp)
+			# gpg can't handle very long TMPDIR
+			# https://bugs.gentoo.org/854492
+			local -x TMPDIR=/tmp
 			gemato gpg-wrap -K "${key}" "${extra_args[@]}" -- \
 				gpg --verify --output="${output_file}" "${file}" ||
 				die "PGP signature verification failed"
@@ -197,6 +232,84 @@ verify-sig_verify_message() {
 	esac
 }
 
+# @FUNCTION: verify-sig_verify_unsigned_checksums
+# @USAGE: <checksum-file> <format> <files>
+# @DESCRIPTION:
+# Verify the checksums for all files listed in the space-separated list
+# <files> (akin to ${A}) using a <checksum-file>.  <format> specifies
+# the checksum file format.  <checksum-file> can be "-" for stdin.
+#
+# The following formats are supported:
+#  - sha256 -- sha256sum (<hash> <filename>)
+#  - openssl-dgst -- openssl dgst (<algo>(<filename>)=<hash>)
+#
+# The function dies if one of the files does not match checksums or
+# is missing from the checksum file.
+#
+# Note that this function itself can only verify integrity of the files.
+# In order to verify their authenticity, the <checksum-file> must
+# be verified against a signature first, e.g. using
+# verify-sig_verify_detached.  If it contains inline signature, use
+# verify-sig_verify_signed_checksums instead.
+verify-sig_verify_unsigned_checksums() {
+	local checksum_file=${1}
+	local format=${2}
+	local files=()
+	read -r -d '' -a files <<<"${3}"
+	local chksum_prog chksum_len algo=${format}
+
+	case ${format} in
+		sha256)
+			chksum_len=64
+			;;
+		openssl-dgst)
+			;;
+		*)
+			die "${FUNCNAME}: unknown checksum format ${format}"
+			;;
+	esac
+
+	[[ ${checksum_file} == - ]] && checksum_file=/dev/stdin
+	local line checksum filename junk ret=0 count=0
+	local -A verified
+	while read -r line; do
+		if [[ ${line} == "-----BEGIN"* ]]; then
+			die "${FUNCNAME}: PGP armor found, use verify-sig_verify_signed_checksums instead"
+		fi
+
+		case ${format} in
+			sha256)
+				read -r checksum filename junk <<<"${line}"
+				[[ ${#checksum} -ne ${chksum_len} ]] && continue
+				[[ -n ${checksum//[0-9a-f]} ]] && continue
+				[[ -n ${junk} ]] && continue
+				;;
+			openssl-dgst)
+				[[ ${line} != *"("*")="* ]] && continue
+				checksum=${line##*)=}
+				algo=${line%%(*}
+				filename=${line#*(}
+				filename=${filename%)=*}
+				;;
+		esac
+
+		if ! has "${filename}" "${files[@]}"; then
+			continue
+		fi
+
+		if "${algo,,}sum" -c --strict - <<<"${checksum} ${filename}"; then
+			verified["${filename}"]=1
+		else
+			ret=1
+		fi
+	done < "${checksum_file}"
+
+	[[ ${ret} -eq 0 ]] ||
+		die "${FUNCNAME}: at least one file did not verify successfully"
+	[[ ${#verified[@]} -eq ${#files[@]} ]] ||
+		die "${FUNCNAME}: checksums for some of the specified files were missing"
+}
+
 # @FUNCTION: _gpg_verify_signed_checksums
 # @INTERNAL
 # @USAGE: <checksum-file> <algo> <files> [<key-file>]
@@ -205,40 +318,12 @@ verify-sig_verify_message() {
 _gpg_verify_signed_checksums() {
 	local checksum_file=${1}
 	local algo=${2}
-	local files=()
-	read -r -d '' -a files <<<"${3}"
-	local key=${4:-${VERIFY_SIG_OPENPGP_KEY_PATH}}
-	local chksum_prog chksum_len
+	local files=${3}
+	local key=${4}
 
-	case ${algo} in
-		sha256)
-			chksum_prog=sha256sum
-			chksum_len=64
-			;;
-		*)
-			die "${FUNCNAME}: unknown checksum algo ${algo}"
-			;;
-	esac
-
-	local checksum filename junk ret=0 count=0
-	while read -r checksum filename junk; do
-		[[ ${#checksum} -eq ${chksum_len} ]] || continue
-		[[ -z ${checksum//[0-9a-f]} ]] || continue
-		has "${filename}" "${files[@]}" || continue
-		[[ -z ${junk} ]] || continue
-
-		"${chksum_prog}" -c --strict - <<<"${checksum} ${filename}"
-		if [[ ${?} -eq 0 ]]; then
-			(( count++ ))
-		else
-			ret=1
-		fi
-	done < <(verify-sig_verify_message "${checksum_file}" - "${key}")
-
-	[[ ${ret} -eq 0 ]] ||
-		die "${FUNCNAME}: at least one file did not verify successfully"
-	[[ ${count} -eq ${#files[@]} ]] ||
-		die "${FUNCNAME}: checksums for some of the specified files were missing"
+	verify-sig_verify_unsigned_checksums - "${algo}" "${files}" < <(
+		verify-sig_verify_message "${checksum_file}" - "${key}"
+	)
 }
 
 # @FUNCTION: verify-sig_verify_signed_checksums
@@ -257,10 +342,15 @@ verify-sig_verify_signed_checksums() {
 	local algo=${2}
 	local files=()
 	read -r -d '' -a files <<<"${3}"
-	local key=${4:-${VERIFY_SIG_OPENPGP_KEY_PATH}}
+	local key=${4}
 
-	[[ -n ${key} ]] ||
-		die "${FUNCNAME}: no key passed and VERIFY_SIG_OPENPGP_KEY_PATH unset"
+	if [[ -z ${key} ]]; then
+		if [[ -z ${VERIFY_SIG_OPENPGP_KEY_PATH} ]]; then
+			die "${FUNCNAME}: no key passed and VERIFY_SIG_OPENPGP_KEY_PATH unset"
+		else
+			key="${BROOT}${VERIFY_SIG_OPENPGP_KEY_PATH}"
+		fi
+	fi
 
 	case ${VERIFY_SIG_METHOD} in
 		openpgp)
@@ -290,7 +380,7 @@ verify-sig_src_unpack() {
 		# find all distfiles and signatures, and combine them
 		for f in ${A}; do
 			found=
-			for suffix in .asc .sig; do
+			for suffix in .asc .sig .minisig; do
 				if [[ ${f} == *${suffix} ]]; then
 					signatures+=( "${f}" )
 					found=sig
@@ -342,5 +432,6 @@ verify-sig_src_unpack() {
 	default_src_unpack
 }
 
-_VERIFY_SIG_ECLASS=1
 fi
+
+EXPORT_FUNCTIONS src_unpack

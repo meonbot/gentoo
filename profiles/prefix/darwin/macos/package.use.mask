@@ -1,5 +1,18 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
+
+# Fabian Groffen <grobian@gentoo.org> (2024-03-08)
+# -z,now is not something Darwin linkers understand
+sys-devel/gcc default-znow
+
+# Benda Xu <heroxbd@gentoo.org> (2023-08-18)
+# strlcpy and other BSD functions are available in the libc of macOS.
+# Should not use libbsd.
+net-libs/zeromq libbsd
+
+# Fabian Groffen <grobian@gentoo.org> (2022-02-13)
+# we have virtual/gsasl keyworded
+mail-client/mutt -gsasl
 
 # Fabian Groffen <grobian@gentoo.org> (2020-06-08)
 # Do NOT enable tinfo, it breaks ANYTHING existing, and it also breaks

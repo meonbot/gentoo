@@ -1,12 +1,12 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
-inherit mount-boot savedconfig
+EAPI=8
+inherit dist-kernel-utils linux-info mount-boot savedconfig multiprocessing
 
 # In case this is a real snapshot, fill in commit below.
 # For normal, tagged releases, leave blank
-MY_COMMIT=
+MY_COMMIT=""
 
 if [[ ${PV} == 99999999* ]]; then
 	inherit git-r3
@@ -14,41 +14,39 @@ if [[ ${PV} == 99999999* ]]; then
 else
 	if [[ -n "${MY_COMMIT}" ]]; then
 		SRC_URI="https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git/snapshot/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
+		S="${WORKDIR}/${MY_COMMIT}"
 	else
 		SRC_URI="https://mirrors.edge.kernel.org/pub/linux/kernel/firmware/${P}.tar.xz"
 	fi
 
-	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+	KEYWORDS="~amd64"
 fi
 
 DESCRIPTION="Linux firmware files"
 HOMEPAGE="https://git.kernel.org/?p=linux/kernel/git/firmware/linux-firmware.git"
 
 LICENSE="GPL-2 GPL-2+ GPL-3 BSD MIT || ( MPL-1.1 GPL-2 )
-	redistributable? (
-		linux-fw-redistributable ( BSD-2 BSD BSD-4 ISC MIT no-source-code ) )
+	redistributable? ( linux-fw-redistributable BSD-2 BSD BSD-4 ISC MIT )
 	unknown-license? ( all-rights-reserved )"
 SLOT="0"
-IUSE="initramfs +redistributable savedconfig unknown-license"
-REQUIRED_USE="initramfs? ( redistributable )"
+IUSE="compress-xz compress-zstd deduplicate dist-kernel +initramfs +redistributable savedconfig unknown-license"
+REQUIRED_USE="initramfs? ( redistributable )
+	?? ( compress-xz compress-zstd )
+	savedconfig? ( !deduplicate )"
 
 RESTRICT="binchecks strip test
 	unknown-license? ( bindist )"
 
-BDEPEND="initramfs? ( app-arch/cpio )"
+BDEPEND="initramfs? ( app-alternatives/cpio )
+	compress-xz? ( app-arch/xz-utils )
+	compress-zstd? ( app-arch/zstd )
+	deduplicate? ( app-misc/rdfind )"
 
 #add anything else that collides to this
 RDEPEND="!savedconfig? (
 		redistributable? (
 			!sys-firmware/alsa-firmware[alsa_cards_ca0132]
 			!sys-block/qla-fc-firmware
-			!sys-firmware/iwl1000-ucode
-			!sys-firmware/iwl6005-ucode
-			!sys-firmware/iwl6030-ucode
-			!sys-firmware/iwl6050-ucode
-			!sys-firmware/iwl3160-ucode
-			!sys-firmware/iwl7260-ucode
-			!sys-firmware/iwl3160-7260-bt-ucode
 			!sys-firmware/raspberrypi-wifi-ucode
 		)
 		unknown-license? (
@@ -57,9 +55,33 @@ RDEPEND="!savedconfig? (
 			!sys-firmware/alsa-firmware[alsa_cards_sb16]
 			!sys-firmware/alsa-firmware[alsa_cards_ymfpci]
 		)
-	)"
+	)
+	dist-kernel? ( virtual/dist-kernel )
+"
+IDEPEND="
+	dist-kernel? (
+		initramfs? ( sys-kernel/installkernel )
+	)
+"
 
 QA_PREBUILT="*"
+
+pkg_setup() {
+	if use compress-xz || use compress-zstd ; then
+		local CONFIG_CHECK
+
+		if kernel_is -ge 5 19; then
+			use compress-xz && CONFIG_CHECK="~FW_LOADER_COMPRESS_XZ"
+			use compress-zstd && CONFIG_CHECK="~FW_LOADER_COMPRESS_ZSTD"
+		else
+			use compress-xz && CONFIG_CHECK="~FW_LOADER_COMPRESS"
+			if use compress-zstd; then
+				eerror "Kernels <5.19 do not support ZSTD-compressed firmware files"
+			fi
+		fi
+	fi
+	linux-info_pkg_setup
+}
 
 pkg_pretend() {
 	use initramfs && mount-boot_pkg_pretend
@@ -86,7 +108,7 @@ src_prepare() {
 
 	chmod +x copy-firmware.sh || die
 
-	if use initramfs; then
+	if use initramfs && ! use dist-kernel; then
 		if [[ -d "${S}/amd-ucode" ]]; then
 			local UCODETMP="${T}/ucode_tmp"
 			local UCODEDIR="${UCODETMP}/kernel/x86/microcode"
@@ -187,14 +209,12 @@ src_prepare() {
 
 	# blacklist of images with unknown license
 	local unknown_license=(
-		atmsar11.fw
 		korg/k1212.dsp
 		ess/maestro3_assp_kernel.fw
 		ess/maestro3_assp_minisrc.fw
 		yamaha/ds1_ctrl.fw
 		yamaha/ds1_dsp.fw
 		yamaha/ds1e_ctrl.fw
-		tr_smctr.bin
 		ttusb-budget/dspbootcode.bin
 		emi62/bitstream.fw
 		emi62/loader.fw
@@ -206,7 +226,6 @@ src_prepare() {
 		mts_mt9234zba.fw
 		whiteheat.fw
 		whiteheat_loader.fw
-		intelliport2.bin
 		cpia2/stv0672_vp4.bin
 		vicam/firmware.fw
 		edgeport/boot.fw
@@ -226,7 +245,6 @@ src_prepare() {
 		adaptec/starfire_tx.bin
 		yam/1200.bin
 		yam/9600.bin
-		3com/3C359.bin
 		ositech/Xilinx7OD.bin
 		qlogic/isp1000.bin
 		myricom/lanai.bin
@@ -260,7 +278,7 @@ src_prepare() {
 }
 
 src_install() {
-	./copy-firmware.sh -v "${ED}/lib/firmware" || die
+	./copy-firmware.sh $(usex deduplicate '' '--ignore-duplicates') -v "${ED}/lib/firmware" || die
 
 	pushd "${ED}/lib/firmware" &>/dev/null || die
 
@@ -306,9 +324,45 @@ src_install() {
 	find * ! -type d >> "${S}"/${PN}.conf || die
 	save_config "${S}"/${PN}.conf
 
+	if use compress-xz || use compress-zstd; then
+		einfo "Compressing firmware ..."
+		local target
+		local ext
+		local compressor
+
+		if use compress-xz; then
+			ext=xz
+			compressor="xz -T1 -C crc32"
+		elif use compress-zstd; then
+			ext=zst
+			compressor="zstd -15 -T1 -C -q --rm"
+		fi
+
+		# rename symlinks
+		while IFS= read -r -d '' f; do
+			# skip symlinks pointing to directories
+			[[ -d ${f} ]] && continue
+
+			target=$(readlink "${f}")
+			[[ $? -eq 0 ]] || die
+			ln -sf "${target}".${ext} "${f}" || die
+			mv -T "${f}" "${f}".${ext} || die
+		done < <(find . -type l -print0) || die
+
+		find . -type f ! -path "./amd-ucode/*" -print0 | \
+			xargs -0 -P $(makeopts_jobs) -I'{}' ${compressor} '{}' || die
+
+	fi
+
 	popd &>/dev/null || die
 
-	if use initramfs ; then
+	# Instruct Dracut on whether or not we want the microcode in initramfs
+	(
+		insinto /usr/lib/dracut/dracut.conf.d
+		newins - 10-${PN}.conf <<<"early_microcode=$(usex initramfs)"
+	)
+
+	if use initramfs && ! use dist-kernel; then
 		insinto /boot
 		doins "${S}"/amd-uc.img
 	fi
@@ -317,6 +371,11 @@ src_install() {
 pkg_preinst() {
 	if use savedconfig; then
 		ewarn "USE=savedconfig is active. You must handle file collisions manually."
+	fi
+
+	# Fix 'symlink is blocked by a directory' Bug #871315
+	if has_version "<${CATEGORY}/${PN}-20220913-r2" ; then
+		rm -rf "${EROOT}"/lib/firmware/qcom/LENOVO/21BX
 	fi
 
 	# Make sure /boot is available if needed.
@@ -339,7 +398,12 @@ pkg_postinst() {
 	done
 
 	# Don't forget to umount /boot if it was previously mounted by us.
-	use initramfs && mount-boot_pkg_postinst
+	if use initramfs; then
+		if [[ -z ${ROOT} ]] && use dist-kernel; then
+			dist-kernel_reinstall_initramfs "${KV_DIR}" "${KV_FULL}"
+		fi
+		mount-boot_pkg_postinst
+	fi
 }
 
 pkg_prerm() {

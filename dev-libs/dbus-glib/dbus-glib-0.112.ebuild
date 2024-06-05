@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -11,7 +11,7 @@ SRC_URI="https://dbus.freedesktop.org/releases/${PN}/${P}.tar.gz"
 
 LICENSE="|| ( GPL-2 AFL-2.1 )"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~sparc-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
 IUSE="debug static-libs test"
 RESTRICT="!test? ( test )"
 
@@ -26,7 +26,7 @@ BDEPEND="
 	>=dev-libs/glib-2.40:2
 	>=sys-apps/dbus-1.8
 	>=dev-util/glib-utils-2.40
-	>=dev-util/gtk-doc-am-1.14
+	>=dev-build/gtk-doc-am-1.14
 	virtual/pkgconfig
 " # CBUILD dependencies are needed to make a native tool while cross-compiling.
 

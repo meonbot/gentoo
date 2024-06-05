@@ -5,6 +5,10 @@
 		<email>zoltan@sinustrom.info</email>
 		<name>Zoltan Puskas</name>
 	</maintainer>
+	<maintainer type="person" proxied="yes">
+		<email>vowstar@gmail.com</email>
+		<name>Huang Rui</name>
+	</maintainer>
 	<maintainer type="project" proxied="proxy">
 		<email>proxy-maint@gentoo.org</email>
 		<name>Proxy Maintainers</name>
@@ -19,6 +23,6 @@
 		diagrams and printed circuit board artwork.
 	</longdescription>
 	<upstream>
-		<remote-id type="github">KiCad/kicad-doc</remote-id>
+		<remote-id type="gitlab">kicad/services/kicad-doc</remote-id>
 	</upstream>
 </pkgmetadata>

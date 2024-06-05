@@ -1,10 +1,10 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
-WX_GTK_VER=3.0-gtk3
+PYTHON_COMPAT=( python3_{9..11} )
+WX_GTK_VER=3.2-gtk3
 
 inherit cmake desktop flag-o-matic perl-functions python-r1 toolchain-funcs wxwidgets xdg-utils
 
@@ -30,7 +30,7 @@ fi
 
 SRC_URI="${SRC_URI}
 	https://openbabel.org/docs/dev/_static/babel130.png -> ${PN}.png
-	http://openbabel.org/OBTitle.jpg ->  ${PN}.jpg"
+	https://openbabel.org/OBTitle.jpg ->  ${PN}.jpg"
 
 # See src/CMakeLists.txt for LIBRARY_VERSION
 SLOT="0/7.0.0"
@@ -48,7 +48,7 @@ REQUIRED_USE="
 BDEPEND="
 	dev-lang/perl
 	doc? (
-		app-doc/doxygen
+		app-text/doxygen
 		dev-texlive/texlive-latex
 	)
 	perl? ( >=dev-lang/swig-2 )
@@ -80,8 +80,12 @@ RDEPEND="
 	)
 "
 
+pkg_pretend() {
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+}
+
 pkg_setup() {
-	use openmp && tc-check-openmp
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 }
 
 prepare_python_bindings() {
@@ -181,7 +185,7 @@ src_configure() {
 	)
 
 	if use test; then
-		# Help cmake find the python interpreter when dev-lang/python-exec is built 
+		# Help cmake find the python interpreter when dev-lang/python-exec is built
 		# without native-symlinks support.
 		python_setup
 		mycmakeargs+=( -DPYTHON_EXECUTABLE="${PYTHON}" )

@@ -1,16 +1,16 @@
-BDEPEND=doc? ( || ( >=app-text/asciidoc-8.6.0 dev-ruby/asciidoctor ) app-text/docbook-xml-dtd:4.5 app-text/xmlto ) sys-devel/gnuconfig sys-devel/gnuconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.2-r1:1.16 ) >=sys-devel/autoconf-2.69 >=dev-vcs/git-1.8.2.1[curl]
-DEFINED_PHASES=compile configure install prepare setup unpack
-DEPEND=dev-libs/lzo:2= sys-apps/util-linux:0=[static-libs(+)?] sys-libs/zlib:0= convert? ( sys-fs/e2fsprogs:= reiserfs? ( >=sys-fs/reiserfsprogs-3.6.27 ) ) python? ( python_single_target_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9 ) python_single_target_python3_10? ( >=dev-lang/python-3.10.0_p1-r1:3.10 ) ) zstd? ( app-arch/zstd:0= ) >=sys-kernel/linux-headers-5.10 convert? ( sys-apps/acl ) python? ( python_single_target_python3_8? ( dev-python/setuptools[python_targets_python3_8(-)] ) python_single_target_python3_9? ( dev-python/setuptools[python_targets_python3_9(-)] ) python_single_target_python3_10? ( dev-python/setuptools[python_targets_python3_10(-)] ) ) static? ( dev-libs/lzo:2[static-libs(+)] sys-apps/util-linux:0[static-libs(+)] sys-libs/zlib:0[static-libs(+)] convert? ( sys-fs/e2fsprogs[static-libs(+)] reiserfs? ( >=sys-fs/reiserfsprogs-3.6.27[static-libs(+)] ) ) zstd? ( app-arch/zstd:0[static-libs(+)] ) )
+BDEPEND=virtual/pkgconfig man? ( || ( ( dev-lang/python:3.13 dev-python/sphinx[python_targets_python3_13(-)] dev-python/sphinx-rtd-theme[python_targets_python3_13(-)] ) ( dev-lang/python:3.12 dev-python/sphinx[python_targets_python3_12(-)] dev-python/sphinx-rtd-theme[python_targets_python3_12(-)] ) ( dev-lang/python:3.11 dev-python/sphinx[python_targets_python3_11(-)] dev-python/sphinx-rtd-theme[python_targets_python3_11(-)] ) ( dev-lang/python:3.10 dev-python/sphinx[python_targets_python3_10(-)] dev-python/sphinx-rtd-theme[python_targets_python3_10(-)] ) ) ) sys-devel/gnuconfig virtual/pkgconfig >=app-portage/elt-patches-20240116 sys-devel/gnuconfig || ( >=dev-build/automake-1.16.5:1.16 ) || ( >=dev-build/autoconf-2.72-r1:2.72 >=dev-build/autoconf-2.71-r6:2.71 ) >=dev-vcs/git-1.8.2.1[curl]
+DEFINED_PHASES=compile configure install postinst postrm prepare setup test unpack
+DEPEND=dev-libs/lzo:2= sys-apps/util-linux:=[static-libs(+)?] sys-libs/zlib:= convert? ( sys-fs/e2fsprogs:= reiserfs? ( >=sys-fs/reiserfsprogs-3.6.27 ) ) udev? ( virtual/libudev:= ) zstd? ( app-arch/zstd:= ) >=sys-kernel/linux-headers-5.10 convert? ( sys-apps/acl ) static? ( dev-libs/lzo:2[static-libs(+)] sys-apps/util-linux:0[static-libs(+)] sys-libs/zlib:0[static-libs(+)] convert? ( sys-fs/e2fsprogs[static-libs(+)] reiserfs? ( >=sys-fs/reiserfsprogs-3.6.27[static-libs(+)] ) ) zstd? ( app-arch/zstd[static-libs(+)] ) )
 DESCRIPTION=Btrfs filesystem utilities
-EAPI=7
-HOMEPAGE=https://btrfs.wiki.kernel.org
-INHERIT=bash-completion-r1 python-single-r1 autotools git-r3
-IUSE=+convert doc python reiserfs static static-libs +zstd python_single_target_python3_8 python_single_target_python3_9 python_single_target_python3_10
+EAPI=8
+HOMEPAGE=https://btrfs.readthedocs.io/en/latest/
+INHERIT=bash-completion-r1 python-any-r1 udev autotools git-r3
+IUSE=+convert +man reiserfs static static-libs udev +zstd
 LICENSE=GPL-2
 PROPERTIES=live
-RDEPEND=dev-libs/lzo:2= sys-apps/util-linux:0=[static-libs(+)?] sys-libs/zlib:0= convert? ( sys-fs/e2fsprogs:= reiserfs? ( >=sys-fs/reiserfsprogs-3.6.27 ) ) python? ( python_single_target_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9 ) python_single_target_python3_10? ( >=dev-lang/python-3.10.0_p1-r1:3.10 ) ) zstd? ( app-arch/zstd:0= )
-REQUIRED_USE=python? ( ^^ ( python_single_target_python3_8 python_single_target_python3_9 python_single_target_python3_10 ) )
+RDEPEND=dev-libs/lzo:2= sys-apps/util-linux:=[static-libs(+)?] sys-libs/zlib:= convert? ( sys-fs/e2fsprogs:= reiserfs? ( >=sys-fs/reiserfsprogs-3.6.27 ) ) udev? ( virtual/libudev:= ) zstd? ( app-arch/zstd:= )
+REQUIRED_USE=static? ( !udev )
 RESTRICT=test
 SLOT=0/0
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	bash-completion-r1	d3a60385655d9b402be765a6de333245	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	multiprocessing	61c959fc55c15c00bbb1079d6a71370b	python-utils-r1	54423f1e035828362c248fad528ebbba	python-single-r1	9783802d3840cbbd78c02b313df760cc	gnuconfig	262062cef0ba4f22b397193da514a350	libtool	241a8f577b9781a42a7421e53448a44e	autotools	c9df06c186913b43eb211100ef5fe2cf	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=aa5bed3e52060c11261b8c55fb86eb91
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	bash-completion-r1	f5e7a020fd9c741740756aac61bf75ff	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	python-any-r1	f5169813d1619761b459800587005fd2	udev	eec0bbab06977f1cfc5597269c1fa152	gnuconfig	a397adda6984a4c423e28ac274c1ba98	libtool	5f49a16f67f81bdf873e3d1f10b10001	autotools	dc70c1dc473b68317fc4a86f5fbfc57d	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=16f1d4cf237e42a7e11a91ca2dc36a9b

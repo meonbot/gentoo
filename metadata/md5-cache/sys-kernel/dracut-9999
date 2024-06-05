@@ -1,15 +1,15 @@
 BDEPEND=app-text/asciidoc app-text/docbook-xml-dtd:4.5 >=app-text/docbook-xsl-stylesheets-1.75.2 >=dev-libs/libxslt-1.1.26 virtual/pkgconfig virtual/pkgconfig >=dev-vcs/git-1.8.2.1[curl]
-DEFINED_PHASES=configure install postinst setup test unpack
+DEFINED_PHASES=configure install postinst test unpack
 DEPEND=>=sys-apps/kmod-23 elibc_musl? ( sys-libs/fts-standalone )
 DESCRIPTION=Generic initramfs generation tool
-EAPI=7
-HOMEPAGE=https://dracut.wiki.kernel.org
-INHERIT=bash-completion-r1 linux-info optfeature systemd toolchain-funcs git-r3
+EAPI=8
+HOMEPAGE=https://github.com/dracut-ng/dracut-ng/wiki
+INHERIT=bash-completion-r1 edo optfeature systemd toolchain-funcs git-r3
 IUSE=selinux test
 LICENSE=GPL-2
 PROPERTIES=live
-RDEPEND=app-arch/cpio >=app-shells/bash-4.0:0 sys-apps/coreutils[xattr(-)] >=sys-apps/kmod-23[tools] || ( >=sys-apps/sysvinit-2.87-r3 sys-apps/openrc[sysv-utils(-),selinux?] sys-apps/systemd[sysv-utils] ) >=sys-apps/util-linux-2.21 virtual/pkgconfig virtual/udev elibc_musl? ( sys-libs/fts-standalone ) selinux? ( sec-policy/selinux-dracut sys-libs/libselinux sys-libs/libsepol )
+RDEPEND=app-alternatives/cpio >=app-shells/bash-4.0:0 sys-apps/coreutils[xattr(-)] >=sys-apps/kmod-23[tools] || ( >=sys-apps/sysvinit-2.87-r3 sys-apps/openrc[sysv-utils(-),selinux?] sys-apps/systemd[sysv-utils] sys-apps/s6-linux-init[sysv-utils(-)] ) >=sys-apps/util-linux-2.21 virtual/pkgconfig[native-symlinks(+)] virtual/udev elibc_musl? ( sys-libs/fts-standalone ) selinux? ( sec-policy/selinux-dracut sys-libs/libselinux sys-libs/libsepol )
 RESTRICT=!test? ( test )
 SLOT=0
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	bash-completion-r1	d3a60385655d9b402be765a6de333245	linux-info	2f039741fe92bcea55c78806d16ac0f5	optfeature	30ce9dec2b8943338c9b015bd32bac6a	systemd	2736b403a83f194b59b767f3b344c2c1	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=6599a55209812928df0da855f7221b69
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	bash-completion-r1	f5e7a020fd9c741740756aac61bf75ff	edo	367e103a74bf77e6a8da7894d999fa3c	optfeature	222cb475c5a4f7ae7cfb0bf510a6fe54	systemd	c8b03e8df84486aa991d4396686e8942	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=3be5be00620e75df167ccf0cc34abe3e

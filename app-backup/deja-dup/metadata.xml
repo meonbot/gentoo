@@ -25,7 +25,7 @@
 	backup apps.
 	</longdescription>
 	<upstream>
-		<remote-id type="gitlab">https://gitlab.gnome.org/World/deja-dup</remote-id>
 		<bugs-to>https://gitlab.gnome.org/World/deja-dup/issues</bugs-to>
+		<remote-id type="gnome-gitlab">World/deja-dup</remote-id>
 	</upstream>
 </pkgmetadata>

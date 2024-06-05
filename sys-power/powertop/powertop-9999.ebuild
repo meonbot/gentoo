@@ -1,13 +1,12 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 EGIT_REPO_URI="https://github.com/fenrus75/powertop.git"
 
 if [[ ${PV} == "9999" ]] ; then
 	GIT_ECLASS="git-r3"
-	SRC_URI=""
 else
 	SRC_URI="https://github.com/fenrus75/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~sparc ~x86 ~amd64-linux ~x86-linux"
@@ -16,7 +15,7 @@ fi
 inherit autotools ${GIT_ECLASS} linux-info
 
 DESCRIPTION="tool to diagnose issues with power consumption and power management"
-HOMEPAGE="https://01.org/powertop/ https://github.com/fenrus75/powertop/"
+HOMEPAGE="https://github.com/fenrus75/powertop/"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -30,7 +29,7 @@ DEPEND="
 
 BDEPEND="
 	virtual/pkgconfig
-	sys-devel/autoconf-archive
+	dev-build/autoconf-archive
 	>=sys-devel/gettext-0.20.2
 "
 RDEPEND="

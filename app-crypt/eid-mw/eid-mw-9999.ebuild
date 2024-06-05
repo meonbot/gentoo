@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit autotools desktop gnome2-utils xdg-utils git-r3
+inherit autotools desktop gnome2-utils git-r3
 
 DESCRIPTION="Electronic Identity Card middleware supplied by the Belgian Federal Government"
 HOMEPAGE="https://eid.belgium.be"
@@ -13,19 +13,19 @@ LICENSE="LGPL-3"
 SLOT="0"
 IUSE="+dialogs +gtk p11-kit"
 
-RDEPEND=">=sys-apps/pcsc-lite-1.2.9
+RDEPEND="sys-apps/pcsc-lite
 	gtk? (
 		x11-libs/gdk-pixbuf[jpeg]
 		x11-libs/gtk+:3
 		dev-libs/libxml2
 		net-misc/curl[ssl]
 		net-libs/libproxy
-		>=app-crypt/pinentry-1.1.0-r4[gtk]
+		app-crypt/pinentry[gtk]
 	)
 	p11-kit? ( app-crypt/p11-kit )"
 
-DEPEND="${RDEPEND}
-	virtual/pkgconfig"
+DEPEND="${RDEPEND}"
+BDEPEND="virtual/pkgconfig"
 
 REQUIRED_USE="dialogs? ( gtk )"
 
@@ -43,18 +43,11 @@ src_prepare() {
 		-e "s:get_lsb_info('c'):strdup(_(\"n/a\")):" \
 		plugins_tools/aboutmw/gtk/about-main.c || die
 
-	# Fix libdir for pkcs11_manifestdir
+	# Fix libdir for manifestdir
 	sed -i \
 		-e "/pkcs11_manifestdir/ s:prefix)/lib:libdir):" \
+		-e "/managed_storage_manifestdir/ s:prefix)/lib:libdir):" \
 		cardcomm/pkcs11/src/Makefile.am || die
-
-	# See bug #732994
-	sed -i \
-		-e '/LDFLAGS="/ s:$CPPFLAGS:$LDFLAGS:' \
-		configure.ac || die
-
-	# See bug #751472
-	eapply "${FILESDIR}/use-printf-in-Makefile.patch"
 
 	# See bug #811270 (remove uml build)
 	sed -i \
@@ -71,14 +64,13 @@ src_configure() {
 	econf \
 		$(use_enable dialogs) \
 		$(use_enable p11-kit p11kit) \
-		$(use_with gtk gtkvers 'detect') \
-		--with-gnu-ld \
-		--disable-static
+		$(use_with gtk gtkvers '3') \
+		--with-gnu-ld
 }
 
 src_install() {
 	default
-	rm -r "${ED}"/usr/$(get_libdir)/*.la || die
+	find "${ED}" -type f -name '*.la' -delete || die
 	if use gtk; then
 		domenu plugins_tools/eid-viewer/eid-viewer.desktop
 		doicon plugins_tools/eid-viewer/gtk/eid-viewer.png

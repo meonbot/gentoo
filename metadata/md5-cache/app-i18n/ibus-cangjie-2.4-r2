@@ -1,16 +1,16 @@
-BDEPEND=dev-util/intltool nls? ( sys-devel/gettext ) sys-devel/gnuconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.2-r1:1.16 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4
+BDEPEND=dev-util/intltool nls? ( sys-devel/gettext ) >=app-portage/elt-patches-20240116 sys-devel/gnuconfig || ( >=dev-build/automake-1.16.5:1.16 ) || ( >=dev-build/autoconf-2.72-r1:2.72 >=dev-build/autoconf-2.71-r6:2.71 ) >=dev-build/libtool-2.4.7-r3
 DEFINED_PHASES=compile configure install postinst postrm preinst prepare
-DEPEND=python_targets_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8 ) python_targets_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9 ) python_targets_python3_10? ( >=dev-lang/python-3.10.0_p1-r1:3.10 ) app-i18n/ibus[python(+),python_targets_python3_8(-)?,python_targets_python3_9(-)?,python_targets_python3_10(-)?] app-i18n/libcangjie dev-python/cangjie[python_targets_python3_8(-)?,python_targets_python3_9(-)?,python_targets_python3_10(-)?] nls? ( virtual/libintl ) dev-util/desktop-file-utils x11-misc/shared-mime-info
+DEPEND=python_targets_python3_10? ( dev-lang/python:3.10 ) python_targets_python3_11? ( dev-lang/python:3.11 ) app-i18n/ibus[python(+),python_targets_python3_10(-)?,python_targets_python3_11(-)?] app-i18n/libcangjie dev-python/cangjie[python_targets_python3_10(-)?,python_targets_python3_11(-)?] nls? ( virtual/libintl ) dev-util/desktop-file-utils x11-misc/shared-mime-info
 DESCRIPTION=Chinese Cangjie and Quick engines for IBus
 EAPI=7
 HOMEPAGE=http://cangjians.github.io/
 INHERIT=autotools gnome2-utils python-r1 xdg
-IUSE=nls python_targets_python3_8 python_targets_python3_9 python_targets_python3_10
+IUSE=nls python_targets_python3_10 python_targets_python3_11
 KEYWORDS=amd64 x86
 LICENSE=GPL-3+
-RDEPEND=python_targets_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8 ) python_targets_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9 ) python_targets_python3_10? ( >=dev-lang/python-3.10.0_p1-r1:3.10 ) app-i18n/ibus[python(+),python_targets_python3_8(-)?,python_targets_python3_9(-)?,python_targets_python3_10(-)?] app-i18n/libcangjie dev-python/cangjie[python_targets_python3_8(-)?,python_targets_python3_9(-)?,python_targets_python3_10(-)?] nls? ( virtual/libintl )
-REQUIRED_USE=|| ( python_targets_python3_8 python_targets_python3_9 python_targets_python3_10 )
+RDEPEND=python_targets_python3_10? ( dev-lang/python:3.10 ) python_targets_python3_11? ( dev-lang/python:3.11 ) app-i18n/ibus[python(+),python_targets_python3_10(-)?,python_targets_python3_11(-)?] app-i18n/libcangjie dev-python/cangjie[python_targets_python3_10(-)?,python_targets_python3_11(-)?] nls? ( virtual/libintl )
+REQUIRED_USE=|| ( python_targets_python3_10 python_targets_python3_11 )
 SLOT=0
 SRC_URI=https://github.com/Cangjians/ibus-cangjie/releases/download/v2.4/ibus-cangjie-2.4.tar.xz
-_eclasses_=gnuconfig	262062cef0ba4f22b397193da514a350	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	libtool	241a8f577b9781a42a7421e53448a44e	autotools	c9df06c186913b43eb211100ef5fe2cf	xdg-utils	4f29a8b760a594a212abe9c2ba957c31	gnome2-utils	239e7afa214b50012f83b8bb61de7555	multibuild	d79bd5b4bc4edcb1f5bc19591f8d4714	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	multiprocessing	61c959fc55c15c00bbb1079d6a71370b	python-utils-r1	54423f1e035828362c248fad528ebbba	python-r1	4c008ab1e6c02cbead059dfe8b864c26	xdg	6024fbc93167fad782e2032933654857
-_md5_=6d2502fe3f34537f8730a1053580a630
+_eclasses_=gnuconfig	a397adda6984a4c423e28ac274c1ba98	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	libtool	5f49a16f67f81bdf873e3d1f10b10001	autotools	dc70c1dc473b68317fc4a86f5fbfc57d	xdg-utils	baea6080dd821f5562d715887954c9d3	gnome2-utils	30dbce54b89e77b86f366548f94419ad	out-of-source-utils	1a9007554652a6e627edbccb3c25a439	multibuild	d67e78a235f541871c7dfe4cf7931489	eapi8-dosym	5ac4857ad078256d939c44f7c64197a9	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	python-r1	8a28fa6d3e3bc96ff8a7eff2badbe71f	xdg	4a14c5c24f121e7da66e5aab4a168c6e
+_md5_=bb46421b5cb7c3ff2779f42ed96983f5

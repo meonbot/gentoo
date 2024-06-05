@@ -2,11 +2,10 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
   <maintainer type="person">
-    <email>bircoph@gentoo.org</email>
-    <name>Andrew Savchenko</name>
+    <email>dlan@gentoo.org</email>
+    <name>Yixun Lan</name>
   </maintainer>
   <use>
-    <flag name="eet">Enable Eet image loader</flag>
     <flag name="xcf">Enable XCF image loader</flag>
   </use>
   <longdescription>

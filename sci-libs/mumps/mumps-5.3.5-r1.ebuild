@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,13 +8,13 @@ inherit fortran-2 flag-o-matic multilib toolchain-funcs
 MYP=MUMPS_${PV}
 
 DESCRIPTION="MUltifrontal Massively Parallel sparse direct matrix Solver"
-HOMEPAGE="http://mumps.enseeiht.fr/"
-SRC_URI="http://mumps.enseeiht.fr/${MYP}.tar.gz"
+HOMEPAGE="https://mumps-solver.org/"
+SRC_URI="https://mumps-solver.org/${MYP}.tar.gz"
 S="${WORKDIR}/${MYP}"
 
 LICENSE="public-domain"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~loong ~riscv ~x86 ~amd64-linux ~x86-linux"
 IUSE="doc examples metis mpi +scotch static-libs"
 
 BDEPEND="virtual/pkgconfig"
@@ -63,6 +63,16 @@ static_to_shared() {
 }
 
 src_prepare() {
+	# -Werror=strict-aliasing
+	# https://bugs.gentoo.org/862903
+	#
+	# There is an upstream mailing list but it seems to be broken. I *think*,
+	# because it's all in French. I tried and failed to report the bug.
+	#
+	# Do not trust with LTO either.
+	append-flags -fno-strict-aliasing
+	filter-lto
+
 	# workaround for gcc10 (bug #743442)
 	append-fflags $(test-flags-FC -fallow-argument-mismatch)
 
@@ -145,7 +155,8 @@ src_compile() {
 	# Workaround #462602
 	export FAKEROOTKEY=1
 
-	emake alllib PIC="-fPIC"
+	# Use "-j1" to avoid a spurious race condition
+	emake -j1 alllib PIC="-fPIC"
 	if ! use mpi; then
 		#$(tc-getAR) crs lib/libmumps_common.a libseq/*.o || die
 		LIBADD+=" -Llibseq -lmpiseq"

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -14,7 +14,7 @@ SRC_URI="https://hackage.haskell.org/package/${P}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 ~arm64 ~ppc64 ~riscv ~x86"
 IUSE=""
 
 RDEPEND=">=dev-haskell/comonad-4:=[profile?] <dev-haskell/comonad-6:=[profile?]
@@ -36,9 +36,6 @@ DEPEND="${RDEPEND}
 		>=dev-haskell/hspec-2 <dev-haskell/hspec-3 )
 "
 
-src_prepare() {
-	default
-
-	cabal_chdeps \
-		'containers          >= 0.3     && < 0.6' 'containers          >= 0.3'
-}
+CABAL_CHDEPS=(
+	'containers          >= 0.3     && < 0.6' 'containers          >= 0.3'
+)

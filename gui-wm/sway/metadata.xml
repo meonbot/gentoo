@@ -2,10 +2,6 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>bman@gentoo.org</email>
-		<name>Aaron Bauman</name>
-	</maintainer>
-	<maintainer type="person">
 		<email>prometheanfire@gentoo.org</email>
 		<name>Matthew Thode</name>
 	</maintainer>
@@ -27,10 +23,6 @@
 	</longdescription>
 	<use>
 		<flag name="swaybar">Install 'swaybar': sway's status bar component</flag>
-		<flag name="swaybg">Install 'swaybg': allows to set a desktop background image</flag>
-		<flag name="swayidle">Install 'swayidle': idle manager to run commands when user is inactive</flag>
-		<flag name="swaylock">Install 'swaylock': sway's screen locker</flag>
-		<flag name="swaymsg">Install 'swaymsg': tool for communicating with a running sway instance</flag>
 		<flag name="swaynag">Install 'swaynag': shows a message with buttons</flag>
 		<flag name="tray">Enable support for StatusNotifierItem tray specification</flag>
 		<flag name="wallpapers">Install sway's default wallpaper image</flag>

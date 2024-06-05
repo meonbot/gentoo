@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-	<maintainer type="person">
-		<email>grknight@gentoo.org</email>
-		<name>Brian Evans</name>
-	</maintainer>
 	<maintainer type="project">
 		<email>perl@gentoo.org</email>
 		<name>Gentoo Perl Project</name>
@@ -31,5 +27,6 @@
 		<remote-id type="cpan-module">App::Ack::Filter::MatchGroup</remote-id>
 		<remote-id type="cpan-module">App::Ack::Resource</remote-id>
 		<remote-id type="cpan-module">App::Ack::Resources</remote-id>
+		<remote-id type="github">beyondgrep/ack3</remote-id>
 	</upstream>
 </pkgmetadata>

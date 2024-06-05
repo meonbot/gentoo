@@ -2,10 +2,6 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 <maintainer type="person">
-	<email>dilfridge@gentoo.org</email>
-	<name>Andreas K. Huettel</name>
-</maintainer>
-<maintainer type="person">
 	<email>heroxbd@gentoo.org</email>
 	<name>Benda Xu</name>
 </maintainer>
@@ -18,17 +14,19 @@
 	<name>James Le Cuirot</name>
 </maintainer>
 <upstream>
+	<remote-id type="pypi">xpra</remote-id>
+	<remote-id type="github">Xpra-org/xpra</remote-id>
 	<bugs-to>https://www.xpra.org/trac/report</bugs-to>
 </upstream>
 <use>
-	<flag name="brotli">Enable brotli compression support</flag>
 	<flag name="client">Build client-side code</flag>
 	<flag name="clipboard">Enable clipboard support</flag>
 	<flag name="csc">Enable csc softscaler support</flag>
 	<flag name="html">Install the HTML5 client</flag>
 	<flag name="ibus">Use ibus input method via <pkg>app-i18n/ibus</pkg></flag>
-	<flag name="pillow">Enable pillow support</flag>
+	<flag name="oauth">Enable OAuth2 authentication in the server</flag>
 	<flag name="pinentry">Use <pkg>app-crypt/pinentry</pkg> for password entry</flag>
+	<flag name="trayicon">Enable system tray icon</flag>
 	<flag name="server">Build server-side code</flag>
 	<flag name="vpx">Enable vpx image format support</flag>
 	<flag name="webcam">Enable webcam support via opencv</flag>

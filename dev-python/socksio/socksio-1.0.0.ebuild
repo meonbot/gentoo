@@ -1,19 +1,22 @@
-# Copyright 2022 Gentoo Authors
+# Copyright 2022-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
 DISTUTILS_USE_PEP517=flit
-inherit distutils-r1
+PYTHON_COMPAT=( pypy3 python3_{10..13} )
+
+inherit distutils-r1 pypi
 
 DESCRIPTION="Sans-I/O implementation of SOCKS4, SOCKS4A, and SOCKS5"
-HOMEPAGE="https://pypi.org/project/socksio/ https://github.com/sethmlarson/socksio"
-SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
+HOMEPAGE="
+	https://github.com/sethmlarson/socksio/
+	https://pypi.org/project/socksio/
+"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 
 distutils_enable_tests pytest
 

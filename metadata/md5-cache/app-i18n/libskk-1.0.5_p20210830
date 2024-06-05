@@ -1,4 +1,4 @@
-BDEPEND=|| ( dev-lang/vala:0.54 dev-lang/vala:0.52 dev-lang/vala:0.50 dev-lang/vala:0.48 dev-lang/vala:0.46 ) virtual/pkgconfig nls? ( sys-devel/gettext ) sys-devel/gnuconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.2-r1:1.16 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4 test? ( x11-base/xorg-server[xvfb] x11-apps/xhost )
+BDEPEND=|| ( dev-lang/vala:0.56 ) virtual/pkgconfig nls? ( sys-devel/gettext ) >=app-portage/elt-patches-20240116 sys-devel/gnuconfig || ( >=dev-build/automake-1.16.5:1.16 ) || ( >=dev-build/autoconf-2.72-r1:2.72 >=dev-build/autoconf-2.71-r6:2.71 ) >=dev-build/libtool-2.4.7-r3 test? ( x11-base/xorg-server[xvfb] x11-apps/xhost )
 DEFINED_PHASES=configure install prepare test unpack
 DEPEND=dev-libs/glib:2 dev-libs/json-glib dev-libs/libgee:0.8 x11-libs/libxkbcommon introspection? ( dev-libs/gobject-introspection ) nls? ( virtual/libintl )
 DESCRIPTION=GObject-based library to deal with Japanese kana-to-kanji conversion method
@@ -6,11 +6,11 @@ EAPI=7
 HOMEPAGE=https://github.com/ueno/libskk
 INHERIT=autotools vala vcs-snapshot virtualx
 IUSE=+introspection nls static-libs test
-KEYWORDS=~amd64 ~x86
+KEYWORDS=amd64 x86
 LICENSE=GPL-3+
 RDEPEND=dev-libs/glib:2 dev-libs/json-glib dev-libs/libgee:0.8 x11-libs/libxkbcommon introspection? ( dev-libs/gobject-introspection ) nls? ( virtual/libintl )
 RESTRICT=!test? ( test )
 SLOT=0
 SRC_URI=https://github.com/ueno/libskk/archive/5f5e5c2d3facfec9f577fb66032e6f1994ed5d44.tar.gz -> libskk-1.0.5_p20210830.tar.gz
-_eclasses_=gnuconfig	262062cef0ba4f22b397193da514a350	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	libtool	241a8f577b9781a42a7421e53448a44e	autotools	c9df06c186913b43eb211100ef5fe2cf	edos2unix	33e347e171066657f91f8b0c72ec8773	strip-linguas	ac3ee41ee2d31d8c41a77c0838320cc7	wrapper	4251d4c84c25f59094fd557e0063a974	eutils	dab5d8ec471d025b79c9e6906bcf3bff	vala	78150b86094c58851346877cbf691245	vcs-snapshot	b1abf460a493fc59ebb25de0df3f09dd	virtualx	fa024aa649b6bd544144bf94893d402c
-_md5_=2d2b15d7514bd3479951c8bedc753542
+_eclasses_=gnuconfig	a397adda6984a4c423e28ac274c1ba98	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	libtool	5f49a16f67f81bdf873e3d1f10b10001	autotools	dc70c1dc473b68317fc4a86f5fbfc57d	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	vala	e477903dbe0105930c51f170a592dc16	vcs-snapshot	eab6d8533446763c2e9777d8bbd1594e	virtualx	817571665ee28575da44ee08135089e5
+_md5_=0ecddb6bcb52f2a0b6e71c5c884dff4c

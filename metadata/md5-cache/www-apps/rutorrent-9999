@@ -1,13 +1,14 @@
-DEFINED_PHASES=install postinst prepare prerm setup unpack
-DEPEND=|| ( dev-lang/php[xml,gd] dev-lang/php[xml,gd-external] ) app-admin/webapp-config >=dev-vcs/git-1.8.2.1[curl]
+BDEPEND=>=dev-vcs/git-1.8.2.1[curl]
+DEFINED_PHASES=install postinst prerm setup unpack
+DEPEND=|| ( virtual/httpd-cgi virtual/httpd-fastcgi ) app-admin/webapp-config
 DESCRIPTION=ruTorrent is a front-end for the popular Bittorrent client rTorrent
-EAPI=6
+EAPI=8
 HOMEPAGE=https://github.com/Novik/ruTorrent
-INHERIT=webapp git-r3
+INHERIT=webapp optfeature git-r3
 IUSE=vhosts
-LICENSE=GPL-2
+LICENSE=GPL-2+ MIT
 PROPERTIES=live
-RDEPEND=virtual/httpd-php app-admin/webapp-config
+RDEPEND=dev-lang/php[xml,gd] virtual/httpd-php app-admin/webapp-config
 SLOT=9999
-_eclasses_=webapp	60f2eb31dec733d05e8114cc078ebc33	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=2aa3aa7f2ae58b6dcc67261986216186
+_eclasses_=webapp	de2d3d345b44597c10d7104a7bcdf7b2	optfeature	222cb475c5a4f7ae7cfb0bf510a6fe54	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=aa3549fbf922e4656ac7a0c4a96e7c88

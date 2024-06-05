@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,11 +7,11 @@ inherit toolchain-funcs
 
 DESCRIPTION="library for extracting audio from DVD-Audio discs"
 HOMEPAGE="https://sourceforge.net/projects/libdvd-audio/"
-SRC_URI="mirror://sourceforge/${PN}/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${P}.tar.gz"
 
 LICENSE="GPL-2 LGPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 ~x86"
 IUSE="doc static-libs"
 
 PATCHES=( "${FILESDIR}"/${P}-makefile.patch )

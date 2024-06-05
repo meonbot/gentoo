@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -14,7 +14,7 @@ LICENSE="BSD"
 # Subslot indicates the fork / new version
 # 3 doesn't include the same games as the classic variant, etc
 SLOT="0/3"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~hppa ~mips ~riscv ~x86"
 
 # 'check' target doesn't exist, nor do any actual tests
 # bug #779649
@@ -31,8 +31,9 @@ RDEPEND="
 	acct-group/gamestat
 "
 BDEPEND="
-	sys-devel/bison
-	sys-devel/flex
+	sys-apps/which
+	app-alternatives/yacc
+	app-alternatives/lex
 	virtual/pkgconfig
 "
 
@@ -67,6 +68,9 @@ src_prepare() {
 	echo bsd_games_cfg_usrlibdir=\"$(get_libdir)\" >> ./config.params || die
 	echo bsd_games_cfg_build_dirs=\"${GAMES_TO_BUILD}\" >> ./config.params || die
 	echo bsd_games_cfg_docdir=\"/usr/share/doc/${PF}\" >> ./config.params || die
+	if use riscv; then
+		sed -i 's/${CC} ${ldflags} -o $@ $^/${CC} ${ldflags} -o $@ $^ -latomic/' ./*/Module.mk || die
+	fi
 }
 
 src_configure() {

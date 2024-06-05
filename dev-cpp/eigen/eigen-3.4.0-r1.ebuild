@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -12,7 +12,7 @@ SRC_URI="https://gitlab.com/lib${PN}/${PN}/-/archive/${PV}/${P}.tar.gz"
 
 LICENSE="MPL-2.0"
 SLOT="3"
-KEYWORDS="amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv ~s390 ~sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~loong ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~arm64-macos ~x64-macos"
 IUSE="cpu_flags_arm_neon cpu_flags_ppc_altivec cpu_flags_ppc_vsx cuda debug doc openmp test" #zvector
 
 # Tests failing again because of compiler issues
@@ -20,7 +20,7 @@ RESTRICT="!test? ( test ) test"
 
 BDEPEND="
 	doc? (
-		app-doc/doxygen[dot]
+		app-text/doxygen[dot]
 		dev-texlive/texlive-bibtexextra
 		dev-texlive/texlive-fontsextra
 		dev-texlive/texlive-fontutils

@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -14,7 +14,7 @@ SRC_URI="https://files.inria.fr/${PN}/${P}/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0/7"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv ~sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ~ppc ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux"
 
 IUSE="
 	blas cuda doc examples fftw fortran hdf5 mpi opencl opengl
@@ -33,17 +33,22 @@ RDEPEND="
 	mpi? ( virtual/mpi )
 	opencl? ( virtual/opencl )
 	opengl? ( media-libs/freeglut:0= )
-	valgrind? ( dev-util/valgrind )
+	valgrind? ( dev-debug/valgrind )
 "
 
 DEPEND="${RDEPEND}"
 BDEPEND="
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen virtual/latex-base )
+	doc? ( app-text/doxygen virtual/latex-base )
 "
+
+pkg_pretend() {
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+}
 
 pkg_setup() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
+	fortran-2_pkg_setup
 }
 
 src_prepare() {

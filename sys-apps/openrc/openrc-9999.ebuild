@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit flag-o-matic meson pam toolchain-funcs
+inherit meson pam
 
 DESCRIPTION="OpenRC manages the services, startup and shutdown of a host"
 HOMEPAGE="https://github.com/openrc/openrc/"
@@ -13,52 +13,46 @@ if [[ ${PV} =~ ^9{4,}$ ]]; then
 	inherit git-r3
 else
 	SRC_URI="https://github.com/OpenRC/openrc/archive/${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
 fi
 
 LICENSE="BSD-2"
 SLOT="0"
-IUSE="audit bash debug ncurses pam newnet +netifrc selinux sysv-utils unicode"
+IUSE="audit bash debug pam newnet +netifrc selinux s6 +sysvinit sysv-utils unicode"
 
 COMMON_DEPEND="
-	ncurses? ( sys-libs/ncurses:0= )
 	pam? ( sys-libs/pam )
 	audit? ( sys-process/audit )
 	sys-process/psmisc
-	!<sys-process/procps-3.3.9-r2
 	selinux? (
 		sys-apps/policycoreutils
 		>=sys-libs/libselinux-2.6
-	)
-	!<sys-apps/baselayout-2.1-r1
-	!<sys-fs/udev-init-scripts-27"
+	)"
 DEPEND="${COMMON_DEPEND}
-	virtual/os-headers
-	ncurses? ( virtual/pkgconfig )"
+	virtual/os-headers"
 RDEPEND="${COMMON_DEPEND}
 	bash? ( app-shells/bash )
-	!prefix? (
-		sysv-utils? (
-			!sys-apps/systemd[sysv-utils(-)]
-			!sys-apps/sysvinit
-		)
-		!sysv-utils? ( >=sys-apps/sysvinit-2.86-r6[selinux?] )
-		virtual/tmpfiles
+	sysv-utils? (
+		!sys-apps/systemd[sysv-utils(-)]
+		!sys-apps/sysvinit
 	)
+	!sysv-utils? (
+		sysvinit? ( >=sys-apps/sysvinit-2.86-r6[selinux?] )
+		s6? ( sys-apps/s6-linux-init[sysv-utils(-)] )
+	)
+	virtual/tmpfiles
 	selinux? (
 		>=sec-policy/selinux-base-policy-2.20170204-r4
 		>=sec-policy/selinux-openrc-2.20170204-r4
 	)
-	!<app-shells/gentoo-bashcomp-20180302
-	!<app-shells/gentoo-zsh-completions-20180228
 "
 
 PDEPEND="netifrc? ( net-misc/netifrc )"
 
 src_configure() {
 	local emesonargs=(
-	$(meson_feature audit)
-	"-Dbranding=\"Gentoo Linux\""
+		$(meson_feature audit)
+		"-Dbranding=\"Gentoo Linux\""
 		$(meson_use newnet)
 		-Dos=Linux
 		$(meson_use pam)
@@ -66,7 +60,6 @@ src_configure() {
 		-Drootprefix="${EPREFIX}"
 		-Dshell=$(usex bash /bin/bash /bin/sh)
 		$(meson_use sysv-utils sysvinit)
-		-Dtermcap=$(usev ncurses)
 	)
 	# export DEBUG=$(usev debug)
 	meson_src_configure
@@ -112,7 +105,7 @@ src_install() {
 	fi
 
 	# install documentation
-	dodoc ChangeLog *.md
+	dodoc *.md
 }
 
 pkg_preinst() {
@@ -155,4 +148,15 @@ pkg_postinst() {
 		ewarn "without networking."
 		ewarn
 	fi
+
+	# added for 0.45 to handle seedrng/urandom switching (2022-06-07)
+	for v in ${REPLACING_VERSIONS}; do
+		[[ -x $(type rc-update) ]] || continue
+		if ver_test $v -lt 0.45; then
+			if rc-update show boot | grep -q urandom; then
+				rc-update del urandom boot
+				rc-update add seedrng boot
+		fi
+		fi
+	done
 }

@@ -1,17 +1,17 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 # This ebuild uses 3 special global variables:
 # GRUB_BOOTSTRAP: Depend on python and invoke bootstrap (gnulib).
-# GRUB_AUTOGEN: Depend on python and invoke the autogen.sh.
+# GRUB_AUTOGEN: Depend on python and invoke autogen.sh.
 # GRUB_AUTORECONF: Inherit autotools and invoke eautoreconf.
 #
 # When applying patches:
 # If gnulib is updated, set GRUB_BOOTSTRAP=1
-# If *.def is updated, set GRUB_AUTOGEN=1
-# If gnulib, *.def, or any autotools files are updated, set GRUB_AUTORECONF=1
+# If gentpl.py or *.def is updated, set GRUB_AUTOGEN=1
+# If gnulib, gentpl.py, *.def, or any autotools files are updated, set GRUB_AUTORECONF=1
 #
 # If any of the above applies to a user patch, the user should set the
 # corresponding variable in make.conf or the environment.
@@ -21,55 +21,57 @@ if [[ ${PV} == 9999  ]]; then
 	GRUB_BOOTSTRAP=1
 fi
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{10..12} )
 WANT_LIBTOOL=none
-
-if [[ -n ${GRUB_AUTOGEN} || -n ${GRUB_BOOTSTRAP} ]]; then
-	inherit python-any-r1
-fi
+VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/dkiper.gpg
 
 if [[ -n ${GRUB_AUTORECONF} ]]; then
 	inherit autotools
 fi
 
-inherit bash-completion-r1 flag-o-matic multibuild optfeature toolchain-funcs
+inherit bash-completion-r1 flag-o-matic multibuild optfeature python-any-r1 toolchain-funcs
 
+DESCRIPTION="GNU GRUB boot loader"
+HOMEPAGE="https://www.gnu.org/software/grub/"
+
+MY_P=${P}
 if [[ ${PV} != 9999 ]]; then
+	inherit verify-sig
+
 	if [[ ${PV} == *_alpha* || ${PV} == *_beta* || ${PV} == *_rc* ]]; then
 		# The quote style is to work with <=bash-4.2 and >=bash-4.3 #503860
 		MY_P=${P/_/'~'}
-		SRC_URI="https://alpha.gnu.org/gnu/${PN}/${MY_P}.tar.xz"
+		SRC_URI="
+			https://alpha.gnu.org/gnu/${PN}/${MY_P}.tar.xz
+			verify-sig? ( https://alpha.gnu.org/gnu/${PN}/${MY_P}.tar.xz.sig )
+		"
 		S=${WORKDIR}/${MY_P}
 	else
-		SRC_URI="mirror://gnu/${PN}/${P}.tar.xz"
+		SRC_URI="
+			mirror://gnu/${PN}/${P}.tar.xz
+			verify-sig? ( mirror://gnu/${PN}/${P}.tar.xz.sig )
+		"
 		S=${WORKDIR}/${P%_*}
 	fi
-	KEYWORDS="~amd64 ~arm ~arm64 ~ia64 ~ppc ~ppc64 ~sparc ~x86"
+	BDEPEND="verify-sig? ( sec-keys/openpgp-keys-danielkiper )"
+	KEYWORDS="~amd64 ~arm ~arm64 ~ia64 ~loong ~ppc ~ppc64 ~riscv ~sparc ~x86"
 else
 	inherit git-r3
 	EGIT_REPO_URI="https://git.savannah.gnu.org/git/grub.git"
 fi
 
-PATCHES=(
-	"${FILESDIR}"/gfxpayload.patch
-	"${FILESDIR}"/grub-2.02_beta2-KERNEL_GLOBS.patch
-	"${FILESDIR}"/grub-2.06-test-words.patch
-)
-
 DEJAVU=dejavu-sans-ttf-2.37
-UNIFONT=unifont-12.1.02
+UNIFONT=unifont-15.0.06
 SRC_URI+=" fonts? ( mirror://gnu/unifont/${UNIFONT}/${UNIFONT}.pcf.gz )
-	themes? ( mirror://sourceforge/dejavu/${DEJAVU}.zip )"
-
-DESCRIPTION="GNU GRUB boot loader"
-HOMEPAGE="https://www.gnu.org/software/grub/"
+	themes? ( https://downloads.sourceforge.net/dejavu/${DEJAVU}.zip )"
 
 # Includes licenses for dejavu and unifont
 LICENSE="GPL-3+ BSD MIT fonts? ( GPL-2-with-font-exception ) themes? ( CC-BY-SA-3.0 BitstreamVera )"
 SLOT="2/${PVR}"
 IUSE="device-mapper doc efiemu +fonts mount nls sdl test +themes truetype libzfs"
 
-GRUB_ALL_PLATFORMS=( coreboot efi-32 efi-64 emu ieee1275 loongson multiboot qemu qemu-mips pc uboot xen xen-32 xen-pvh )
+GRUB_ALL_PLATFORMS=( coreboot efi-32 efi-64 emu ieee1275 loongson multiboot
+	qemu qemu-mips pc uboot xen xen-32 xen-pvh )
 IUSE+=" ${GRUB_ALL_PLATFORMS[@]/#/grub_platforms_}"
 
 REQUIRED_USE="
@@ -79,9 +81,9 @@ REQUIRED_USE="
 	grub_platforms_loongson? ( fonts )
 "
 
-BDEPEND="
+BDEPEND+="
 	${PYTHON_DEPS}
-	sys-devel/flex
+	>=sys-devel/flex-2.5.35
 	sys-devel/bison
 	sys-apps/help2man
 	sys-apps/texinfo
@@ -91,7 +93,7 @@ BDEPEND="
 	)
 	test? (
 		app-admin/genromfs
-		app-arch/cpio
+		app-alternatives/cpio
 		app-arch/lzop
 		app-emulation/qemu
 		dev-libs/libisoburn
@@ -110,11 +112,11 @@ DEPEND="
 	app-arch/xz-utils
 	>=sys-libs/ncurses-5.2-r5:0=
 	grub_platforms_emu? (
-		sdl? ( media-libs/libsdl )
+		sdl? ( media-libs/libsdl2 )
 	)
 	device-mapper? ( >=sys-fs/lvm2-2.02.45 )
 	libzfs? ( sys-fs/zfs:= )
-	mount? ( sys-fs/fuse:0 )
+	mount? ( sys-fs/fuse:3 )
 	truetype? ( media-libs/freetype:2= )
 	ppc? ( >=sys-apps/ibm-powerpc-utils-1.3.5 )
 	ppc64? ( >=sys-apps/ibm-powerpc-utils-1.3.5 )
@@ -128,7 +130,7 @@ RDEPEND="${DEPEND}
 	nls? ( sys-devel/gettext )
 "
 
-RESTRICT="!test? ( test )"
+RESTRICT="!test? ( test ) test? ( userpriv )"
 
 QA_EXECSTACK="usr/bin/grub-emu* usr/lib/grub/*"
 QA_PRESTRIPPED="usr/lib/grub/.*"
@@ -148,26 +150,28 @@ src_unpack() {
 		git-r3_fetch "${GNULIB_URI}" "${GNULIB_REVISION}"
 		git-r3_checkout "${GNULIB_URI}" gnulib
 		popd >/dev/null || die
+	elif use verify-sig; then
+		verify-sig_verify_detached "${DISTDIR}"/${MY_P}.tar.xz{,.sig}
 	fi
 	default
 }
 
 src_prepare() {
+	local PATCHES=(
+		"${FILESDIR}"/gfxpayload.patch
+		"${FILESDIR}"/grub-2.02_beta2-KERNEL_GLOBS.patch
+		"${FILESDIR}"/grub-2.06-test-words.patch
+	)
+
 	default
 
-	sed -i -e /autoreconf/d autogen.sh || die
-
-	if [[ -n ${GRUB_AUTOGEN} || -n ${GRUB_BOOTSTRAP} ]]; then
-		python_setup
-	else
-		export PYTHON=true
-	fi
+	python_setup
 
 	if [[ -n ${GRUB_BOOTSTRAP} ]]; then
 		eautopoint --force
 		AUTOPOINT=: AUTORECONF=: ./bootstrap || die
 	elif [[ -n ${GRUB_AUTOGEN} ]]; then
-		./autogen.sh || die
+		FROM_BOOTSTRAP=1 ./autogen.sh || die
 	fi
 
 	if [[ -n ${GRUB_AUTORECONF} ]]; then
@@ -217,7 +221,8 @@ grub_configure() {
 		$(use_enable themes grub-themes)
 		$(use_enable truetype grub-mkfont)
 		$(use_enable libzfs)
-		$(use_enable sdl grub-emu-sdl)
+		--enable-grub-emu-sdl=no
+		$(use_enable sdl grub-emu-sdl2)
 		${platform:+--with-platform=}${platform}
 
 		# Let configure detect this where supported
@@ -257,6 +262,10 @@ src_configure() {
 	tc-export CC NM OBJCOPY RANLIB STRIP
 	tc-export BUILD_CC BUILD_PKG_CONFIG
 
+	# Force configure to use flex & bison, bug 887211.
+	export LEX=flex
+	unset YACC
+
 	MULTIBUILD_VARIANTS=()
 	local p
 	for p in "${GRUB_ALL_PLATFORMS[@]}"; do
@@ -268,7 +277,7 @@ src_configure() {
 
 src_compile() {
 	# Sandbox bug 404013.
-	use libzfs && addpredict /etc/dfs:/dev/zfs
+	use libzfs && { addpredict /etc/dfs; addpredict /dev/zfs; }
 
 	grub_do emake
 	use doc && grub_do_once emake -C docs html
@@ -277,7 +286,9 @@ src_compile() {
 src_test() {
 	# The qemu dependency is a bit complex.
 	# You will need to adjust QEMU_SOFTMMU_TARGETS to match the cpu/platform.
-	grub_do emake check
+	local SANDBOX_WRITE=${SANDBOX_WRITE}
+	addwrite /dev
+	grub_do emake -j1 check
 }
 
 src_install() {
@@ -287,26 +298,47 @@ src_install() {
 	einstalldocs
 
 	insinto /etc/default
-	newins "${FILESDIR}"/grub.default-3 grub
+	newins "${FILESDIR}"/grub.default-4 grub
 
 	# https://bugs.gentoo.org/231935
 	dostrip -x /usr/lib/grub
+
+	sed -e "s/%PV%/${PV}/" "${FILESDIR}/sbat.csv" > "${T}/sbat.csv" || die
+	insinto /usr/share/grub
+	doins "${T}/sbat.csv"
+
+	if use elibc_musl; then
+		# https://bugs.gentoo.org/900348
+		QA_CONFIG_IMPL_DECL_SKIP=( re_{compile_pattern,match,search,set_syntax} )
+	fi
 }
 
 pkg_postinst() {
 	elog "For information on how to configure GRUB2 please refer to the guide:"
 	elog "    https://wiki.gentoo.org/wiki/GRUB2_Quick_Start"
 
-	if has_version 'sys-boot/grub:0'; then
-		elog "A migration guide for GRUB Legacy users is available:"
-		elog "    https://wiki.gentoo.org/wiki/GRUB2_Migration"
-	fi
-
-	if [[ -z ${REPLACING_VERSIONS} ]]; then
+	if [[ -n ${REPLACING_VERSIONS} ]]; then
+		local v
+		for v in ${REPLACING_VERSIONS}; do
+			if ver_test -gt ${v}; then
+				ewarn
+				ewarn "Re-run grub-install to update installed boot code!"
+				ewarn "Re-run grub-mkconfig to update grub.cfg!"
+				ewarn
+				break
+			fi
+		done
+	else
 		elog
 		optfeature "detecting other operating systems (grub-mkconfig)" sys-boot/os-prober
 		optfeature "creating rescue media (grub-mkrescue)" dev-libs/libisoburn
 		optfeature "enabling RAID device detection" sys-fs/mdadm
+		optfeature "automatically updating GRUB's configuration on each kernel installation" "sys-kernel/installkernel[grub]"
+	fi
+
+	if has_version 'sys-boot/grub:0'; then
+		elog "A migration guide for GRUB Legacy users is available:"
+		elog "    https://wiki.gentoo.org/wiki/GRUB2_Migration"
 	fi
 
 	if has_version sys-boot/os-prober; then

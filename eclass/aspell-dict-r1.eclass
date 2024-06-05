@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: aspell-dict-r1.eclass
@@ -7,14 +7,14 @@
 # @AUTHOR:
 # Seemant Kulleen <seemant@gentoo.org> (original author)
 # David Seifert <soap@gentoo.org> (-r1 author)
-# @SUPPORTED_EAPIS: 7 8
+# @SUPPORTED_EAPIS: 8
 # @BLURB: An eclass to streamline the construction of ebuilds for new Aspell dictionaries.
 # @DESCRIPTION:
 # The aspell-dict-r1 eclass is designed to streamline the construction of ebuilds for
 # the new Aspell dictionaries (from gnu.org) which support aspell-0.60.
 # Support for aspell-0.60 has been added by Sergey Ulanov.
 
-# @ECLASS-VARIABLE: ASPELL_LANG
+# @ECLASS_VARIABLE: ASPELL_LANG
 # @PRE_INHERIT
 # @REQUIRED
 # @DESCRIPTION:
@@ -22,13 +22,13 @@
 # This is the name of the language, for instance "Hungarian".
 # Needs to be defined before inheriting the eclass.
 
-# @ECLASS-VARIABLE: ASPELL_SPELLANG
+# @ECLASS_VARIABLE: ASPELL_SPELLANG
 # @DESCRIPTION:
 # Short (readonly) form of the language code, generated from ${PN}
 # For instance, 'aspell-hu' yields the value 'hu'.
 readonly ASPELL_SPELLANG=${PN/aspell-/}
 
-# @ECLASS-VARIABLE: ASPELL_VERSION
+# @ECLASS_VARIABLE: ASPELL_VERSION
 # @PRE_INHERIT
 # @DEFAULT_UNSET
 # @DESCRIPTION:
@@ -36,18 +36,13 @@ readonly ASPELL_SPELLANG=${PN/aspell-/}
 # This value is used to construct SRC_URI strings.
 # If the value needs to be overridden, it needs to be overridden before inheriting the eclass.
 
-case ${EAPI:-0} in
-	[7-8])
-		;;
-	*)
-		die "${ECLASS}: EAPI ${EAPI:-0} not supported"
-		;;
+case ${EAPI} in
+	8) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-EXPORT_FUNCTIONS src_configure src_install
-
-if [[ ! ${_ASPELL_DICT_R1} ]]; then
-_ASPELL_DICT_R1=1
+if [[ ! ${_ASPELL_DICT_R1_ECLASS} ]]; then
+_ASPELL_DICT_R1_ECLASS=1
 
 # Most of those aspell packages have an idiosyncratic versioning scheme,
 # where the last separating version separator is replaced by a '-'.
@@ -72,6 +67,10 @@ unset _ASPELL_MAJOR_VERSION
 # @DESCRIPTION:
 # The aspell-dict-r1 src_configure function which is exported.
 aspell-dict-r1_src_configure() {
+	# configure generates lines like:
+	#  `echo "ASPELL = `which $ASPELL`" > Makefile`
+	sed -i -e '/.* = `which/ s:`which:`command -v:' configure || die
+
 	# Since it's a non-autoconf based script, 'econf' cannot be used.
 	./configure || die
 }
@@ -85,3 +84,5 @@ aspell-dict-r1_src_install() {
 }
 
 fi
+
+EXPORT_FUNCTIONS src_configure src_install

@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -9,7 +9,7 @@ DESCRIPTION="tag system to find an object location in various sources"
 HOMEPAGE="https://www.gnu.org/software/global/global.html"
 SRC_URI="mirror://gnu/${PN}/${P}.tar.gz"
 
-LICENSE="GPL-3"
+LICENSE="GPL-3+"
 SLOT="0"
 KEYWORDS="amd64 ppc x86"
 IUSE="doc emacs vim"
@@ -24,7 +24,7 @@ RDEPEND="
 	)
 	|| (
 		dev-libs/libltdl:0
-		sys-devel/libtool:2
+		dev-build/libtool:2
 	)"
 
 DEPEND="${RDEPEND}
@@ -38,6 +38,7 @@ SITEFILE="50gtags-gentoo.el"
 PATCHES=(
 	"${FILESDIR}/${PN}-6.2.9-tinfo.patch"
 	"${FILESDIR}/${PN}-6.6.4-fno-common.patch"
+	"${FILESDIR}/${PN}-6.6.4-Fix-build-with-Clang-16.patch"
 )
 
 DOCS=( AUTHORS FAQ NEWS README THANKS )

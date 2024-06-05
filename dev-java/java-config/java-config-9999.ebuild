@@ -1,20 +1,18 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-# jython depends on java-config, so don't add it or things will break
-PYTHON_COMPAT=( python3_{7..10} )
-DISTUTILS_USE_SETUPTOOLS=no
+PYTHON_COMPAT=( python3_{10..12} )
 
-inherit distutils-r1
+inherit meson python-r1
 
-if [[ ${PV} = *9999 ]]; then
+if [[ ${PV} = 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://anongit.gentoo.org/git/proj/java-config.git"
 else
 	SRC_URI="https://gitweb.gentoo.org/proj/${PN}.git/snapshot/${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+	KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x64-solaris"
 fi
 
 DESCRIPTION="Java environment configuration query tool"
@@ -22,23 +20,61 @@ HOMEPAGE="https://wiki.gentoo.org/wiki/Project:Java"
 
 LICENSE="GPL-2"
 SLOT="2"
-IUSE="test"
+IUSE="+compat test"
 RESTRICT="!test? ( test )"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 DEPEND="test? ( sys-apps/portage[${PYTHON_USEDEP}] )"
 
 # baselayout-java is added as a dep till it can be added to eclass.
 RDEPEND="
+	${PYTHON_DEPS}
 	sys-apps/baselayout-java
-	sys-apps/portage[${PYTHON_USEDEP}]"
+	sys-apps/portage[${PYTHON_USEDEP}]
+"
 
-python_install_all() {
-	distutils-r1_python_install_all
-
-	# This replaces the file installed by java-config-wrapper.
-	dosym java-config-2 /usr/bin/java-config
+src_configure() {
+	local python_only=false
+	python_foreach_impl my_src_configure
 }
 
-python_test() {
-	esetup.py test
+my_src_configure() {
+	local emesonargs=(
+		-Darch="${ARCH}"
+		-Dpython-only="${python_only}"
+		-Deprefix="${EPREFIX}"
+	)
+
+	meson_src_configure
+	python_only=true
+}
+
+src_compile() {
+	python_foreach_impl meson_src_compile
+}
+
+src_test() {
+	python_foreach_impl meson_src_test --no-rebuild --verbose
+}
+
+src_install() {
+	python_foreach_impl my_src_install
+
+	local scripts
+	mapfile -t scripts < <(awk '/^#!.*python/ {print FILENAME} {nextfile}' "${ED}"/usr/bin/* || die)
+	python_replicate_script "${scripts[@]}"
+
+	if use compat; then
+		# Symlink java-config-2 to java-config for now.
+		dosym java-config /usr/bin/java-config-2
+	fi
+}
+
+my_src_install() {
+	meson_src_install
+
+	local pydirs=(
+		"${D}$(python_get_sitedir)"
+	)
+	python_optimize "${pydirs[@]}"
 }

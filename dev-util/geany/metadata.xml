@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-	<maintainer type="person">
-		<email>polynomial-c@gentoo.org</email>
-		<name>Lars Wendler</name>
+	<maintainer type="person" proxied="yes">
+		<email>aklhfex@gmail.com</email>
+		<name>Chris Mayo</name>
+	</maintainer>
+	<maintainer type="project" proxied="proxy">
+		<email>proxy-maint@gentoo.org</email>
+		<name>Gentoo Proxy Maintainers Project</name>
 	</maintainer>
 	<longdescription lang="en">
 		Geany is a small and lightweight integrated development environment.
@@ -35,7 +39,6 @@
 		symboles.
 	</longdescription>
 	<use>
-		<flag name="gtk2">Use GTK+2 instead of GTK+3</flag>
 		<flag name="vte">Enable Terminal support (<pkg>x11-libs/vte</pkg>)</flag>
 	</use>
 </pkgmetadata>

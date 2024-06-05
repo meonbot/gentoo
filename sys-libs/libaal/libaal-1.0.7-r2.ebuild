@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,11 +7,11 @@ inherit usr-ldscript
 
 DESCRIPTION="library required by reiser4progs"
 HOMEPAGE="https://sourceforge.net/projects/reiser4/"
-SRC_URI="mirror://sourceforge/reiser4/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/reiser4/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0/7"
-KEYWORDS="amd64 arm ~arm64 ppc ppc64 -sparc x86"
+KEYWORDS="amd64 arm ~arm64 ~loong ppc ppc64 -sparc x86"
 IUSE="static-libs"
 
 BDEPEND="virtual/os-headers"

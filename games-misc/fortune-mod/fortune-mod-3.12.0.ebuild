@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -6,12 +6,12 @@ EAPI=8
 inherit cmake
 
 DESCRIPTION="The notorious fortune program"
-HOMEPAGE="https://www.shlomifish.org/open-source/projects/fortune-mod/ http://www.redellipse.net/code/fortune"
+HOMEPAGE="https://www.shlomifish.org/open-source/projects/fortune-mod/"
 SRC_URI="https://github.com/shlomif/fortune-mod/releases/download/${P}/${P}.tar.xz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~m68k ~mips ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="amd64 arm arm64 hppa ~m68k ~mips ppc64 ~riscv ~sparc x86"
 IUSE="offensive"
 
 DEPEND="app-text/recode:=

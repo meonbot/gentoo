@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -7,11 +7,11 @@ inherit toolchain-funcs
 
 DESCRIPTION="Bayesian Inference of Phylogeny"
 HOMEPAGE="http://mrbayes.csit.fsu.edu/"
-SRC_URI="mirror://sourceforge/${PN}/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~sparc-solaris"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc-macos"
 IUSE="debug mpi readline"
 
 DEPEND="
@@ -44,7 +44,7 @@ src_compile() {
 	if use mpi; then
 		mycc=mpicc
 	else
-		mycc=$(tc-getCC)
+		mycc="$(tc-getCC)"
 	fi
 
 	use mpi && myconf="MPI=yes"

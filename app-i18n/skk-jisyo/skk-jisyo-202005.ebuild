@@ -1,21 +1,21 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
+EAPI="8"
 
 MY_PN=${PN^^}
 
 DESCRIPTION="Jisyo (dictionary) files for the SKK Japanese-input software"
-HOMEPAGE="http://openlab.ring.gr.jp/skk/dic.html"
+HOMEPAGE="https://skk-dev.github.io/dict/"
 SRC_URI="mirror://gentoo/${P}.tar.xz
 	https://dev.gentoo.org/~hattya/distfiles/${P}.tar.xz"
 
 LICENSE="CC-BY-SA-3.0 GPL-2+ public-domain unicode"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~hppa ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~sparc-solaris"
+KEYWORDS="amd64 arm ~hppa ppc ppc64 ~riscv x86 ~amd64-linux ~x86-linux ~ppc-macos"
 IUSE="cdb"
 
-DEPEND="virtual/awk
+DEPEND="app-alternatives/awk
 	cdb? (
 		|| (
 			dev-db/tinycdb

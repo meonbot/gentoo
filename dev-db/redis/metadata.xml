@@ -2,6 +2,10 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
+		<email>arkamar@gentoo.org</email>
+		<name>Petr Vaněk</name>
+	</maintainer>
+	<maintainer type="person">
 		<email>sam@gentoo.org</email>
 		<name>Sam James</name>
 	</maintainer>
@@ -10,4 +14,7 @@
 			Use tcmalloc from <pkg>dev-util/google-perftools</pkg> for allocations.
 		</flag>
 	</use>
+	<upstream>
+		<remote-id type="github">redis/redis</remote-id>
+	</upstream>
 </pkgmetadata>

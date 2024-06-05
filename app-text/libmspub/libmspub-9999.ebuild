@@ -1,16 +1,16 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit flag-o-matic
+inherit autotools flag-o-matic
 
-if [[ ${PV} = *9999 ]]; then
+if [[ ${PV} = *9999* ]]; then
 	EGIT_REPO_URI="https://anongit.freedesktop.org/git/libreoffice/libmspub.git"
-	inherit autotools git-r3
+	inherit git-r3
 else
 	SRC_URI="https://dev-www.libreoffice.org/src/libmspub/${P}.tar.xz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~ppc ~ppc64 ~sparc ~x86"
+	KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~loong ~ppc ~ppc64 ~sparc ~x86"
 fi
 DESCRIPTION="Library parsing Microsoft Publisher documents"
 HOMEPAGE="https://wiki.documentfoundation.org/DLP/Libraries/libmspub"
@@ -19,29 +19,31 @@ LICENSE="LGPL-2.1"
 SLOT="0"
 IUSE="doc static-libs"
 
-BDEPEND="
-	virtual/pkgconfig
-	doc? ( app-doc/doxygen )
-"
 RDEPEND="
 	dev-libs/icu:=
 	dev-libs/librevenge
 	sys-libs/zlib
 "
 DEPEND="${RDEPEND}
+	dev-build/libtool
 	dev-libs/boost
-	sys-devel/libtool
+"
+BDEPEND="
+	virtual/pkgconfig
+	doc? ( app-text/doxygen )
 "
 
 src_prepare() {
 	default
 	[[ -d m4 ]] || mkdir "m4"
-	[[ ${PV} == *9999 ]] && eautoreconf
+
+	# Needed for Clang: stale libtool. bug #832764
+	eautoreconf
 }
 
 src_configure() {
-	# bug 619044
-	append-cxxflags -std=c++14
+	# bug 619044, 932494
+	append-cxxflags -std=c++17
 
 	local myeconfargs=(
 		--disable-werror

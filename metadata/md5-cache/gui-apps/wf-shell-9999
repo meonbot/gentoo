@@ -1,14 +1,16 @@
-BDEPEND=dev-libs/wayland-protocols virtual/pkgconfig >=dev-util/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array >=dev-vcs/git-1.8.2.1[curl]
-DEFINED_PHASES=compile configure install test unpack
-DEPEND=dev-cpp/gtkmm:3.0=[wayland] dev-libs/gobject-introspection gui-libs/gtk-layer-shell >=gui-wm/wayfire-9999 pulseaudio? ( media-sound/pulseaudio )
-DESCRIPTION=A compiz like 3D wayland compositor
-EAPI=7
+BDEPEND=dev-libs/wayland-protocols dev-util/wayland-scanner virtual/pkgconfig >=dev-build/meson-1.2.3 app-alternatives/ninja dev-build/meson-format-array >=dev-vcs/git-1.8.2.1[curl]
+DEFINED_PHASES=compile configure install postinst postrm preinst test unpack
+DEPEND=dev-cpp/gtkmm:3.0[wayland] dev-libs/gobject-introspection dev-libs/libdbusmenu[gtk3] >=gui-libs/gtk-layer-shell-0.6 dev-libs/wayland >=gui-libs/wf-config-0.7.0 gui-wm/wayfire pulseaudio? ( media-libs/libpulse )
+DESCRIPTION=Compiz like 3D wayland compositor
+EAPI=8
 HOMEPAGE=https://github.com/WayfireWM/wf-shell
-INHERIT=meson git-r3
+IDEPEND=dev-util/desktop-file-utils x11-misc/shared-mime-info
+INHERIT=meson xdg git-r3
 IUSE=+pulseaudio
 LICENSE=MIT
 PROPERTIES=live
-RDEPEND=dev-cpp/gtkmm:3.0=[wayland] dev-libs/gobject-introspection gui-libs/gtk-layer-shell >=gui-wm/wayfire-9999 pulseaudio? ( media-sound/pulseaudio ) gui-apps/wayland-logout
-SLOT=0
-_eclasses_=multiprocessing	61c959fc55c15c00bbb1079d6a71370b	ninja-utils	a4dab848a4490e8e48cf0baab3e61bc2	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	python-utils-r1	54423f1e035828362c248fad528ebbba	meson	9f3e84959ae1d60e19bc91f212774dcc	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=460b3363016f9089bb001deb6dcd8fb9
+RDEPEND=dev-cpp/gtkmm:3.0[wayland] dev-libs/gobject-introspection dev-libs/libdbusmenu[gtk3] >=gui-libs/gtk-layer-shell-0.6 dev-libs/wayland >=gui-libs/wf-config-0.7.0 gui-wm/wayfire pulseaudio? ( media-libs/libpulse ) gui-apps/wayland-logout
+RESTRICT=test
+SLOT=0/0.8
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	meson	aecae905c2e0c201d7925fae52a5576d	xdg-utils	baea6080dd821f5562d715887954c9d3	xdg	4a14c5c24f121e7da66e5aab4a168c6e	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=864219750aabd488fbfbcb159781d975

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -12,7 +12,7 @@ SRC_URI="https://gforge.inria.fr/frs/download.php/file/37744/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0/5"
-KEYWORDS="~alpha amd64 arm arm64 ~ia64 ppc ppc64 ~riscv ~sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~alpha amd64 arm arm64 ~ia64 ~ppc ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux"
 
 IUSE="
 	blas cuda doc examples fftw fortran gcc-plugin mpi opencl opengl
@@ -30,13 +30,13 @@ RDEPEND="
 	mpi? ( virtual/mpi )
 	opencl? ( virtual/opencl )
 	opengl? ( media-libs/freeglut:0= )
-	valgrind? ( dev-util/valgrind )
+	valgrind? ( dev-debug/valgrind )
 "
 
 DEPEND="${RDEPEND}"
 BDEPEND="
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen virtual/latex-base )
+	doc? ( app-text/doxygen virtual/latex-base )
 	test? ( gcc-plugin? ( dev-scheme/guile ) )
 "
 
@@ -82,8 +82,8 @@ src_install() {
 	default
 	use doc && dodoc -r doc/doxygen/*.pdf doc/doxygen/html
 	if use examples; then
-		insinto /usr/share/doc/${PF}/examples
-		doins -r examples/*
+		dodoc -r examples
+		docompress -x /usr/share/doc/${PF}/examples
 	fi
 	find "${ED}" -name '*.la' -delete || die
 }

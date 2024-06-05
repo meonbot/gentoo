@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -6,12 +6,12 @@ EAPI=8
 inherit autotools optfeature xdg-utils
 
 DESCRIPTION="Another free touch typing tutor program"
-HOMEPAGE="https://klavaro.sourceforge.net/"
-SRC_URI="mirror://sourceforge/project/${PN}/${P}.tar.bz2"
+HOMEPAGE="https://klavaro.sourceforge.io/"
+SRC_URI="https://downloads.sourceforge.net/project/${PN}/${P}.tar.bz2"
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 x86"
 
 BDEPEND="
 	dev-util/intltool
@@ -42,7 +42,7 @@ src_prepare() {
 
 pkg_postinst() {
 	xdg_icon_cache_update
-	optfeature "instructions via synthesized speech" app-accessibility/espeak
+	optfeature "instructions via synthesized speech" app-accessibility/espeak-ng
 }
 
 pkg_postrm() {

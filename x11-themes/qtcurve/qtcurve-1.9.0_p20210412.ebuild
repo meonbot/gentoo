@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -11,7 +11,7 @@ HOMEPAGE="https://invent.kde.org/system/qtcurve"
 
 LICENSE="LGPL-2+"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~hppa ppc ppc64 ~sparc x86"
+KEYWORDS="amd64 ~hppa ppc ppc64 ~sparc x86"
 IUSE="gtk nls plasma +qt5 test +X"
 
 REQUIRED_USE="gtk? ( X )
@@ -55,7 +55,7 @@ RDEPEND="${DEPEND}"
 BDEPEND="
 	virtual/pkgconfig
 	nls? ( sys-devel/gettext )
-	plasma? ( kde-frameworks/extra-cmake-modules:5 )
+	plasma? ( kde-frameworks/extra-cmake-modules:0 )
 "
 
 DOCS=( AUTHORS ChangeLog.md README.md TODO.md )
@@ -71,8 +71,8 @@ src_configure() {
 		-DBUILD_TESTING="$(usex test)"
 		-DQTC_ENABLE_X11="$(usex X)"
 		-DQTC_INSTALL_PO="$(usex nls)"
-		-DQTC_QT5_ENABLE_KDE="$(usex plasma)"
 	)
+	use qt5 && mycmakeargs+=( -DQTC_QT5_ENABLE_KDE="$(usex plasma)" )
 
 	cmake_src_configure
 }

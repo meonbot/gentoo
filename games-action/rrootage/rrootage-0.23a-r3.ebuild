@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,9 +8,9 @@ inherit toolchain-funcs
 MY_PN="rRootage"
 MY_P="${MY_PN}-${PV}"
 DESCRIPTION="Abstract shooter - defeat auto-created huge battleships"
-HOMEPAGE="http://www.asahi-net.or.jp/~cs8k-cyu/windows/rr_e.html
-	http://rrootage.sourceforge.net/"
-SRC_URI="mirror://sourceforge/${PN}/${MY_P}.tar.gz"
+HOMEPAGE="https://www.asahi-net.or.jp/~cs8k-cyu/windows/rr_e.html
+	https://rrootage.sourceforge.net/"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${MY_P}.tar.gz"
 S="${WORKDIR}"/${MY_PN}/src
 
 LICENSE="BSD"
@@ -50,8 +50,8 @@ src_prepare() {
 
 src_compile() {
 	emake \
-		CC=$(tc-getCC) \
-		CXX=$(tc-getCXX) \
+		CC="$(tc-getCC)" \
+		CXX="$(tc-getCXX)" \
 		MORE_CFLAGS="-DLINUX ${CFLAGS}" \
 		MORE_CXXFLAGS="-DLINUX ${CXXFLAGS}"
 }

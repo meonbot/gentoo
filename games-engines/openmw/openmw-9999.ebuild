@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -14,9 +14,14 @@ if [[ ${PV} == *9999* ]]; then
 	EGIT_REPO_URI="https://github.com/OpenMW/openmw.git"
 else
 	SRC_URI="https://github.com/OpenMW/openmw/archive/${P}.tar.gz"
-	KEYWORDS="~amd64 ~x86"
+	KEYWORDS="~amd64 ~arm64 ~x86"
 	S="${WORKDIR}/${PN}-${P}"
 fi
+
+MY_TEMPLATE_COMMIT="8966dab24692555eec720c854fb0f73d108070cd"
+SRC_URI+="
+	test? ( https://gitlab.com/OpenMW/example-suite/-/raw/${MY_TEMPLATE_COMMIT}/data/template.omwgame -> openmw-template-${MY_TEMPLATE_COMMIT}.omwgame )
+"
 
 LICENSE="GPL-3 MIT BitstreamVera ZLIB"
 SLOT="0"
@@ -29,17 +34,20 @@ RESTRICT="!test? ( test )"
 
 RDEPEND="${LUA_DEPS}
 	app-arch/lz4:=
-	>=dev-games/mygui-3.4.1
+	>=dev-games/mygui-3.4.3:=
+	dev-cpp/yaml-cpp:=
+	dev-db/sqlite:3
 	dev-games/recastnavigation:=
-	dev-libs/boost:=[threads(+),zlib]
+	dev-libs/boost:=[zlib]
+	dev-libs/icu:=
 	dev-libs/tinyxml[stl]
 	media-libs/libsdl2[joystick,opengl,video]
 	media-libs/openal
 	media-video/ffmpeg:=
 	>=sci-physics/bullet-2.86:=[double-precision]
 	virtual/opengl
-	osg-fork? ( >=dev-games/openscenegraph-openmw-3.6:=[collada(-),ffmpeg,jpeg,png,sdl,svg,truetype,zlib] )
-	!osg-fork? ( >=dev-games/openscenegraph-3.5.5:=[collada(-),ffmpeg,jpeg,png,sdl,svg,truetype,zlib] )
+	osg-fork? ( >=dev-games/openscenegraph-openmw-3.6:=[collada(-),jpeg,png,sdl,svg,truetype,zlib] )
+	!osg-fork? ( >=dev-games/openscenegraph-3.5.5:=[collada(-),jpeg,png,sdl,svg,truetype,zlib] )
 	qt5? (
 		app-arch/unshield
 		dev-qt/qtcore:5
@@ -57,7 +65,7 @@ DEPEND="${RDEPEND}
 BDEPEND="
 	virtual/pkgconfig
 	doc? (
-		app-doc/doxygen[dot]
+		app-text/doxygen[dot]
 		dev-python/sphinx
 	)
 	test? (
@@ -65,16 +73,12 @@ BDEPEND="
 	)
 "
 
-PATCHES=(
-	"${FILESDIR}"/openmw-0.47.0-mygui-license.patch
-)
-
 src_prepare() {
 	cmake_src_prepare
 
 	# Use the system tinyxml headers
 	rm -v extern/oics/tiny{str,xml}* || die
-	rm -rv extern/sol3.2.2 || die
+	rm -rv extern/sol3 || die
 }
 
 src_configure() {
@@ -92,8 +96,8 @@ src_configure() {
 		-DBUILD_UNITTESTS=$(usex test)
 		-DGLOBAL_DATA_PATH="${EPREFIX}/usr/share"
 		-DICONDIR="${EPREFIX}/usr/share/icons/hicolor/256x256/apps"
-		-DMORROWIND_DATA_FILES="${EPREFIX}/usr/share/morrowind-data"
 		-DUSE_SYSTEM_TINYXML=ON
+		-DOPENMW_USE_SYSTEM_GOOGLETEST=ON
 		-DOPENMW_USE_SYSTEM_RECASTNAVIGATION=ON
 	)
 
@@ -111,6 +115,12 @@ src_configure() {
 		)
 	fi
 
+	if use test ; then
+		mkdir -p "${BUILD_DIR}"/apps/openmw_test_suite/data || die
+		cp "${DISTDIR}"/openmw-template-${MY_TEMPLATE_COMMIT}.omwgame \
+			"${BUILD_DIR}"/apps/openmw_test_suite/data/template.omwgame || die
+	fi
+
 	cmake_src_configure
 }
 
@@ -126,7 +136,15 @@ src_compile() {
 }
 
 src_test() {
-	"${BUILD_DIR}/openmw_test_suite" || die
+	# Lua 5.x is supported in theory, but don't work as well, the test fails
+	# Upstream recommends luajit, but it has less arch coverage
+	if [[ ${ELUA} != luajit ]]; then
+		elog "Skipping tests on ${ELUA}"
+		return
+	fi
+	pushd "${BUILD_DIR}" > /dev/null || die
+	./openmw_test_suite || die
+	popd > /dev/null || die
 }
 
 src_install() {

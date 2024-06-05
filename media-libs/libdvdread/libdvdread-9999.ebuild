@@ -1,21 +1,22 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit autotools multilib-minimal
+inherit multilib-minimal
 
 DESCRIPTION="Library for DVD navigation tools"
 HOMEPAGE="https://www.videolan.org/developers/libdvdnav.html"
 if [[ ${PV} = 9999 ]]; then
-	inherit git-r3
+	inherit autotools git-r3
 	EGIT_REPO_URI="https://code.videolan.org/videolan/libdvdread.git"
 else
 	SRC_URI="https://downloads.videolan.org/pub/videolan/libdvdread/${PV}/${P}.tar.bz2"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~x86-solaris"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~riscv ~sparc ~x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos"
 fi
 
-LICENSE="GPL-2"
+# See https://code.videolan.org/videolan/libdvdread/-/commit/0e020921726ee812e633959d9ad6315ff58b902b
+LICENSE="GPL-2 GPL-3"
 SLOT="0/8" # libdvdread.so.VERSION
 IUSE="+css static-libs"
 
@@ -27,15 +28,20 @@ DOCS=( AUTHORS ChangeLog NEWS TODO README )
 
 src_prepare() {
 	default
-	eautoreconf
+
+	if [[ ${PV} == 9999 ]] ; then
+		eautoreconf
+	fi
 }
 
 multilib_src_configure() {
 	local myeconfargs=(
 		--enable-shared
+		--disable-apidoc
 		$(use_enable static-libs static)
 		$(use_with css libdvdcss)
 	)
+
 	ECONF_SOURCE="${S}" econf "${myeconfargs[@]}"
 }
 

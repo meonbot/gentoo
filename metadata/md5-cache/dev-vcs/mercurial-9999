@@ -1,16 +1,16 @@
-BDEPEND=dev-python/docutils[python_targets_python3_8(-)?,python_targets_python3_9(-)?,python_targets_python3_10(-)?] rust? ( >=virtual/rust-1.53 ) python_targets_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8[threads(+)] ) python_targets_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9[threads(+)] ) python_targets_python3_10? ( >=dev-lang/python-3.10.0_p1-r1:3.10[threads(+)] ) dev-vcs/mercurial
+BDEPEND=dev-python/docutils[python_targets_python3_10(-)?,python_targets_python3_11(-)?,python_targets_python3_12(-)?] rust? ( >=virtual/rust-1.53 ) python_targets_python3_10? ( dev-lang/python:3.10[threads(+)] ) python_targets_python3_11? ( dev-lang/python:3.11[threads(+)] ) python_targets_python3_12? ( dev-lang/python:3.12[threads(+)] ) >=dev-python/gpep517-15[python_targets_python3_10(-)?,python_targets_python3_11(-)?,python_targets_python3_12(-)?] >=dev-python/setuptools-69.0.3[python_targets_python3_10(-)?,python_targets_python3_11(-)?,python_targets_python3_12(-)?] dev-vcs/mercurial
 DEFINED_PHASES=compile configure install postinst postrm prepare test unpack
-DEPEND=emacs? ( >=app-editors/emacs-23.1:* ) test? ( app-arch/unzip dev-python/pygments[python_targets_python3_8(-)?,python_targets_python3_9(-)?,python_targets_python3_10(-)?] )
+DEPEND=emacs? ( >=app-editors/emacs-23.1:* ) test? ( app-arch/unzip dev-python/pygments[python_targets_python3_10(-)?,python_targets_python3_11(-)?,python_targets_python3_12(-)?] ) python_targets_python3_10? ( dev-lang/python:3.10[threads(+)] ) python_targets_python3_11? ( dev-lang/python:3.11[threads(+)] ) python_targets_python3_12? ( dev-lang/python:3.12[threads(+)] )
 DESCRIPTION=Scalable distributed SCM
 EAPI=8
 HOMEPAGE=https://www.mercurial-scm.org/
 INHERIT=bash-completion-r1 cargo elisp-common distutils-r1 mercurial flag-o-matic multiprocessing
-IUSE=+chg emacs gpg test tk rust debug python_targets_python3_8 python_targets_python3_9 python_targets_python3_10
+IUSE=+chg emacs gpg test tk rust debug python_targets_python3_10 python_targets_python3_11 python_targets_python3_12 debug
 LICENSE=GPL-2+
 PROPERTIES=live
-RDEPEND=app-misc/ca-certificates gpg? ( app-crypt/gnupg ) tk? ( dev-lang/tk ) python_targets_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8[threads(+)] ) python_targets_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9[threads(+)] ) python_targets_python3_10? ( >=dev-lang/python-3.10.0_p1-r1:3.10[threads(+)] )
-REQUIRED_USE=|| ( python_targets_python3_8 python_targets_python3_9 python_targets_python3_10 )
+RDEPEND=app-misc/ca-certificates gpg? ( app-crypt/gnupg ) tk? ( dev-lang/tk ) python_targets_python3_10? ( dev-lang/python:3.10[threads(+)] ) python_targets_python3_11? ( dev-lang/python:3.11[threads(+)] ) python_targets_python3_12? ( dev-lang/python:3.12[threads(+)] )
+REQUIRED_USE=|| ( python_targets_python3_10 python_targets_python3_11 python_targets_python3_12 )
 RESTRICT=!test? ( test )
 SLOT=0
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	bash-completion-r1	d3a60385655d9b402be765a6de333245	multiprocessing	61c959fc55c15c00bbb1079d6a71370b	cargo	7ea27a358c2ff39754bf66a96c06f3de	elisp-common	cf4fd1b0835b9f3e638724840468064a	multibuild	d79bd5b4bc4edcb1f5bc19591f8d4714	python-utils-r1	54423f1e035828362c248fad528ebbba	python-r1	4c008ab1e6c02cbead059dfe8b864c26	distutils-r1	5c20d378b93148ef7abefc22c5b4de06	mercurial	fab322f5d0b16d043915315d0db2abb1	flag-o-matic	d5e1306543bc457213f68bb18f830d14
-_md5_=9b6c8ce69a993c01e75160a165e8a870
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	bash-completion-r1	f5e7a020fd9c741740756aac61bf75ff	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	cargo	172dcb548e750dda201deb8263a17124	elisp-common	abb2dda42f680fce87602c8273f832c7	out-of-source-utils	1a9007554652a6e627edbccb3c25a439	multibuild	d67e78a235f541871c7dfe4cf7931489	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	python-r1	8a28fa6d3e3bc96ff8a7eff2badbe71f	distutils-r1	5400d21736d8621562bf93be4fa98eec	mercurial	e6a56a378cb9241482284b8b897c7a39
+_md5_=1415fb79f56d77a26cf13b44a17b2a98

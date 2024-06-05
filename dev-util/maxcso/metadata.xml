@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE pkgmetadata SYSTEM 'http://www.gentoo.org/dtd/metadata.dtd'>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person" proxied="yes">
 		<email>orbea@riseup.net</email>
 		<name>orbea</name>
-	</maintainer>
-	<maintainer type="person" proxied="proxy">
-		<email>sam@gentoo.org</email>
-		<name>Sam James</name>
 	</maintainer>
 	<maintainer type="project" proxied="proxy">
 		<email>proxy-maint@gentoo.org</email>
@@ -18,4 +14,7 @@
 		emulators, which uses multiple algorithms for best compression
 		ratio.
 	</longdescription>
+	<upstream>
+		<remote-id type="github">unknownbrackets/maxcso</remote-id>
+	</upstream>
 </pkgmetadata>

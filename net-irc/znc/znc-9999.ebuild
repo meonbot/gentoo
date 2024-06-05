@@ -1,13 +1,13 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{10..12} )
 
 inherit cmake python-single-r1 readme.gentoo-r1 systemd
 
-GTEST_VER="1.8.1"
+GTEST_VER="1.14.0"
 GTEST_URL="https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz -> gtest-${GTEST_VER}.tar.gz"
 DESCRIPTION="An advanced IRC Bouncer"
 
@@ -21,7 +21,7 @@ else
 		https://znc.in/releases/archive/${MY_P}.tar.gz
 		test? ( ${GTEST_URL} )
 	"
-	KEYWORDS="~amd64 ~arm ~arm64 ~x86"
+	KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86"
 	S=${WORKDIR}/${MY_P}
 fi
 
@@ -30,21 +30,25 @@ LICENSE="Apache-2.0"
 # "If you upgrade your ZNC version, you must recompile all your modules."
 # - https://wiki.znc.in/Compiling_modules
 SLOT="0/${PV}"
-IUSE="+ipv6 +icu nls perl python +ssl sasl tcl test +zlib"
+IUSE="+argon2 +icu nls perl python +ssl sasl tcl test +zlib"
 RESTRICT="!test? ( test )"
 
-REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} icu )"
+# tests run znc-buildmod which is a Python script
+REQUIRED_USE="
+	python? ( ${PYTHON_REQUIRED_USE} icu )
+	test? ( ${PYTHON_REQUIRED_USE} )
+"
 
 # perl is a build-time dependency of modpython
 BDEPEND="
 	virtual/pkgconfig
 	nls? ( sys-devel/gettext )
 	perl? (
-		>=dev-lang/swig-3.0.0
+		>=dev-lang/swig-4.0.1
 		>=dev-lang/perl-5.10
 	)
 	python? (
-		>=dev-lang/swig-3.0.0
+		>=dev-lang/swig-4.0.1
 		>=dev-lang/perl-5.10
 	)
 	test? (
@@ -53,6 +57,8 @@ BDEPEND="
 	)
 "
 DEPEND="
+	dev-cpp/cctz:=
+	argon2? ( app-crypt/argon2:= )
 	icu? ( dev-libs/icu:= )
 	nls? ( dev-libs/boost:=[nls] )
 	perl? ( >=dev-lang/perl-5.10:= )
@@ -69,11 +75,11 @@ RDEPEND="
 "
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-1.7.1-inttest-dir.patch
+	"${FILESDIR}/${PN}-1.7.1-inttest-dir.patch"
 )
 
 pkg_setup() {
-	if use python; then
+	if use python || use test; then
 		python-single-r1_pkg_setup
 	fi
 }
@@ -98,7 +104,8 @@ src_configure() {
 		-DWANT_SYSTEMD=yes  # Causes -DSYSTEMD_DIR to be used.
 		-DSYSTEMD_DIR="$(systemd_get_systemunitdir)"
 		-DWANT_ICU="$(usex icu)"
-		-DWANT_IPV6="$(usex ipv6)"
+		-DWANT_ARGON="$(usex argon2)"
+		-DWANT_IPV6=yes
 		-DWANT_I18N="$(usex nls)"
 		-DWANT_PERL="$(usex perl)"
 		-DWANT_PYTHON="$(usex python)"
@@ -110,8 +117,8 @@ src_configure() {
 	)
 
 	if [[ ${PV} != *9999* ]] && use test; then
-		export GTEST_ROOT="${WORKDIR}/googletest-release-${GTEST_VER}/googletest"
-		export GMOCK_ROOT="${WORKDIR}/googletest-release-${GTEST_VER}/googlemock"
+		export GTEST_ROOT="${WORKDIR}/googletest-${GTEST_VER}/googletest"
+		export GMOCK_ROOT="${WORKDIR}/googletest-${GTEST_VER}/googlemock"
 	fi
 
 	cmake_src_configure

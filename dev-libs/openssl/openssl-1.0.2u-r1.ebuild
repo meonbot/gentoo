@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
@@ -37,7 +37,7 @@ SRC_URI="mirror://openssl/source/${MY_P}.tar.gz
 
 LICENSE="openssl"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x86-linux"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x86-linux ~arm64-macos"
 IUSE="+asm bindist gmp kerberos rfc3779 sctp cpu_flags_x86_sse2 sslv2 +sslv3 static-libs test tls-compression +tls-heartbeat vanilla"
 RESTRICT="!bindist? ( bindist )
 	!test? ( test )"
@@ -52,7 +52,7 @@ BDEPEND="
 	sctp? ( >=net-misc/lksctp-tools-1.0.12 )
 	test? (
 		sys-apps/diffutils
-		sys-devel/bc
+		app-alternatives/bc
 	)"
 PDEPEND="app-misc/ca-certificates"
 
@@ -153,14 +153,15 @@ multilib_src_configure() {
 	local krb5=$(has_version app-crypt/mit-krb5 && echo "MIT" || echo "Heimdal")
 
 	# See if our toolchain supports __uint128_t.  If so, it's 64bit
-	# friendly and can use the nicely optimized code paths. #460790
-	local ec_nistp_64_gcc_128
-	# Disable it for now though #469976
-	#if ! use bindist ; then
-	#	echo "__uint128_t i;" > "${T}"/128.c
-	#	if ${CC} ${CFLAGS} -c "${T}"/128.c -o /dev/null >&/dev/null ; then
-	#		ec_nistp_64_gcc_128="enable-ec_nistp_64_gcc_128"
-	#	fi
+	# friendly and can use the nicely optimized code paths, bug #460790.
+	#local ec_nistp_64_gcc_128
+	#
+	# Disable it for now though (bug #469976)
+	# Do NOT re-enable without substantial discussion first!
+	#
+	#echo "__uint128_t i;" > "${T}"/128.c
+	#if ${CC} ${CFLAGS} -c "${T}"/128.c -o /dev/null >&/dev/null ; then
+	#       ec_nistp_64_gcc_128="enable-ec_nistp_64_gcc_128"
 	#fi
 
 	# https://github.com/openssl/openssl/issues/2286
@@ -247,7 +248,9 @@ multilib_src_install() {
 		mkdir "${ED}"/usr || die
 	fi
 
-	emake INSTALL_PREFIX="${D}" install
+	# Only -j1 is supported for the install targets:
+	# https://github.com/openssl/openssl/issues/21999#issuecomment-1771150305
+	emake INSTALL_PREFIX="${D}" -j1 install
 
 	# This is crappy in that the static archives are still built even
 	# when USE=static-libs.  But this is due to a failing in the openssl

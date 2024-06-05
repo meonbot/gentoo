@@ -1,8 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-USE_RUBY="ruby26 ruby27 ruby30"
+USE_RUBY="ruby31 ruby32 ruby33"
 
 RUBY_FAKEGEM_RECIPE_TEST="rspec3"
 
@@ -13,12 +13,11 @@ RUBY_FAKEGEM_EXTENSIONS=(ext/pg_array_parser/extconf.rb)
 inherit ruby-fakegem
 
 DESCRIPTION="Simple library to parse PostgreSQL arrays into a array of strings"
-HOMEPAGE="https://github.com/dockyard/pg_array_parser"
+HOMEPAGE="https://github.com/DavyJonesLocker/pg_array_parser"
 
 LICENSE="MIT"
 SLOT="$(ver_cut 1-3)"
 KEYWORDS="~amd64 ~arm ~x86"
-IUSE=""
 
 ruby_add_bdepend "dev-ruby/bundler"
 

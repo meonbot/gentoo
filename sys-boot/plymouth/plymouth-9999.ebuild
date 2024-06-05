@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -21,16 +21,16 @@ HOMEPAGE="https://cgit.freedesktop.org/plymouth/"
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="debug +gtk +libkms +pango +split-usr static-libs +udev"
+IUSE="debug +drm +gtk +pango selinux +split-usr static-libs +udev"
 
 CDEPEND="
 	>=media-libs/libpng-1.2.16:=
+	drm? ( x11-libs/libdrm )
 	gtk? (
 		dev-libs/glib:2
 		>=x11-libs/gtk+-3.14:3
 		x11-libs/cairo
 	)
-	libkms? ( x11-libs/libdrm[libkms] )
 	pango? ( >=x11-libs/pango-1.21 )
 "
 DEPEND="${CDEPEND}
@@ -41,6 +41,7 @@ DEPEND="${CDEPEND}
 "
 # Block due bug #383067
 RDEPEND="${CDEPEND}
+	selinux? ( sec-policy/selinux-plymouthd )
 	udev? ( virtual/udev )
 	!<sys-kernel/dracut-0.37-r3
 "
@@ -71,8 +72,8 @@ src_configure() {
 		$(use_enable !static-libs shared)
 		$(use_enable static-libs static)
 		$(use_enable debug tracing)
-		$(use_enable gtk gtk)
-		$(use_enable libkms drm)
+		$(use_enable drm)
+		$(use_enable gtk)
 		$(use_enable pango)
 		$(use_with udev)
 	)
@@ -105,8 +106,8 @@ src_install() {
 
 pkg_postinst() {
 	readme.gentoo_print_elog
-	if ! has_version "sys-kernel/dracut" && ! has_version "sys-kernel/genkernel-next[plymouth]"; then
+	if ! has_version "sys-kernel/dracut"; then
 		ewarn "If you want initramfs builder with plymouth support, please emerge"
-		ewarn "sys-kernel/dracut or sys-kernel/genkernel-next[plymouth]."
+		ewarn "sys-kernel/dracut."
 	fi
 }

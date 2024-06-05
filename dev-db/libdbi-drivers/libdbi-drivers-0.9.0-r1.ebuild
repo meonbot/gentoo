@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,11 +7,11 @@ inherit autotools
 
 DESCRIPTION="The libdbi-drivers project maintains drivers for libdbi"
 HOMEPAGE="http://libdbi-drivers.sourceforge.net/"
-SRC_URI="mirror://sourceforge/project/${PN}/${PN}/${P}/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/project/${PN}/${PN}/${P}/${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86"
 IUSE="doc firebird mysql oci8 postgres +sqlite static-libs"
 
 REQUIRED_USE="|| ( mysql postgres sqlite firebird oci8 )"

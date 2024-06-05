@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -21,8 +21,8 @@ RDEPEND="
 	sys-apps/groff
 "
 DEPEND="${RDEPEND}
-	sys-devel/flex
-	virtual/awk
+	app-alternatives/lex
+	app-alternatives/awk
 	doc? (
 		dev-texlive/texlive-fontsrecommended
 		virtual/latex-base

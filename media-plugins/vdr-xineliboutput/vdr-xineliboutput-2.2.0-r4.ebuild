@@ -1,26 +1,25 @@
-# Copyright 2021 Gentoo Authors
+# Copyright 2022-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit toolchain-funcs vdr-plugin-2
+inherit flag-o-matic toolchain-funcs vdr-plugin-2
 
 GENTOO_VDR_CONDITIONAL=yes
 
 DESCRIPTION="VDR Plugin: Xinelib PlugIn"
 HOMEPAGE="https://sourceforge.net/projects/xineliboutput/"
-SRC_URI="mirror://sourceforge/${PN#vdr-}/${P}.tgz
+SRC_URI="https://downloads.sourceforge.net/${PN#vdr-}/${P}.tgz
 		http://vdr.websitec.de/download/${PN}/${P}_clang.patch.bz2"
 
-SLOT="0"
 LICENSE="GPL-2+"
+SLOT="0"
 KEYWORDS="~amd64 ~x86"
-IUSE="bluray caps cec dbus fbcon jpeg libextractor nls opengl +vdr vaapi vdpau +X +xine xinerama"
+IUSE="bluray caps cec dbus fbcon jpeg nls opengl +vdr vaapi vdpau +X +xine xinerama"
 
 COMMON_DEPEND="
 	vdr? (
 		media-video/vdr
-		libextractor? ( >=media-libs/libextractor-0.5.20 )
 		caps? ( sys-libs/libcap )
 	)
 
@@ -36,7 +35,7 @@ COMMON_DEPEND="
 			dbus? ( dev-libs/dbus-glib dev-libs/glib:2 )
 			jpeg? ( virtual/jpeg:* )
 			opengl? ( virtual/opengl )
-			vaapi? ( x11-libs/libva >=media-libs/xine-lib-1.2[vaapi] )
+			vaapi? ( media-libs/libva >=media-libs/xine-lib-1.2[vaapi] )
 			vdpau? ( x11-libs/libvdpau >=media-libs/xine-lib-1.2[vdpau] )
 			xinerama? ( x11-libs/libXinerama )
 		)
@@ -89,8 +88,8 @@ src_configure() {
 
 	# No autotools based configure script
 	./configure \
-		--cc=$(tc-getCC) \
-		--cxx=$(tc-getCXX) \
+		--cc="$(tc-getCC)" \
+		--cxx="$(tc-getCXX)" \
 		$(use_enable X x11) \
 		$(use_enable X xshm) \
 		$(use_enable X xdpms) \
@@ -100,7 +99,7 @@ src_configure() {
 		$(use_enable fbcon fb) \
 		$(use_enable vdr) \
 		$(use_enable xine libxine) \
-		$(use_enable libextractor) \
+		--disable-libextractor \
 		$(use_enable caps libcap) \
 		$(use_enable cec libcec) \
 		$(use_enable jpeg libjpeg) \

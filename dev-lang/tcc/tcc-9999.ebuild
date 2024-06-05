@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit toolchain-funcs
+inherit flag-o-matic toolchain-funcs
 
 MY_COMMIT="16456168430c9e185dd94b8215aa77d02bbb8a2c"
 DESCRIPTION="A very small C compiler for ix86/amd64"
@@ -22,7 +22,7 @@ fi
 LICENSE="LGPL-2.1"
 SLOT="0"
 if [[ ${PV} != *9999* ]] ; then
-	KEYWORDS="~amd64 ~x86 ~amd64-linux"
+	KEYWORDS="~amd64 ~arm64 ~riscv ~x86 ~amd64-linux"
 fi
 
 BDEPEND="dev-lang/perl" # doc generation
@@ -45,12 +45,22 @@ src_prepare() {
 	}' examples/ex*.c || die
 	sed -i -e '1s/$/ -lX11/' examples/ex4.c || die
 
+	# bug 888115
+	sed -i -e "s|/usr/local/bin/tcc|/usr/bin/tcc|g" tcc-doc.texi || die
+
 	# Fix texi2html invocation
 	sed -i -e 's/-number//' Makefile || die
 	sed -i -e 's/--sections//' Makefile || die
 }
 
 src_configure() {
+	# fails tests
+	# https://bugs.gentoo.org/866815
+	#
+	# Also distributes static libraries:
+	# https://bugs.gentoo.org/926120
+	filter-lto
+
 	local libc
 
 	use test && unset CFLAGS LDFLAGS # Tests run with CC=tcc etc, they will fail hard otherwise

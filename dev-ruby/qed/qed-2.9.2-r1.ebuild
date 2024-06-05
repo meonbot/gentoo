@@ -1,8 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-USE_RUBY="ruby26 ruby27 ruby30"
+
+USE_RUBY="ruby31 ruby32 ruby33"
 
 RUBY_FAKEGEM_TASK_TEST=""
 RUBY_FAKEGEM_RECIPE_DOC="yard"
@@ -21,7 +22,8 @@ IUSE=""
 ruby_add_bdepend "test? ( dev-ruby/ae )"
 ruby_add_rdepend "
 	dev-ruby/ansi
-	dev-ruby/brass"
+	dev-ruby/brass
+"
 
 each_ruby_test() {
 	${RUBY} -Ilib bin/qed || die 'tests failed'

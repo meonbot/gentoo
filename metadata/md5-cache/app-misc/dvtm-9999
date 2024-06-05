@@ -1,7 +1,8 @@
+BDEPEND=>=dev-vcs/git-1.8.2.1[curl]
 DEFINED_PHASES=compile install postinst prepare unpack
-DEPEND=>=sys-libs/ncurses-6.1:=[unicode(+)] virtual/pkgconfig >=dev-vcs/git-1.8.2.1[curl]
+DEPEND=>=sys-libs/ncurses-6.1:=[unicode(+)] virtual/pkgconfig
 DESCRIPTION=Dynamic virtual terminal manager
-EAPI=6
+EAPI=8
 HOMEPAGE=https://www.brain-dump.org/projects/dvtm/
 INHERIT=savedconfig toolchain-funcs git-r3
 IUSE=savedconfig
@@ -9,5 +10,5 @@ LICENSE=MIT
 PROPERTIES=live
 RDEPEND=>=sys-libs/ncurses-6.1:=[unicode(+)]
 SLOT=0
-_eclasses_=portability	d1186f1e621de7b27ddcae82e6253259	savedconfig	7cb1bf66b4acedc4f06802a012d3b08d	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=600c20828f45eb9f176eb6ee45a220ef
+_eclasses_=portability	225656ad6c6594fe3b0187bdd50707fb	savedconfig	8b5f9d995a970e49cd427c55d5840285	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=bc307f2061c7d10c3cddd25d64295249

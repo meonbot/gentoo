@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -8,11 +8,11 @@ inherit bash-completion-r1
 MY_P="${P/_/-}"
 DESCRIPTION="Small and simple weblog engine written in Bash for the command-line"
 HOMEPAGE="http://nanoblogger.sourceforge.net/"
-SRC_URI="mirror://sourceforge/${PN}/${MY_P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${MY_P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~hppa ~ia64 ~mips ppc x86"
+KEYWORDS="amd64 ~hppa ppc x86"
 
 RDEPEND="app-shells/bash"
 

@@ -1,13 +1,13 @@
-BDEPEND=sys-devel/bison virtual/pkgconfig >=dev-vcs/git-1.8.2.1[curl]
+BDEPEND=app-alternatives/yacc virtual/pkgconfig >=dev-vcs/git-1.8.2.1[curl]
 DEFINED_PHASES=compile install unpack
-DEPEND=x11-libs/libXft x11-libs/libXinerama x11-libs/libXrandr
+DEPEND=x11-libs/libX11 x11-libs/libXft x11-libs/libXrandr
 DESCRIPTION=OpenBSD fork of calmwm, a clean and lightweight window manager
-EAPI=7
-HOMEPAGE=https://github.com/leahneukirchen/cwm https://www.openbsd.org/cgi-bin/cvsweb/xenocara/app/cwm/
+EAPI=8
+HOMEPAGE=https://github.com/leahneukirchen/cwm
 INHERIT=desktop toolchain-funcs git-r3
 LICENSE=ISC
 PROPERTIES=live
-RDEPEND=x11-libs/libXft x11-libs/libXinerama x11-libs/libXrandr
+RDEPEND=x11-libs/libX11 x11-libs/libXft x11-libs/libXrandr
 SLOT=0
-_eclasses_=desktop	c0d27bf73aa08ca05b663dbd31fbef28	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=3a9fae011137eec18d59807450b0727a
+_eclasses_=desktop	021728fdc1b03b36357dbc89489e0f0d	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=c8d75a2560f50754c93c836efeb1d96f

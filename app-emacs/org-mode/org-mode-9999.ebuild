@@ -1,8 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-NEED_EMACS=24
 
 inherit elisp readme.gentoo-r1
 
@@ -45,7 +44,7 @@ src_install() {
 		install
 
 	elisp-site-file-install "${FILESDIR}/${SITEFILE}"
-	dodoc README CONTRIBUTE etc/ORG-NEWS
+	dodoc README.org CONTRIBUTE.org etc/ORG-NEWS
 	use doc && dodoc doc/org.pdf doc/orgcard.pdf doc/orgguide.pdf
 
 	local DOC_CONTENTS="Org mode has a large variety of run-time dependencies,

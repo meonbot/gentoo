@@ -2,8 +2,8 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>sam@gentoo.org</email>
-		<name>Sam James</name>
+		<email>expeditioneer@gentoo.org</email>
+		<name>Dennis Lamm</name>
 	</maintainer>
 	<maintainer type="person" proxied="yes">
 		<email>crabbedhaloablution@icloud.com</email>

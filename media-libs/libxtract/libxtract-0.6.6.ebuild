@@ -1,11 +1,11 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
 DESCRIPTION="A simple, portable, lightweight library of audio feature extraction functions"
 HOMEPAGE="https://github.com/jamiebullock/LibXtract"
-SRC_URI="https://github.com/downloads/jamiebullock/LibXtract/${P}.tar.gz"
+SRC_URI="mirror://gentoo/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -14,7 +14,7 @@ IUSE="doc fftw"
 
 RDEPEND="fftw? ( sci-libs/fftw:3.0 )"
 DEPEND="${RDEPEND}"
-BDEPEND="doc? ( app-doc/doxygen[dot] )"
+BDEPEND="doc? ( app-text/doxygen[dot] )"
 
 src_configure() {
 	econf \

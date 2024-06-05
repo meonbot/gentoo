@@ -1,9 +1,9 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit desktop qmake-utils
+inherit qmake-utils
 [[ "${PV}" == "9999" ]] && inherit git-r3
 
 DESCRIPTION="Tool for one-time conversion from svn to git"
@@ -18,7 +18,6 @@ fi
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE=""
 # KEYWORDS way up
 
 DEPEND="

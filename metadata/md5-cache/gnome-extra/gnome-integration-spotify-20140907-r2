@@ -1,15 +1,15 @@
 DEFINED_PHASES=install postinst preinst prerm
-DEPEND=python_targets_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8 ) python_targets_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9 )
+DEPEND=python_targets_python3_10? ( dev-lang/python:3.10 ) python_targets_python3_11? ( dev-lang/python:3.11 ) python_targets_python3_12? ( dev-lang/python:3.12 )
 DESCRIPTION=GNOME integration for Spotify
 EAPI=7
 HOMEPAGE=https://github.com/mrpdaemon/gnome-integration-spotify
 INHERIT=gnome2-utils python-r1
-IUSE=python_targets_python3_8 python_targets_python3_9
+IUSE=python_targets_python3_10 python_targets_python3_11 python_targets_python3_12
 KEYWORDS=amd64 x86
 LICENSE=GPL-3
-RDEPEND=python_targets_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8 ) python_targets_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9 ) dev-python/dbus-python[python_targets_python3_8(-)?,python_targets_python3_9(-)?] media-gfx/imagemagick x11-misc/wmctrl x11-misc/xautomation x11-misc/xdotool x11-apps/xwininfo
-REQUIRED_USE=|| ( python_targets_python3_8 python_targets_python3_9 )
+RDEPEND=python_targets_python3_10? ( dev-lang/python:3.10 ) python_targets_python3_11? ( dev-lang/python:3.11 ) python_targets_python3_12? ( dev-lang/python:3.12 ) dev-python/dbus-python[python_targets_python3_10(-)?,python_targets_python3_11(-)?,python_targets_python3_12(-)?] media-gfx/imagemagick x11-misc/wmctrl x11-misc/xautomation x11-misc/xdotool x11-apps/xwininfo
+REQUIRED_USE=|| ( python_targets_python3_10 python_targets_python3_11 python_targets_python3_12 )
 SLOT=0
 SRC_URI=https://github.com/mrpdaemon/gnome-integration-spotify/archive/20140907.tar.gz -> gnome-integration-spotify-20140907.tar.gz
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	xdg-utils	4f29a8b760a594a212abe9c2ba957c31	gnome2-utils	239e7afa214b50012f83b8bb61de7555	multibuild	d79bd5b4bc4edcb1f5bc19591f8d4714	eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	multiprocessing	61c959fc55c15c00bbb1079d6a71370b	python-utils-r1	54423f1e035828362c248fad528ebbba	python-r1	4c008ab1e6c02cbead059dfe8b864c26
-_md5_=52ec0168be56d5bf8680a2422dab8853
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	xdg-utils	baea6080dd821f5562d715887954c9d3	gnome2-utils	30dbce54b89e77b86f366548f94419ad	out-of-source-utils	1a9007554652a6e627edbccb3c25a439	multibuild	d67e78a235f541871c7dfe4cf7931489	eapi8-dosym	5ac4857ad078256d939c44f7c64197a9	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	python-r1	8a28fa6d3e3bc96ff8a7eff2badbe71f
+_md5_=878bd161d95bd717cc8f6d4d3fbb0a63

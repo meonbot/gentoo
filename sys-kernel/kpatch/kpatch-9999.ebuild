@@ -1,9 +1,9 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit flag-o-matic linux-mod
+inherit flag-o-matic linux-mod-r1
 
 if [[ "${PV}" == "9999" ]]; then
 	inherit git-r3
@@ -30,8 +30,8 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	dev-libs/elfutils
-	sys-devel/bison
-	test? ( dev-util/shellcheck-bin )
+	app-alternatives/yacc
+	test? ( || ( dev-util/shellcheck-bin dev-util/shellcheck ) )
 "
 
 pkg_setup() {

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -9,37 +9,44 @@ EGIT_REPO_URI="https://github.com/OpenRCT2/OpenRCT2.git"
 EGIT_BRANCH="develop"
 
 MY_PN="OpenRCT2"
+MY_PN_MSX="openmusic"
 MY_PN_OBJ="objects"
 MY_PN_RPL="replays"
+MY_PN_SFX="opensound"
 MY_PN_TS="title-sequences"
-MY_PV_OBJ="1.2.4"
-MY_PV_RPL="0.0.62"
-MY_PV_TS="0.1.2c"
+MY_PV_MSX="1.5"
+MY_PV_OBJ="1.4.4"
+MY_PV_RPL="0.0.79"
+MY_PV_SFX="1.0.5"
+MY_PV_TS="0.4.6"
 
 DESCRIPTION="An open source re-implementation of Chris Sawyer's RollerCoaster Tycoon 2"
 HOMEPAGE="https://openrct2.org/"
 SRC_URI="
+	https://github.com/${MY_PN}/${MY_PN_MSX}/releases/download/v${MY_PV_MSX}/${MY_PN_MSX}.zip -> ${PN}-${MY_PN_MSX}-${MY_PV_MSX}.zip
 	https://github.com/${MY_PN}/${MY_PN_OBJ}/releases/download/v${MY_PV_OBJ}/${MY_PN_OBJ}.zip -> ${PN}-${MY_PN_OBJ}-${MY_PV_OBJ}.zip
+	https://github.com/${MY_PN}/OpenSoundEffects/releases/download/v${MY_PV_SFX}/${MY_PN_SFX}.zip -> ${PN}-${MY_PN_SFX}-${MY_PV_SFX}.zip
 	https://github.com/${MY_PN}/${MY_PN_TS}/releases/download/v${MY_PV_TS}/${MY_PN_TS}.zip -> ${PN}-${MY_PN_TS}-${MY_PV_TS}.zip
 	test? ( https://github.com/${MY_PN}/${MY_PN_RPL}/releases/download/v${MY_PV_RPL}/${MY_PN_RPL}.zip -> ${PN}-${MY_PN_RPL}-${MY_PV_RPL}.zip )
 "
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS=""
-IUSE="dedicated +lightfx +opengl scripting test +truetype"
+IUSE="dedicated +flac +opengl scripting test +truetype +vorbis"
 
 COMMON_DEPEND="
 	dev-libs/icu:=
 	dev-libs/jansson:=
 	dev-libs/libzip:=
-	media-libs/libpng:0=
+	media-libs/libpng:=
 	net-misc/curl[ssl]
 	sys-libs/zlib
 	!dedicated? (
 		media-libs/libsdl2
 		media-libs/speexdsp
+		flac? ( media-libs/flac:= )
 		opengl? ( virtual/opengl )
+		vorbis? ( media-libs/libvorbis )
 	)
 	dev-libs/openssl:0=
 	scripting? ( dev-lang/duktape:= )
@@ -71,20 +78,25 @@ BDEPEND="
 RESTRICT="!test? ( test )"
 
 PATCHES=(
-	"${FILESDIR}/${PN}-0.2.4-include-additional-paths.patch"
-	"${FILESDIR}/${PN}-0.2.6-gtest-1.10.patch"
+	"${FILESDIR}/${PN}-0.4.0-include-additional-paths.patch"
+	"${FILESDIR}/${PN}-0.4.1-gtest-1.10.patch"
 )
 
 src_unpack() {
-	git-r3_src_unpack
+	unpack "${P}".tar.gz
 
-	mkdir -p "${S}"/data/sequence || die
-	cd "${S}"/data/sequence || die
-	unpack "${PN}-${MY_PN_TS}-${MY_PV_TS}".zip
+	mkdir -p "${S}"/data || die
+	cd "${S}"/data
+	unpack "${PN}-${MY_PN_MSX}-${MY_PV_MSX}".zip
+	unpack "${PN}-${MY_PN_SFX}-${MY_PV_SFX}".zip
 
 	mkdir -p "${S}"/data/object || die
 	cd "${S}"/data/object || die
 	unpack "${PN}-${MY_PN_OBJ}-${MY_PV_OBJ}".zip
+
+	mkdir -p "${S}"/data/sequence || die
+	cd "${S}"/data/sequence || die
+	unpack "${PN}-${MY_PN_TS}-${MY_PV_TS}".zip
 
 	if use test; then
 		mkdir -p "${S}"/testdata/replays || die
@@ -105,21 +117,24 @@ src_configure() {
 	# as both packages do not exist in Gentoo, so support for them has been disabled.
 	local mycmakeargs=(
 		-DDISABLE_DISCORD_RPC=ON
+		$(usex !dedicated "-DDISABLE_FLAC=$(usex !flac)" "")
 		-DDISABLE_GOOGLE_BENCHMARK=ON
 		-DDISABLE_GUI=$(usex dedicated)
 		-DDISABLE_HTTP=OFF
+		-DDISABLE_IPO=ON
 		-DDISABLE_NETWORK=OFF
 		$(usex !dedicated "-DDISABLE_OPENGL=$(usex !opengl)" "")
 		-DDISABLE_TTF=$(usex !truetype)
+		$(usex !dedicated "-DDISABLE_VORBIS=$(usex !vorbis)" "")
 		-DDOWNLOAD_OBJECTS=OFF
+		-DDOWNLOAD_OPENMSX=OFF
+		-DDOWNLOAD_OPENSFX=OFF
 		-DDOWNLOAD_REPLAYS=OFF
 		-DDOWNLOAD_TITLE_SEQUENCES=OFF
-		-DENABLE_LIGHTFX=$(usex lightfx)
 		-DENABLE_SCRIPTING=$(usex scripting)
 		-DOPENRCT2_USE_CCACHE=OFF
 		-DPORTABLE=OFF
 		-DSTATIC=OFF
-		$(usex test "-DSYSTEM_GTEST=ON" "")
 		-DWITH_TESTS=$(usex test)
 		-DUSE_MMAP=ON
 	)
@@ -162,5 +177,5 @@ pkg_postinst() {
 pkg_postrm() {
 	xdg_desktop_database_update
 	xdg_icon_cache_update
-	xdg_mimeinfo_database_update
+	xdg_mimeinf
 }

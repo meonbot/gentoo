@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -9,7 +9,7 @@ HOMEPAGE="http://jpgraph.net/"
 SRC_URI="https://dev.gentoo.org/~grknight/distfiles/${P}.tar.gz"
 LICENSE="QPL-1.0"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~hppa ~ppc ~sparc ~x86"
+KEYWORDS="amd64 ~hppa ppc sparc x86"
 IUSE="truetype examples"
 
 DEPEND=""
@@ -27,7 +27,7 @@ src_prepare() {
 	# break without warning when the user e.g. removes corefonts. By
 	# applying the patch conditionally, we ensure a dependency on
 	# media-fonts/corefonts before anything will work.
-	use truetype && eapply "${FILESDIR}/gentoo_ttf_dir.patch"
+	use truetype && eapply "${FILESDIR}/gentoo_ttf_dir-4.3.5.patch"
 
 	# Some of the documentation and examples are shipped in the "src"
 	# directory. We want them outside of that tree so that we can simply

@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit meson
 
@@ -11,60 +11,92 @@ HOMEPAGE="https://gitlab.freedesktop.org/wlroots/wlroots"
 if [[ ${PV} == 9999 ]]; then
 	EGIT_REPO_URI="https://gitlab.freedesktop.org/${PN}/${PN}.git"
 	inherit git-r3
-	SLOT="0/9999"
+	SLOT="0.18"
 else
-	SRC_URI="https://gitlab.freedesktop.org/${PN}/${PN}/-/archive/${PV}/${P}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv ~x86"
-	SLOT="0/16"
+	SRC_URI="https://gitlab.freedesktop.org/${PN}/${PN}/-/releases/${PV}/downloads/${P}.tar.gz"
+	KEYWORDS="~amd64 ~arm64 ~loong ~ppc64 ~riscv ~x86"
+	SLOT="$(ver_cut 1-2)"
 fi
 
 LICENSE="MIT"
-IUSE="vulkan x11-backend X"
+IUSE="liftoff +libinput +drm +session tinywl vulkan x11-backend xcb-errors X"
+REQUIRED_USE="
+	drm? ( session )
+	libinput? ( session )
+	xcb-errors? ( || ( x11-backend X ) )
+"
 
 DEPEND="
-	>=dev-libs/libinput-1.14.0:0=
-	>=dev-libs/wayland-1.20.0
-	>=dev-libs/wayland-protocols-1.24
-	media-libs/mesa[egl(+),gles2,gbm(+)]
-	sys-auth/seatd:=
-	virtual/libudev
-	vulkan? (
-		dev-util/glslang:0=
-		dev-util/vulkan-headers:0=
-		media-libs/vulkan-loader:0=
+	>=dev-libs/wayland-1.22.0
+	media-libs/libglvnd
+	|| (
+		>=media-libs/mesa-24.1.0_rc1[opengl]
+		<media-libs/mesa-24.1.0_rc1[egl(+),gles2]
 	)
-	>=x11-libs/libdrm-2.4.109:0=
+	>=x11-libs/libdrm-2.4.120
 	x11-libs/libxkbcommon
-	x11-libs/pixman
-	x11-backend? ( x11-libs/libxcb:0= )
+	>=x11-libs/pixman-0.42.0
+	drm? (
+		media-libs/libdisplay-info
+		sys-apps/hwdata
+		liftoff? ( >=dev-libs/libliftoff-0.4 )
+	)
+	libinput? ( >=dev-libs/libinput-1.14.0:= )
+	session? (
+		sys-auth/seatd:=
+		virtual/libudev
+	)
+	vulkan? (
+		dev-util/glslang:=
+		dev-util/vulkan-headers
+		media-libs/vulkan-loader
+	)
+	xcb-errors? ( x11-libs/xcb-util-errors )
+	x11-backend? (
+		x11-libs/libxcb:=
+		x11-libs/xcb-util-renderutil
+	)
 	X? (
-		x11-base/xwayland
-		x11-libs/libxcb:0=
-		x11-libs/xcb-util-image
+		x11-libs/libxcb:=
 		x11-libs/xcb-util-wm
+		x11-base/xwayland
 	)
 "
 RDEPEND="
 	${DEPEND}
 "
 BDEPEND="
-	>=dev-libs/wayland-protocols-1.24
-	>=dev-util/meson-0.60.0
+	>=dev-libs/wayland-protocols-1.33
+	dev-util/wayland-scanner
 	virtual/pkgconfig
 "
 
 src_configure() {
-	# xcb-util-errors is not on Gentoo Repository (and upstream seems inactive?)
+	local backends=(
+		$(usev drm)
+		$(usev libinput)
+		$(usev x11-backend 'x11')
+	)
+	local meson_backends=$(IFS=','; echo "${backends[*]}")
 	local emesonargs=(
-		"-Dxcb-errors=disabled"
-		"-Dexamples=false"
-		"-Dwerror=false"
+		$(meson_feature xcb-errors)
+		$(meson_use tinywl examples)
 		-Drenderers=$(usex vulkan 'gles2,vulkan' gles2)
-		-Dxwayland=$(usex X enabled disabled)
-		-Dbackends=drm,libinput$(usex x11-backend ',x11' '')
+		$(meson_feature X xwayland)
+		-Dbackends=${meson_backends}
+		$(meson_feature session)
 	)
 
 	meson_src_configure
+}
+
+src_install() {
+	meson_src_install
+	dodoc docs/*
+
+	if use tinywl; then
+		dobin "${BUILD_DIR}"/tinywl/tinywl
+	fi
 }
 
 pkg_postinst() {

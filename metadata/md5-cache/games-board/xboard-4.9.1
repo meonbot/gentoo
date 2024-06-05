@@ -1,16 +1,16 @@
-BDEPEND=virtual/pkgconfig x11-base/xorg-proto nls? ( sys-devel/gettext ) sys-devel/gnuconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.2-r1:1.16 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4
+BDEPEND=virtual/pkgconfig x11-base/xorg-proto nls? ( sys-devel/gettext ) >=app-portage/elt-patches-20240116 sys-devel/gnuconfig || ( >=dev-build/automake-1.16.5:1.16 ) || ( >=dev-build/autoconf-2.72-r1:2.72 >=dev-build/autoconf-2.71-r6:2.71 ) >=dev-build/libtool-2.4.7-r3
 DEFINED_PHASES=configure install postinst postrm preinst prepare
 DEPEND=dev-libs/glib:2 gnome-base/librsvg:2 virtual/libintl x11-libs/cairo[X] x11-libs/libXpm default-font? ( media-fonts/font-adobe-100dpi[nls?] media-fonts/font-misc-misc[nls?] ) !gtk? ( x11-libs/libX11 x11-libs/libXt x11-libs/libXmu Xaw3d? ( x11-libs/libXaw3d ) !Xaw3d? ( x11-libs/libXaw ) ) gtk? ( x11-libs/gtk+:2 ) dev-util/desktop-file-utils x11-misc/shared-mime-info
 DESCRIPTION=GUI for gnuchess and for internet chess servers
 EAPI=7
 HOMEPAGE=https://www.gnu.org/software/xboard/
-INHERIT=autotools xdg
+INHERIT=autotools flag-o-matic xdg
 IUSE=+default-font gtk nls Xaw3d zippy
-KEYWORDS=~amd64 ~ppc64 ~x86
-LICENSE=GPL-3
+KEYWORDS=~amd64 ~arm64 ~ppc64 ~x86
+LICENSE=GPL-3+
 RDEPEND=dev-libs/glib:2 gnome-base/librsvg:2 virtual/libintl x11-libs/cairo[X] x11-libs/libXpm default-font? ( media-fonts/font-adobe-100dpi[nls?] media-fonts/font-misc-misc[nls?] ) !gtk? ( x11-libs/libX11 x11-libs/libXt x11-libs/libXmu Xaw3d? ( x11-libs/libXaw3d ) !Xaw3d? ( x11-libs/libXaw ) ) gtk? ( x11-libs/gtk+:2 )
 RESTRICT=test
 SLOT=0
 SRC_URI=mirror://gnu/xboard/xboard-4.9.1.tar.gz
-_eclasses_=gnuconfig	262062cef0ba4f22b397193da514a350	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	libtool	241a8f577b9781a42a7421e53448a44e	autotools	c9df06c186913b43eb211100ef5fe2cf	xdg-utils	4f29a8b760a594a212abe9c2ba957c31	xdg	6024fbc93167fad782e2032933654857
-_md5_=a5555cad54ea55055f2d048811622e51
+_eclasses_=gnuconfig	a397adda6984a4c423e28ac274c1ba98	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	libtool	5f49a16f67f81bdf873e3d1f10b10001	autotools	dc70c1dc473b68317fc4a86f5fbfc57d	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	xdg-utils	baea6080dd821f5562d715887954c9d3	xdg	4a14c5c24f121e7da66e5aab4a168c6e
+_md5_=f9e0d912deb78f88cda929e305b9dfe2

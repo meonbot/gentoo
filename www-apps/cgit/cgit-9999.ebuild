@@ -1,62 +1,80 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-LUA_COMPAT=( lua5-{1..2} luajit )
+LUA_COMPAT=( lua5-{1..4} luajit )
+
+PYTHON_COMPAT=( python3_{10..12} )
+
 WEBAPP_MANUAL_SLOT="yes"
 
-inherit git-r3 lua-single toolchain-funcs webapp
+inherit lua-single python-single-r1 tmpfiles toolchain-funcs webapp git-r3
 
 [[ -z "${CGIT_CACHEDIR}" ]] && CGIT_CACHEDIR="/var/cache/${PN}/"
 
+GIT_V="2.39.0"
+
 DESCRIPTION="a fast web-interface for git repositories"
 HOMEPAGE="https://git.zx2c4.com/cgit/about"
-SRC_URI=""
-EGIT_REPO_URI="https://git.zx2c4.com/cgit"
+if [[ ${PV} =~ 9999* ]]; then
+	SRC_URI=""
+	EGIT_REPO_URI="https://git.zx2c4.com/cgit"
+else
+	SRC_URI="https://www.kernel.org/pub/software/scm/git/git-${GIT_V}.tar.xz
+		https://git.zx2c4.com/cgit/snapshot/${P}.tar.xz"
+fi
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS=""
 IUSE="doc +highlight +lua test"
-REQUIRED_USE="lua? ( ${LUA_REQUIRED_USE} )"
+REQUIRED_USE="lua? ( ${LUA_REQUIRED_USE} ) ${PYTHON_REQUIRED_USE}"
 RESTRICT="!test? ( test )"
 
 RDEPEND="
+	${PYTHON_DEPS}
 	acct-group/cgit
 	acct-user/cgit
-	dev-vcs/git
-	highlight? ( || ( dev-python/pygments app-text/highlight ) )
 	dev-libs/openssl:0=
+	dev-vcs/git
+	highlight? (
+		$(python_gen_cond_dep 'dev-python/pygments[${PYTHON_USEDEP}]' )
+	)
 	lua? ( ${LUA_DEPS} )
 	sys-libs/zlib
 	virtual/httpd-cgi
 "
 # ebuilds without WEBAPP_MANUAL_SLOT="yes" are broken
-DEPEND="${RDEPEND}
-	doc? ( app-text/docbook-xsl-stylesheets
-		>=app-text/asciidoc-8.5.1 )
+DEPEND="${RDEPEND}"
+BDEPEND="
+	doc? (
+		app-text/docbook-xsl-stylesheets
+		>=app-text/asciidoc-8.5.1
+	)
 "
 
 pkg_setup() {
+	python_setup
 	webapp_pkg_setup
 	use lua && lua-single_pkg_setup
 }
 
-src_prepare() {
-	echo "prefix = ${EPREFIX}/usr" >> cgit.conf
-	echo "libdir = ${EPREFIX}/usr/$(get_libdir)" >> cgit.conf
-	echo "CGIT_SCRIPT_PATH = ${MY_CGIBINDIR}" >> cgit.conf
-	echo "CGIT_DATA_PATH = ${MY_HTDOCSDIR}" >> cgit.conf
-	echo "CACHE_ROOT = ${CGIT_CACHEDIR}" >> cgit.conf
-	echo "DESTDIR = ${D}" >> cgit.conf
-	if use lua; then
-		echo "LUA_PKGCONFIG = ${ELUA}" >> cgit.conf
-	else
-		echo "NO_LUA = 1" >> cgit.conf
+src_configure() {
+	if ! [[ ${PV} =~ 9999* ]]; then
+		rmdir git || die
+		mv "${WORKDIR}"/git-"${GIT_V}" git || die
 	fi
-
-	eapply_user
+	echo "prefix = ${EPREFIX}/usr" >> cgit.conf || die "echo prefix failed"
+	echo "libdir = ${EPREFIX}/usr/$(get_libdir)" >> cgit.conf || die "echo libdir failed"
+	echo "CGIT_SCRIPT_PATH = ${MY_CGIBINDIR}" >> cgit.conf || die "echo CGIT_SCRIPT_PATH failed"
+	echo "CGIT_DATA_PATH = ${MY_HTDOCSDIR}" >> cgit.conf || die "echo CGIT_DATA_PATH failed"
+	echo "CACHE_ROOT = ${CGIT_CACHEDIR}" >> cgit.conf || die "echo CACHE_ROOT failed"
+	if use lua; then
+		echo "LUA_PKGCONFIG = ${ELUA}" >> cgit.conf || die "echo LUA_PKGCONFIG failed"
+	else
+		echo "NO_LUA = 1" >> cgit.conf || die "echo NO_LUA failed"
+	fi
 }
 
 src_compile() {
@@ -67,7 +85,7 @@ src_compile() {
 src_install() {
 	webapp_src_preinst
 
-	emake V=1 AR="$(tc-getAR)" CC="$(tc-getCC)" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" install
+	emake V=1 AR="$(tc-getAR)" CC="$(tc-getCC)" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" DESTDIR="${D}" install
 
 	insinto /etc
 	doins "${FILESDIR}"/cgitrc
@@ -78,9 +96,12 @@ src_install() {
 	webapp_postinst_txt en "${FILESDIR}"/postinstall-en.txt
 	webapp_src_install
 
-	keepdir "${CGIT_CACHEDIR}"
-	fowners ${PN}:${PN} "${CGIT_CACHEDIR}"
-	fperms 700 "${CGIT_CACHEDIR}"
+	cat > cgit.conf <<-EOT || die
+		d ${CGIT_CACHEDIR} 0700 cgit cgit -
+	EOT
+	dotmpfiles cgit.conf
+
+	python_fix_shebang .
 }
 
 src_test() {
@@ -89,6 +110,11 @@ src_test() {
 
 pkg_postinst() {
 	webapp_pkg_postinst
-	ewarn "If you intend to run cgit using web server's user"
-	ewarn "you should change ${CGIT_CACHEDIR} permissions."
+	tmpfiles_process cgit.conf
+	ewarn "The cgit cache is enabled using the cache-size setting in cgitrc."
+	ewarn "If enabling the cache and running cgit using the web server's user"
+	ewarn "you should copy ${EROOT}/usr/lib/tmpfiles.d/cgit.conf"
+	ewarn "to ${EROOT}/etc/tmpfiles.d/ and edit, changing the ownership fields."
+	ewarn "If you use the cache-root setting in cgitrc to specify a cache directory"
+	ewarn "other than ${CGIT_CACHEDIR} edit the path in cgit.conf."
 }

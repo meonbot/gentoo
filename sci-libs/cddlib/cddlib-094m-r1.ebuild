@@ -1,11 +1,14 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
+inherit libtool
+
 # This can't work forever; but for now, it's better than hard-coding the
 # correct version string.
 MY_PV="${PV:0:1}.${PV:1}"
+QA_PKGCONFIG_VERSION="${MY_PV}"
 
 MY_P="${PN}-${MY_PV}"
 DESCRIPTION="C library implementing the Double Description Method"
@@ -14,13 +17,18 @@ SRC_URI="https://github.com/${PN}/${PN}/releases/download/${MY_PV}/${MY_P}.tar.g
 
 SLOT="0"
 LICENSE="GPL-2+"
-KEYWORDS="amd64 ~arm ~ppc ~riscv x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 ~arm ~ppc ~riscv ~x86 ~amd64-linux ~x86-linux"
 IUSE="doc examples static-libs tools"
 
 DEPEND="dev-libs/gmp:0"
 RDEPEND="dev-libs/gmp:0="
 
 S="${WORKDIR}/${MY_P}"
+
+src_prepare() {
+	default
+	elibtoolize
+}
 
 src_configure() {
 	econf $(use_enable static-libs static)

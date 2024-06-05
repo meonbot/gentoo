@@ -1,7 +1,7 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit savedconfig toolchain-funcs
 
@@ -23,11 +23,12 @@ IUSE="xinerama"
 RDEPEND="
 	media-libs/fontconfig
 	x11-libs/libX11
-	x11-libs/libXft
+	>=x11-libs/libXft-2.3.5
 	xinerama? ( x11-libs/libXinerama )
 "
 DEPEND="
 	${RDEPEND}
+	x11-base/xorg-proto
 	xinerama? ( x11-base/xorg-proto )
 "
 
@@ -46,9 +47,9 @@ src_prepare() {
 
 src_compile() {
 	if use xinerama; then
-		emake CC=$(tc-getCC) dwm
+		emake CC="$(tc-getCC)" dwm
 	else
-		emake CC=$(tc-getCC) XINERAMAFLAGS="" XINERAMALIBS="" dwm
+		emake CC="$(tc-getCC)" XINERAMAFLAGS="" XINERAMALIBS="" dwm
 	fi
 }
 

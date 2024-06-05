@@ -1,17 +1,17 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit autotools multilib flag-o-matic toolchain-funcs
+inherit autotools flag-o-matic toolchain-funcs
 
 DESCRIPTION="A set of tools to transform, query, validate, and edit XML documents"
-HOMEPAGE="http://xmlstar.sourceforge.net/"
-SRC_URI="mirror://sourceforge/xmlstar/${P}.tar.gz"
+HOMEPAGE="https://xmlstar.sourceforge.net/"
+SRC_URI="https://downloads.sourceforge.net/xmlstar/${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~hppa ~ia64 ppc ~s390 ~sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
+KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ~ia64 ppc ~s390 ~sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
 
 RDEPEND="
 	dev-libs/libxml2
@@ -28,9 +28,11 @@ src_prepare() {
 	# linker lld with profile 17.1 on amd64 (see https://bugs.gentoo.org/729600).
 	# The grep sandwich acts as a regression test so that a future
 	# version bump cannot break patching without noticing.
-	grep -wq _PREFIX/lib m4/xstar-check-libs.m4 || die
-	sed "s,_PREFIX/lib,_PREFIX/$(get_libdir)," -i m4/xstar-check-libs.m4 || die
-	grep -w _PREFIX/lib m4/xstar-check-libs.m4 && die
+	if [[ $(get_libdir) != lib ]]; then
+	    grep -wq _PREFIX/lib m4/xstar-check-libs.m4 || die
+	    sed "s,_PREFIX/lib,_PREFIX/$(get_libdir)," -i m4/xstar-check-libs.m4 || die
+	    grep -w _PREFIX/lib m4/xstar-check-libs.m4 && die
+	fi
 
 	eautoreconf
 }

@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..9} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit cmake python-any-r1 toolchain-funcs
 
@@ -15,7 +15,7 @@ if [[ ${PV} == *9999 ]] ; then
 	inherit git-r3
 else
 	SRC_URI="https://github.com/mborgerding/kissfft/archive/${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~x86"
+	KEYWORDS="amd64 ~arm arm64 ~riscv ~x86"
 fi
 
 LICENSE="BSD"
@@ -32,8 +32,16 @@ DEPEND="
 	)
 "
 
+PATCHES=(
+	"${FILESDIR}"/${PN}-131.1.0-cross.patch
+)
+
 python_check_deps() {
-	has_version -d "dev-python/numpy[${PYTHON_USEDEP}]"
+	python_has_version -d "dev-python/numpy[${PYTHON_USEDEP}]"
+}
+
+pkg_pretend() {
+	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 }
 
 pkg_setup() {

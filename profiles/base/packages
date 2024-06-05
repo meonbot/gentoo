@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License, v2
 
 # Gentoo Base Profile
@@ -24,15 +24,22 @@
 # of the minimum set of packages needed for any Gentoo based system.
 
 *>=sys-apps/baselayout-2
+*app-alternatives/awk
+*app-alternatives/bzip2
+*app-alternatives/gzip
+*app-alternatives/sh
+*app-alternatives/tar
 *app-admin/eselect
 *app-arch/bzip2
 *app-arch/gzip
 *app-arch/tar
 *app-arch/xz-utils
 *app-shells/bash:0
+*dev-build/make
 *net-misc/iputils
 *net-misc/rsync
 *net-misc/wget
+*sec-keys/openpgp-keys-gentoo-release
 *sys-apps/coreutils
 *sys-apps/diffutils
 *sys-apps/file
@@ -53,7 +60,6 @@
 *sys-devel/binutils
 *sys-devel/gcc
 *sys-devel/gnuconfig
-*sys-devel/make
 *>=sys-devel/patch-2.7
 *sys-fs/e2fsprogs
 *virtual/dev-manager

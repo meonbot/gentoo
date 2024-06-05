@@ -1,9 +1,13 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 inherit flag-o-matic toolchain-funcs prefix
+
+# Uncomment if we have a patchset
+GENTOO_PATCH_DEV="sam"
+GENTOO_PATCH_VER="${PV}-r2"
 
 # Official patchlevel
 # See ftp://ftp.cwru.edu/pub/bash/bash-4.4-patches/
@@ -37,16 +41,20 @@ patches() {
 READLINE_VER="7.0"
 
 DESCRIPTION="The standard GNU Bourne again shell"
-HOMEPAGE="http://tiswww.case.edu/php/chet/bash/bashtop.html"
+HOMEPAGE="https://tiswww.case.edu/php/chet/bash/bashtop.html"
 if is_release ; then
 	SRC_URI="mirror://gnu/bash/${MY_P}.tar.gz $(patches)"
 else
 	SRC_URI="ftp://ftp.cwru.edu/pub/bash/${MY_P}.tar.gz"
 fi
 
+if [[ -n ${GENTOO_PATCH_VER} ]] ; then
+	SRC_URI+=" https://dev.gentoo.org/~${GENTOO_PATCH_DEV}/distfiles/${CATEGORY}/${PN}/${PN}-${GENTOO_PATCH_VER}-patches.tar.xz"
+fi
+
 LICENSE="GPL-3"
 SLOT="${MY_PV}"
-KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris"
+KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~x64-solaris"
 IUSE="afs bashlogger examples mem-scramble +net nls plugins +readline"
 
 DEPEND="
@@ -57,8 +65,8 @@ DEPEND="
 RDEPEND="
 	${DEPEND}
 "
-# We only need yacc when the .y files get patched (bash42-005)
-#BDEPEND="virtual/yacc"
+# We only need bison (yacc) when the .y files get patched (bash42-005)
+#BDEPEND="sys-devel/bison"
 
 S="${WORKDIR}/${MY_P}"
 
@@ -78,14 +86,18 @@ pkg_setup() {
 
 src_unpack() {
 	unpack ${MY_P}.tar.gz
+
+	if [[ -n ${GENTOO_PATCH_VER} ]] ; then
+		unpack ${PN}-${GENTOO_PATCH_VER}-patches.tar.xz
+	fi
 }
 
 src_prepare() {
 	# Include official patches
 	[[ ${PLEVEL} -gt 0 ]] && eapply -p0 $(patches -s)
 
-	eapply "${FILESDIR}/${PN}-4.4-jobs_overflow.patch" # bug #644720
-	eapply "${FILESDIR}/${PN}-4.4-set-SHOBJ_STATUS.patch" # bug #644720
+	eapply "${WORKDIR}"/${P}-r2-patches/${PN}-4.4-jobs_overflow.patch # bug #644720
+	eapply "${WORKDIR}"/${P}-r2-patches/${PN}-4.4-set-SHOBJ_STATUS.patch # bug #644720
 
 	# Clean out local libs so we know we use system ones w/releases.
 	if is_release ; then
@@ -105,6 +117,13 @@ src_prepare() {
 }
 
 src_configure() {
+	# Upstream only test with Bison and require GNUisms like YYEOF and
+	# YYERRCODE. The former at least may be in POSIX soon:
+	# https://www.austingroupbugs.net/view.php?id=1269.
+	# configure warns on use of non-Bison but doesn't abort. The result
+	# may misbehave at runtime.
+	unset YACC
+
 	local myconf=(
 		--disable-profiling
 
@@ -126,10 +145,10 @@ src_configure() {
 	# For descriptions of these, see config-top.h
 	# bashrc/#26952 bash_logout/#90488 ssh/#24762 mktemp/#574426
 	append-cppflags \
-		-DDEFAULT_PATH_VALUE=\'\"${EPREFIX}/usr/local/sbin:${EPREFIX}/usr/local/bin:${EPREFIX}/usr/sbin:${EPREFIX}/usr/bin:${EPREFIX}/sbin:${EPREFIX}/bin\"\' \
-		-DSTANDARD_UTILS_PATH=\'\"${EPREFIX}/bin:${EPREFIX}/usr/bin:${EPREFIX}/sbin:${EPREFIX}/usr/sbin\"\' \
-		-DSYS_BASHRC=\'\"${EPREFIX}/etc/bash/bashrc\"\' \
-		-DSYS_BASH_LOGOUT=\'\"${EPREFIX}/etc/bash/bash_logout\"\' \
+		-DDEFAULT_PATH_VALUE=\'\""${EPREFIX}"/usr/local/sbin:"${EPREFIX}"/usr/local/bin:"${EPREFIX}"/usr/sbin:"${EPREFIX}"/usr/bin:"${EPREFIX}"/sbin:"${EPREFIX}"/bin\"\' \
+		-DSTANDARD_UTILS_PATH=\'\""${EPREFIX}"/bin:"${EPREFIX}"/usr/bin:"${EPREFIX}"/sbin:"${EPREFIX}"/usr/sbin\"\' \
+		-DSYS_BASHRC=\'\""${EPREFIX}"/etc/bash/bashrc\"\' \
+		-DSYS_BASH_LOGOUT=\'\""${EPREFIX}"/etc/bash/bash_logout\"\' \
 		-DNON_INTERACTIVE_LOGIN_SHELLS \
 		-DSSH_SOURCE_BASHRC \
 		$(use bashlogger && echo -DSYSLOG_HISTORY)

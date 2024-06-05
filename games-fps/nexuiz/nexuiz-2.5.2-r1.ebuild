@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -10,12 +10,12 @@ MY_P=${PN}-${PV//./}
 MAPS=nexmappack_r2
 DESCRIPTION="Deathmatch FPS based on DarkPlaces, an advanced Quake 1 engine"
 HOMEPAGE="http://www.nexuiz.com/"
-SRC_URI="mirror://sourceforge/${PN}/${MY_P}.zip
-	maps? ( mirror://sourceforge/${PN}/${MAPS}.zip )"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${MY_P}.zip
+	maps? ( https://downloads.sourceforge.net/${PN}/${MAPS}.zip )"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~x86"
 IUSE="alsa dedicated maps opengl sdl"
 
 # no headers for libpng needed

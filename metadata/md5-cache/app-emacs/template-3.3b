@@ -1,13 +1,13 @@
-BDEPEND=>=app-editors/emacs-23.1:*
-DEFINED_PHASES=compile configure install postinst postrm prepare setup unpack
+BDEPEND=>=app-editors/emacs-25.3:*
+DEFINED_PHASES=compile configure install postinst postrm prepare setup test unpack
 DESCRIPTION=Use templates, decorate comments, auto-update buffers
 EAPI=7
 HOMEPAGE=http://emacs-template.sourceforge.net/
 INHERIT=elisp
 KEYWORDS=~amd64 ~x86
 LICENSE=GPL-2+ Texinfo-manual
-RDEPEND=>=app-editors/emacs-23.1:*
+RDEPEND=>=app-editors/emacs-25.3:*
 SLOT=0
-SRC_URI=mirror://sourceforge/emacs-template/template-3.3b.tar.gz
-_eclasses_=elisp-common	cf4fd1b0835b9f3e638724840468064a	elisp	532fa549a4f54b2a3f83b827b272a4a9
-_md5_=23d681966816d0b3bdde17eb4956326a
+SRC_URI=https://downloads.sourceforge.net/emacs-template/template-3.3b.tar.gz
+_eclasses_=elisp-common	abb2dda42f680fce87602c8273f832c7	elisp	fbefa95f5e9ab880a34bc69832b7c0d7
+_md5_=f6d3c72d4f0de769565cd2e4a67d4015

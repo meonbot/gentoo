@@ -11,4 +11,8 @@
 		<flag name="upstream-proxy">Enable upstream proxying</flag>
 		<flag name="xtinyproxy-header">Include the X-Tinyproxy header</flag>
 	</use>
+	<upstream>
+		<remote-id type="github">tinyproxy/tinyproxy</remote-id>
+		<remote-id type="cpe">cpe:/a:tinyproxy_project:tinyproxy</remote-id>
+	</upstream>
 </pkgmetadata>

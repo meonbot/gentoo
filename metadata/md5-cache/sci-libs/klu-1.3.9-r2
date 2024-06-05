@@ -1,15 +1,15 @@
-BDEPEND=virtual/pkgconfig doc? ( virtual/latex-base ) sys-devel/gnuconfig >=app-portage/elt-patches-20170815 || ( >=sys-devel/automake-1.16.2-r1:1.16 ) >=sys-devel/autoconf-2.69 >=sys-devel/libtool-2.4
+BDEPEND=virtual/pkgconfig doc? ( virtual/latex-base ) >=app-portage/elt-patches-20240116 sys-devel/gnuconfig || ( >=dev-build/automake-1.16.5:1.16 ) || ( >=dev-build/autoconf-2.72-r1:2.72 >=dev-build/autoconf-2.71-r6:2.71 ) >=dev-build/libtool-2.4.7-r3
 DEFINED_PHASES=configure install prepare
 DEPEND=>=sci-libs/amd-2.4 >=sci-libs/btf-1.2 >=sci-libs/colamd-2.9
 DESCRIPTION=Sparse LU factorization for circuit simulation
 EAPI=7
-HOMEPAGE=http://faculty.cse.tamu.edu/davis/suitesparse.html
+HOMEPAGE=https://people.engr.tamu.edu/davis/suitesparse.html
 INHERIT=autotools
 IUSE=doc
-KEYWORDS=amd64 ~arm arm64 ~hppa ppc ppc64 ~riscv ~sparc x86 ~amd64-linux ~x86-linux
+KEYWORDS=amd64 ~arm arm64 ~hppa ~ppc ppc64 ~riscv sparc ~x86 ~amd64-linux ~x86-linux
 LICENSE=LGPL-2.1+
 RDEPEND=>=sci-libs/amd-2.4 >=sci-libs/btf-1.2 >=sci-libs/colamd-2.9
 SLOT=0
 SRC_URI=http://202.36.178.9/sage/klu-1.3.9.tar.bz2
-_eclasses_=gnuconfig	262062cef0ba4f22b397193da514a350	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	libtool	241a8f577b9781a42a7421e53448a44e	autotools	c9df06c186913b43eb211100ef5fe2cf
-_md5_=9498c421a23d4373c9e2c9daec83ad2b
+_eclasses_=gnuconfig	a397adda6984a4c423e28ac274c1ba98	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	libtool	5f49a16f67f81bdf873e3d1f10b10001	autotools	dc70c1dc473b68317fc4a86f5fbfc57d
+_md5_=54e4f14b56b34731c18824a5af64a2f7

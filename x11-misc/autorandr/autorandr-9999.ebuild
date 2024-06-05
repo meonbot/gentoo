@@ -1,9 +1,10 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7..10} )
+DISTUTILS_USE_PEP517=setuptools
+PYTHON_COMPAT=( python3_{10..12} )
 
 inherit bash-completion-r1 distutils-r1 systemd udev
 
@@ -12,7 +13,7 @@ if [[ "${PV}" = "9999" ]] ; then
 	EGIT_REPO_URI="https://github.com/phillipberndt/${PN}.git"
 else
 	SRC_URI="https://github.com/phillipberndt/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="~amd64 ~x86"
+	KEYWORDS="~amd64"
 fi
 
 DESCRIPTION="Automatically select a display configuration based on connected devices"
@@ -20,7 +21,7 @@ HOMEPAGE="https://github.com/phillipberndt/autorandr"
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE="launcher udev"
+IUSE="launcher systemd udev"
 
 RDEPEND="
 	x11-apps/xrandr
@@ -28,7 +29,11 @@ RDEPEND="
 	udev? ( virtual/udev )
 "
 DEPEND="${RDEPEND}"
-BDEPEND="virtual/pkgconfig"
+# desktop-file-util: uses desktop-file-edit in Makefile
+BDEPEND="
+	dev-util/desktop-file-utils
+	virtual/pkgconfig
+"
 
 src_compile() {
 	distutils-r1_src_compile
@@ -46,8 +51,8 @@ src_install() {
 	local targets=(
 		autostart_config
 		bash_completion
-		systemd
 		$(usev launcher)
+		$(usev systemd)
 		$(usev udev)
 	)
 
@@ -59,6 +64,12 @@ src_install() {
 }
 
 pkg_postinst() {
+	if use udev; then
+		udev_reload
+	fi
+}
+
+pkg_postrm() {
 	if use udev; then
 		udev_reload
 	fi

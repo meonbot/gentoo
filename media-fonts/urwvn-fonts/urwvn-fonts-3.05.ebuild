@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,15 +8,15 @@ inherit font
 
 DESCRIPTION="Vietnamese version of the standard PostScript fonts from URW++"
 # Check updates on:
-# http://vntex.sourceforge.net/fonts/urwvn-ttf/download/
+# https://vntex.sourceforge.net/fonts/urwvn-ttf/download/
 # https://sourceforge.net/projects/vntex/files
-HOMEPAGE="http://vntex.sourceforge.net/"
-SRC_URI="mirror://sourceforge/project/vntex/urwvn-ttf/${MY_P}-ttf.tar.bz2"
+HOMEPAGE="https://vntex.sourceforge.net/"
+SRC_URI="https://downloads.sourceforge.net/project/vntex/urwvn-ttf/${MY_P}-ttf.tar.bz2"
 S="${WORKDIR}/${MY_P}-ttf"
 
 LICENSE="GPL-2 Aladdin" # bug #434262
 SLOT="0"
-KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ppc ~s390 sparc x86"
+KEYWORDS="~alpha amd64 arm ~hppa ~ia64 ~loong ppc ~s390 sparc x86"
 IUSE=""
 
 FONT_CONF=( "${FILESDIR}/65-urwvn.conf" )

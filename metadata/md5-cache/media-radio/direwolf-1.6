@@ -1,4 +1,4 @@
-BDEPEND=dev-util/ninja >=dev-util/cmake-3.20.5 virtual/pkgconfig virtual/pkgconfig
+BDEPEND=app-alternatives/ninja >=dev-build/cmake-3.20.5 virtual/pkgconfig virtual/pkgconfig
 DEFINED_PHASES=compile configure install postinst prepare test
 DEPEND=media-libs/alsa-lib gps? ( sci-geosciences/gpsd ) hamlib? ( media-libs/hamlib:= ) udev? ( virtual/libudev:= )
 DESCRIPTION=Decoded Information from Radio Emissions for Windows Or Linux Fans
@@ -6,11 +6,11 @@ EAPI=8
 HOMEPAGE=https://github.com/wb2osz/direwolf/blob/master/README.md
 INHERIT=cmake systemd udev
 IUSE=gps hamlib test udev
-KEYWORDS=~amd64 ~x86
+KEYWORDS=~amd64 ~arm ~arm64 ~riscv ~x86
 LICENSE=GPL-2 BSD
 RDEPEND=media-libs/alsa-lib gps? ( sci-geosciences/gpsd ) hamlib? ( media-libs/hamlib:= ) udev? ( virtual/libudev:= )
 RESTRICT=!test? ( test )
 SLOT=0
 SRC_URI=https://github.com/wb2osz/direwolf/archive/1.6.tar.gz -> direwolf-1.6.tar.gz
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	flag-o-matic	d5e1306543bc457213f68bb18f830d14	multiprocessing	61c959fc55c15c00bbb1079d6a71370b	ninja-utils	a4dab848a4490e8e48cf0baab3e61bc2	xdg-utils	4f29a8b760a594a212abe9c2ba957c31	cmake	11fee991ab428a3370e5c20fa8231fb6	systemd	2736b403a83f194b59b767f3b344c2c1	udev	2d229ad4bfa09058e0184b1ca900db32
-_md5_=2e8202161686eebc08dd2cacc2513b11
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	xdg-utils	baea6080dd821f5562d715887954c9d3	cmake	c7c9a62d6232cac66d4ea32d575c3e7c	systemd	c8b03e8df84486aa991d4396686e8942	udev	eec0bbab06977f1cfc5597269c1fa152
+_md5_=c1ec0b6ab06f5de83f062d66a46445fd

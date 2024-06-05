@@ -1,10 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-# pkgcheck note: toolchain-funcs is not unused
-inherit linux-mod toolchain-funcs udev
+inherit linux-mod-r1 udev
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
@@ -21,46 +20,28 @@ HOMEPAGE="https://atar-axis.github.io/xpadneo/"
 LICENSE="GPL-3"
 SLOT="0"
 
-S="${WORKDIR}/${P}/hid-${PN}"
-MODULE_NAMES="hid-${PN}(kernel/drivers/hid::src)"
-BUILD_PARAMS='V=1 LD="$(tc-getLD)" KERNEL_SOURCE_DIR="${KV_OUT_DIR}"'
-BUILD_TARGETS="modules"
-
 CONFIG_CHECK="INPUT_FF_MEMLESS"
 
+src_compile() {
+	local modlist=( hid-${PN}=kernel/drivers/hid:hid-${PN}:hid-${PN}/src )
+	local modargs=( KERNEL_SOURCE_DIR="${KV_OUT_DIR}" )
+
+	linux-mod-r1_src_compile
+}
+
 src_install() {
-	linux-mod_src_install
+	local DOCS=( docs/{[^i]*.md,descriptors,reports} NEWS.md )
+	linux-mod-r1_src_install
 
 	insinto /etc/modprobe.d
-	doins etc-modprobe.d/${PN}.conf
+	doins hid-${PN}/etc-modprobe.d/${PN}.conf
 
-	udev_dorules etc-udev-rules.d/60-${PN}.rules
-
-	dodoc -r ../docs/{[^i]*.md,descriptors,reports} ../NEWS.md
+	udev_dorules hid-${PN}/etc-udev-rules.d/60-${PN}.rules
 }
 
 pkg_postinst() {
-	linux-mod_pkg_postinst
+	linux-mod-r1_pkg_postinst
 	udev_reload
-
-	local disable_ertm=/sys/module/bluetooth/parameters/disable_ertm
-	if kernel_is -ge 5 12; then
-		if [[ $(<${disable_ertm}) == Y ]]; then
-			elog "Warning: bluetooth ERTM (Enhanced ReTransmission Mode) is disabled."
-			elog "This is no longer recommended with kernel >=5.12 to use ${PN}."
-			elog "Can remove ${EROOT}/etc/modprobe.d/no-ertm.conf if it exists, and run:"
-			elog "  echo N > ${disable_ertm}"
-			elog "After changing, may need to re-pair the gamepad with bluetooth."
-		fi
-	elif [[ $(<${disable_ertm}) == N ]]; then
-		elog "Warning: bluetooth ERTM (Enhanced ReTransmission Mode) is enabled."
-		elog "While keeping enabled is recommended for rumble usage stability, it can"
-		elog "cause connection issues without a fix included in kernel >=5.12"
-		elog "If needed, this mode can be disabled by running:"
-		elog "  echo Y > ${disable_ertm}"
-		elog "  echo 'options bluetooth disable_ertm=y' > ${EROOT}/etc/modprobe.d/no-ertm.conf"
-		elog "After changing, may need to re-pair the gamepad with bluetooth."
-	fi
 
 	if [[ ! ${REPLACING_VERSIONS} ]]; then
 		elog "To pair the gamepad and view module options, see documentation in:"
@@ -69,6 +50,5 @@ pkg_postinst() {
 }
 
 pkg_postrm() {
-	linux-mod_pkg_postrm
 	udev_reload
 }

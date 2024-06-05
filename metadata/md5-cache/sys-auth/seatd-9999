@@ -1,15 +1,15 @@
-BDEPEND=>=app-text/scdoc-1.9.7 >=dev-util/meson-0.58.2-r1 >=dev-util/ninja-1.8.2 dev-util/meson-format-array virtual/pkgconfig >=dev-vcs/git-1.8.2.1[curl]
+BDEPEND=>=app-text/scdoc-1.9.7 >=dev-build/meson-1.2.3 app-alternatives/ninja dev-build/meson-format-array virtual/pkgconfig >=dev-vcs/git-1.8.2.1[curl]
 DEFINED_PHASES=compile configure install test unpack
-DEPEND=elogind? ( sys-auth/elogind ) systemd? ( sys-apps/systemd )
+DEPEND=elogind? ( sys-auth/elogind ) systemd? ( sys-apps/systemd:= )
 DESCRIPTION=Minimal seat management daemon and universal library
 EAPI=8
 HOMEPAGE=https://sr.ht/~kennylevinsen/seatd
 INHERIT=meson systemd git-r3
-IUSE=builtin elogind +server systemd
+IUSE=builtin elogind server systemd
 LICENSE=MIT
 PROPERTIES=live
-RDEPEND=elogind? ( sys-auth/elogind ) systemd? ( sys-apps/systemd ) server? ( acct-group/seat )
+RDEPEND=elogind? ( sys-auth/elogind ) systemd? ( sys-apps/systemd:= ) server? ( acct-group/seat )
 REQUIRED_USE=?? ( elogind systemd )
 SLOT=0/1
-_eclasses_=multiprocessing	61c959fc55c15c00bbb1079d6a71370b	ninja-utils	a4dab848a4490e8e48cf0baab3e61bc2	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	python-utils-r1	54423f1e035828362c248fad528ebbba	meson	9f3e84959ae1d60e19bc91f212774dcc	systemd	2736b403a83f194b59b767f3b344c2c1	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=19124dbf5d522b58edf0fbe16ad0345c
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	meson	aecae905c2e0c201d7925fae52a5576d	systemd	c8b03e8df84486aa991d4396686e8942	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=54352ec1f9b33f4843e349107e409814

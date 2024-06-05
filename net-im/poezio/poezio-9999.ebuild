@@ -1,26 +1,26 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-DISTUTILS_USE_SETUPTOOLS=rdepend
-PYTHON_COMPAT=( python3_{7..10} )
+DISTUTILS_USE_PEP517=setuptools
+PYTHON_COMPAT=( python3_{9..12} )
 
 inherit distutils-r1 optfeature xdg
 
 DESCRIPTION="Console XMPP client that looks like most famous IRC clients"
-HOMEPAGE="https://poez.io/"
-LICENSE="ZLIB"
+HOMEPAGE="https://poez.io/ https://codeberg.org/poezio/poezio"
+LICENSE="GPL-3+"
 SLOT="0"
 
 if [[ "${PV}" == "9999" ]]; then
-	EGIT_REPO_URI="https://lab.louiz.org/${PN}/${PN}.git"
+	EGIT_REPO_URI="https://lab.louiz.org/${PN}/${PN}.git https://github.com/poezio/poezio.git"
 	inherit git-r3
 
 	# We build the html documentation using sphinx.
 	BDEPEND="dev-python/sphinx"
 else
-	SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
+	inherit pypi
 	KEYWORDS="~amd64"
 fi
 
@@ -28,7 +28,7 @@ RDEPEND="
 	dev-python/aiodns[${PYTHON_USEDEP}]
 	dev-python/pyasn1-modules[${PYTHON_USEDEP}]
 	dev-python/pyasn1[${PYTHON_USEDEP}]
-	>=dev-python/slixmpp-1.7.1[${PYTHON_USEDEP}]
+	>=dev-python/slixmpp-1.8.2[${PYTHON_USEDEP}]
 "
 
 PATCHES=(
@@ -49,6 +49,14 @@ src_compile() {
 	if [[ -n "${EGIT_REPO_URI}" ]]; then
 		emake -C doc html
 	fi
+}
+
+# Poezio provides its own Python C extension 'poopt', which needs to be
+# correctly discovered to run the tests. See
+# https://projects.gentoo.org/python/guide/test.html#importerrors-for-c-extensions
+python_test() {
+	cd "${T}" || die
+	epytest "${S}"/test
 }
 
 src_install() {

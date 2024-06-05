@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -22,7 +22,7 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	sys-apps/texinfo
-	sys-devel/bison
+	app-alternatives/yacc
 	virtual/pkgconfig
 	nls? ( sys-devel/gettext )
 "
@@ -41,6 +41,8 @@ src_prepare() {
 }
 
 src_configure() {
+	# The following line can be dropped once https://github.com/baszoetekouw/pinfo/pull/35
+	# is merged.
 	append-cflags -D_BSD_SOURCE -D_DEFAULT_SOURCE # sbrk()
 
 	econf \

@@ -5,7 +5,8 @@
 		<email>chutzpah@gentoo.org</email>
 		<name>Patrick McLean</name>
 	</maintainer>
-	<use>
-		<flag name="udis86">Enable support for dev-libs/udis86 disassembler library</flag>
-	</use>
+	<maintainer type="person">
+		<email>dlan@gentoo.org</email>
+		<name>Yixun Lan</name>
+	</maintainer>
 </pkgmetadata>

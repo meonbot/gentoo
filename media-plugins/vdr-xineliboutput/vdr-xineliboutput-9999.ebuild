@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -12,22 +12,21 @@ HOMEPAGE="https://sourceforge.net/projects/xineliboutput/"
 
 EGIT_REPO_URI="https://git.code.sf.net/p/xineliboutput/git"
 
-SLOT="0"
 LICENSE="GPL-2+"
+SLOT="0"
 KEYWORDS=""
-IUSE="bluray caps cec dbus fbcon jpeg libextractor nls opengl +vdr vdpau +X +xine xinerama"
+IUSE="bluray caps cec dbus fbcon jpeg nls opengl +vdr vdpau +X +xine xinerama"
 
 COMMON_DEPEND="
 	vdr? (
 		>=media-video/vdr-1.6.0
-		libextractor? ( >=media-libs/libextractor-0.5.20 )
 		caps? ( sys-libs/libcap )
 	)
 
 	xine? (
 		( >=media-libs/xine-lib-1.2
 			media-video/ffmpeg )
-		fbcon? ( jpeg? ( virtual/jpeg:* ) )
+		fbcon? ( jpeg? ( media-libs/libjpeg-turbo:= ) )
 		X? (
 			x11-libs/libX11
 			x11-libs/libXext
@@ -35,7 +34,7 @@ COMMON_DEPEND="
 			xinerama? ( x11-libs/libXinerama )
 			dbus? ( dev-libs/dbus-glib dev-libs/glib:2 )
 			vdpau? ( x11-libs/libvdpau >=media-libs/xine-lib-1.2 )
-			jpeg? ( virtual/jpeg:* )
+			jpeg? ( media-libs/libjpeg-turbo:= )
 			bluray? ( media-libs/libbluray )
 			opengl? ( virtual/opengl )
 		)
@@ -93,8 +92,8 @@ src_configure() {
 
 	# No autotools based configure script
 	./configure \
-		--cc=$(tc-getCC) \
-		--cxx=$(tc-getCXX) \
+		--cc="$(tc-getCC)" \
+		--cxx="$(tc-getCXX)" \
 		$(use_enable X x11) \
 		$(use_enable X xshm) \
 		$(use_enable X xdpms) \
@@ -103,7 +102,7 @@ src_configure() {
 		$(use_enable fbcon fb) \
 		$(use_enable vdr) \
 		$(use_enable xine libxine) \
-		$(use_enable libextractor) \
+		--disable-libextractor \
 		$(use_enable caps libcap) \
 		$(use_enable jpeg libjpeg) \
 		$(use_enable xinerama) \
@@ -131,7 +130,7 @@ src_install() {
 		fi
 
 		if use xine; then
-			doinitd "${FILESDIR}"/vdr-frontend
+			newinitd "${FILESDIR}"/vdr-frontend-r1 vdr-frontend
 
 			insinto $XINE_PLUGIN_DIR
 			doins xineplug_inp_xvdr.so

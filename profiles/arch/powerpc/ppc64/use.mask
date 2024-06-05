@@ -1,7 +1,14 @@
-# Copyright 2008-2021 Gentoo Authors
+# Copyright 2008-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 ### THIS FILE IS ONLY FOR PACKAGES MASKED ON BOTH 64-BIT AND 32-BIT USERLAND!!!
+
+# Paul Zander <negril.nx+gentoo@gmail.com> (2024-03-29)
+# not available here (see openexr, opencolorio, opencv)
+openvdb
+embree
+openimageio
+osl
 
 # Michał Górny <mgorny@gentoo.org> (2021-12-31)
 # PyPy3 is keyworded here.
@@ -13,10 +20,6 @@
 # ...and openscenegraph needs openexr.
 openexr
 osg
-
-# Michał Górny <mgorny@gentoo.org> (2014-06-27)
-# Unmask multilib flag for the ABI.
--abi_ppc_64
 
 # Samuli Suominen <ssuominen@gentoo.org> (2012-11-24)
 # TODO: Keyword and stabilize media-gfx/opencolorio and media-libs/opencv
@@ -36,10 +39,3 @@ battery
 
 # Unmask the flag for Playstation 3
 -ps3
-
-# mask custom-cpuopts and cpudetection on ppc64 for mplayer - bug #234629
-cpudetection
-
-# Michał Górny <mgorny@gentoo.org> (2013-05-04)
-# Unmask systemd since it is keyworded here.
--systemd

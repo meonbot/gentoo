@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{10..11} )
 TMPFILES_OPTIONAL=1
 
 inherit python-any-r1 prefix toolchain-funcs flag-o-matic gnuconfig \
@@ -103,7 +103,7 @@ COMMON_DEPEND="
 	) )
 	suid? ( caps? ( sys-libs/libcap ) )
 	selinux? ( sys-libs/libselinux )
-	systemtap? ( dev-util/systemtap )
+	systemtap? ( dev-debug/systemtap )
 	!<net-misc/openssh-8.1_p1-r2
 "
 DEPEND="${COMMON_DEPEND}
@@ -372,6 +372,7 @@ setup_flags() {
 		append-flags -O2
 	fi
 	strip-unsupported-flags
+	filter-lto
 	filter-flags -m32 -m64 '-mabi=*'
 
 	# glibc aborts if rpath is set by LDFLAGS
@@ -633,7 +634,7 @@ sanity_prechecks() {
 	if [[ -e ${EROOT}/etc/nsswitch.conf ]] ; then
 		local entry
 		for entry in passwd group shadow; do
-			if ! egrep -q "^[ \t]*${entry}:.*files" "${EROOT}"/etc/nsswitch.conf; then
+			if ! grep -E -q "^[ \t]*${entry}:.*files" "${EROOT}"/etc/nsswitch.conf; then
 				eerror "Your ${EROOT}/etc/nsswitch.conf is out of date."
 				eerror "Please make sure you have 'files' entries for"
 				eerror "'passwd:', 'group:' and 'shadow:' databases."
@@ -978,7 +979,7 @@ glibc_do_configure() {
 	# add x32 to it, gcc/glibc don't yet support x32.
 	#
 	if [[ -n ${GCC_BOOTSTRAP_VER} ]] && use multilib ; then
-		echo 'main(){}' > "${T}"/test.c
+		echo 'int main(){}' > "${T}"/test.c
 		if ! $(tc-getCC ${CTARGET}) ${CFLAGS} ${LDFLAGS} "${T}"/test.c -Wl,-emain -lgcc 2>/dev/null ; then
 			sed -i -e '/^CC = /s:$: -B$(objdir)/../'"gcc-multilib-bootstrap-${GCC_BOOTSTRAP_VER}/${ABI}:" config.make || die
 		fi
@@ -1486,7 +1487,7 @@ pkg_postinst() {
 	if [[ -e ${EROOT}/etc/nsswitch.conf ]] && ! has_version sys-auth/libnss-nis ; then
 		local entry
 		for entry in passwd group shadow; do
-			if egrep -q "^[ \t]*${entry}:.*nis" "${EROOT}"/etc/nsswitch.conf; then
+			if grep -E -q "^[ \t]*${entry}:.*nis" "${EROOT}"/etc/nsswitch.conf; then
 				ewarn ""
 				ewarn "Your ${EROOT}/etc/nsswitch.conf uses NIS. Support for that has been"
 				ewarn "removed from glibc and is now provided by the package"

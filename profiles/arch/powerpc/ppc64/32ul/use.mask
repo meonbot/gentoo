@@ -7,7 +7,6 @@ ppc64
 # We mask this since we're not really a multilib profile
 multilib
 
-# Michał Górny <mgorny@gentoo.org> (2014-06-27)
-# Switch multilib flags for the ABI.
-abi_ppc_64
--abi_ppc_32
+# matoro <matoro_gentoo@matoro.tk> (2023-06-17)
+# media-libs/libheif is not keyworded here
+heif

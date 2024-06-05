@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,11 +7,11 @@ inherit findlib
 
 DESCRIPTION="OCaml SDL Bindings"
 HOMEPAGE="http://ocamlsdl.sourceforge.net"
-SRC_URI="mirror://sourceforge/ocamlsdl/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/ocamlsdl/${P}.tar.gz"
 LICENSE="LGPL-2"
 
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ppc x86"
+KEYWORDS="~amd64 ~ppc x86"
 IUSE="doc +ocamlopt opengl truetype" #noimage nomixer
 
 RDEPEND="
@@ -50,6 +50,12 @@ src_configure() {
 	econf \
 		$myconf \
 		$(use_enable truetype sdl-ttf)
+	if ! use opengl; then
+		sed -i \
+			-e 's:LABLGLDIR:FALSE:' \
+			src/Makefile \
+			|| die
+	fi
 }
 
 src_install() {

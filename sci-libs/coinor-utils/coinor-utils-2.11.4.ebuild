@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -16,7 +16,7 @@ LICENSE="EPL-1.0"
 # major soname component
 SLOT="0/3"
 
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~loong ~riscv ~x86 ~amd64-linux ~x86-linux"
 IUSE="bzip2 doc glpk blas lapack static-libs test zlib"
 RESTRICT="!test? ( test )"
 
@@ -27,7 +27,7 @@ RESTRICT="!test? ( test )"
 #
 BDEPEND="virtual/fortran
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen[dot] )
+	doc? ( app-text/doxygen[dot] )
 	test? ( sci-libs/coinor-sample )"
 DEPEND="sys-libs/readline:0=
 	blas? ( virtual/blas )

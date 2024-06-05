@@ -1,9 +1,10 @@
-# Copyright 2019-2021 Gentoo Authors
+# Copyright 2019-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: acct-group.eclass
 # @MAINTAINER:
 # Michał Górny <mgorny@gentoo.org>
+# Mike Gilbert <floppym@gentoo.org>
 # @AUTHOR:
 # Michael Orlitzky <mjo@gentoo.org>
 # Michał Górny <mgorny@gentoo.org>
@@ -35,12 +36,12 @@
 if [[ -z ${_ACCT_GROUP_ECLASS} ]]; then
 _ACCT_GROUP_ECLASS=1
 
-case ${EAPI:-0} in
+case ${EAPI} in
 	7|8) ;;
-	*) die "EAPI=${EAPI:-0} not supported";;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
 
-inherit user
+inherit user-info
 
 [[ ${CATEGORY} == acct-group ]] ||
 	die "Ebuild error: this eclass can be used only in acct-group category!"
@@ -48,41 +49,40 @@ inherit user
 
 # << Eclass variables >>
 
-# @ECLASS-VARIABLE: ACCT_GROUP_NAME
-# @INTERNAL
+# @ECLASS_VARIABLE: ACCT_GROUP_NAME
 # @DESCRIPTION:
 # The name of the group.  This is forced to ${PN} and the policy
-# prohibits it from being changed.
+# prohibits it from being changed.  The variable is left writable for
+# use in overlays; package naming restrictions would prohibit some
+# otherwise-valid group names.
 ACCT_GROUP_NAME=${PN}
-readonly ACCT_GROUP_NAME
 
-# @ECLASS-VARIABLE: ACCT_GROUP_ID
+# @ECLASS_VARIABLE: ACCT_GROUP_ID
 # @REQUIRED
 # @DESCRIPTION:
 # Preferred GID for the new group.  This variable is obligatory, and its
-# value must be unique across all group packages.  This can be overriden
+# value must be unique across all group packages.  This can be overridden
 # in make.conf through ACCT_GROUP_<UPPERCASE_USERNAME>_ID variable.
 #
 # Overlays should set this to -1 to dynamically allocate GID.  Using -1
 # in ::gentoo is prohibited by policy.
 
-# @ECLASS-VARIABLE: ACCT_GROUP_ENFORCE_ID
+# @ECLASS_VARIABLE: ACCT_GROUP_ENFORCE_ID
 # @DESCRIPTION:
 # If set to a non-null value, the eclass will require the group to have
 # specified GID.  If the group already exists with another GID, or
 # the GID is taken by another group, the install will fail.
-: ${ACCT_GROUP_ENFORCE_ID:=}
+: "${ACCT_GROUP_ENFORCE_ID:=}"
 
 
 # << Boilerplate ebuild variables >>
-: ${DESCRIPTION:="System group: ${ACCT_GROUP_NAME}"}
-: ${SLOT:=0}
-: ${KEYWORDS:=alpha amd64 arm arm64 hppa ia64 m68k ~mips ppc ppc64 ~riscv s390 sparc x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris}
+: "${DESCRIPTION:="System group: ${ACCT_GROUP_NAME}"}"
+: "${SLOT:=0}"
+: "${KEYWORDS:=~alpha amd64 arm arm64 hppa ~ia64 ~loong ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~x64-solaris}"
 S=${WORKDIR}
 
 
 # << Phase functions >>
-EXPORT_FUNCTIONS pkg_pretend src_install pkg_preinst
 
 # @FUNCTION: acct-group_pkg_pretend
 # @DESCRIPTION:
@@ -96,8 +96,9 @@ acct-group_pkg_pretend() {
 	[[ ${ACCT_GROUP_ID} -ge -1 ]] || die "Ebuild error: ACCT_GROUP_ID=${ACCT_GROUP_ID} invalid!"
 	local group_id=${ACCT_GROUP_ID}
 
-	# check for the override
-	local override_name=${ACCT_GROUP_NAME^^}
+	# check for the override, use PN in case this is an overlay and
+	# ACCT_GROUP_NAME is not PN and not valid in a bash variable name
+	local override_name=${PN^^}
 	local override_var=ACCT_GROUP_${override_name//-/_}_ID
 	if [[ -n ${!override_var} ]]; then
 		group_id=${!override_var}
@@ -132,8 +133,9 @@ acct-group_pkg_pretend() {
 acct-group_src_install() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	# check for the override
-	local override_name=${ACCT_GROUP_NAME^^}
+	# check for the override, use PN in case this is an overlay and
+	# ACCT_GROUP_NAME is not PN and not valid in a bash variable name
+	local override_name=${PN^^}
 	local override_var=ACCT_GROUP_${override_name//-/_}_ID
 	if [[ -n ${!override_var} ]]; then
 		ewarn "${override_var}=${!override_var} override in effect, support will not be provided."
@@ -156,8 +158,32 @@ acct-group_src_install() {
 acct-group_pkg_preinst() {
 	debug-print-function ${FUNCNAME} "${@}"
 
-	enewgroup ${ACCT_GROUP_ENFORCE_ID:+-F} "${ACCT_GROUP_NAME}" \
-		"${_ACCT_GROUP_ID}"
+	if [[ ${EUID} -ne 0 || -n ${EPREFIX} ]]; then
+		einfo "Insufficient privileges to execute ${FUNCNAME[0]}"
+		return
+	fi
+
+	if egetent group "${ACCT_GROUP_NAME}" >/dev/null; then
+		elog "Group ${ACCT_GROUP_NAME} already exists"
+		return
+	fi
+
+	local opts=( --system )
+
+	if [[ ${_ACCT_GROUP_ID} -ne -1 ]] &&
+		! egetent group "${_ACCT_GROUP_ID}" >/dev/null
+	then
+		opts+=( --gid "${_ACCT_GROUP_ID}" )
+	fi
+
+	if [[ -n ${ROOT} ]]; then
+		opts+=( --prefix "${ROOT}" )
+	fi
+
+	elog "Adding group ${ACCT_GROUP_NAME}"
+	groupadd "${opts[@]}" "${ACCT_GROUP_NAME}" || die "groupadd failed with status $?"
 }
 
 fi
+
+EXPORT_FUNCTIONS pkg_pretend src_install pkg_preinst

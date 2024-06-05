@@ -1,17 +1,15 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-# Please don't add pypy support before testing if it's actually supported. The
-# old compat matrix is no longer accessible as of 2021-02-13 but stated back
-# in 2020-07-05 that PyQt5 was explicitly not supported.
-PYTHON_COMPAT=( python3_{8,9,10} )
+PYTHON_COMPAT=( python3_{10..12} )
+DISTUTILS_USE_PEP517="setuptools"
+DISTUTILS_SINGLE_IMPL=1
+PYPI_NO_NORMALIZE=1
+PYPI_PN="ReText"
 
-inherit distutils-r1 optfeature virtualx xdg-utils
-
-MY_PN="ReText"
-MY_P="${MY_PN}-${PV/_/~}"
+inherit desktop distutils-r1 optfeature virtualx xdg
 
 DESCRIPTION="Simple editor for Markdown and reStructuredText"
 HOMEPAGE="https://github.com/retext-project/retext https://github.com/retext-project/retext/wiki"
@@ -20,10 +18,8 @@ if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/retext-project/retext.git"
 else
-	SRC_URI="mirror://pypi/${MY_PN:0:1}/${MY_PN}/${MY_P}.tar.gz"
-	S="${WORKDIR}/${MY_P}"
-
-	KEYWORDS="~amd64 ~riscv ~x86"
+	inherit pypi
+	KEYWORDS="~amd64"
 fi
 
 LICENSE="GPL-2+"
@@ -31,40 +27,43 @@ SLOT="0"
 RESTRICT="!test? ( test )"
 
 RDEPEND="
-	dev-python/chardet[${PYTHON_USEDEP}]
-	dev-python/docutils[${PYTHON_USEDEP}]
-	dev-python/markdown[${PYTHON_USEDEP}]
-	>=dev-python/markups-3.1.1[${PYTHON_USEDEP}]
-	dev-python/pygments[${PYTHON_USEDEP}]
-	dev-python/python-markdown-math[${PYTHON_USEDEP}]
-	dev-python/PyQt5[dbus,gui,printsupport,widgets,${PYTHON_USEDEP}]
+	$(python_gen_cond_dep '
+		dev-python/docutils[${PYTHON_USEDEP}]
+		dev-python/markdown[${PYTHON_USEDEP}]
+		>=dev-python/markups-3.1.1[${PYTHON_USEDEP}]
+		dev-python/pygments[${PYTHON_USEDEP}]
+		dev-python/PyQt6[dbus,gui,printsupport,widgets,${PYTHON_USEDEP}]
+	')
 "
-DEPEND="${RDEPEND}"
-BDEPEND="test? ( dev-python/PyQt5[testlib,${PYTHON_USEDEP}] )"
+# qmake6 from qtbase is used to find lrelease
+BDEPEND="
+	dev-qt/qtbase:6
+	dev-qt/qttools:6[linguist]
+	test? (
+		${RDEPEND}
+		$(python_gen_cond_dep '
+			dev-python/PyQt6[testlib,${PYTHON_USEDEP}]
+		')
+	)
+"
+
+distutils_enable_tests unittest
 
 src_test() {
-	virtx distutils-r1_src_test
+	QT_QPA_PLATFORM=minimal virtx distutils-r1_src_test
 }
 
-python_test() {
-	esetup.py test
+src_install() {
+	distutils-r1_src_install
+
+	domenu data/me.mitya57.ReText.desktop
 }
 
 pkg_postinst() {
-	xdg_desktop_database_update
-	xdg_icon_cache_update
+	xdg_pkg_postinst
 
+	optfeature "a local copy of the MathJax JavaScript library" dev-libs/mathjax
+	optfeature "encoding detection" dev-python/chardet
 	optfeature "dictionary support" dev-python/pyenchant
-	# See https://bugs.gentoo.org/772197.
-	optfeature "rendering with webengine" dev-python/PyQtWebEngine
-
-	einfo "Starting with retext-7.0.4 the markdown-math plugin is installed."
-	einfo "Note that you can use different math delimiters, e.g. \(...\) for inline math."
-	einfo "For more details take a look at:"
-	einfo "https://github.com/mitya57/python-markdown-math#math-delimiters"
-}
-
-pkg_postrm() {
-	xdg_desktop_database_update
-	xdg_icon_cache_update
+	optfeature "JavaScript support in preview" dev-python/PyQt6-WebEngine
 }

@@ -1,8 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
-USE_RUBY="ruby26 ruby27 ruby30"
+USE_RUBY="ruby31 ruby32 ruby33"
 
 RUBY_FAKEGEM_RECIPE_TEST="rspec3"
 
@@ -21,7 +21,7 @@ IUSE=""
 DEPEND+=" >=net-libs/http-parser-2.8.1"
 RDEPEND+=" >=net-libs/http-parser-2.8.1"
 
-ruby_add_bdepend "dev-ruby/ffi-compiler"
+ruby_add_bdepend "dev-ruby/ffi-compiler dev-ruby/rake"
 
 each_ruby_compile() {
 	${RUBY} -C ext -S rake || die

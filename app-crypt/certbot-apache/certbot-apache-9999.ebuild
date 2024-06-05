@@ -1,33 +1,49 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
-DISTUTILS_USE_SETUPTOOLS=rdepend
-
-if [[ ${PV} == 9999* ]]; then
-	EGIT_REPO_URI="https://github.com/certbot/certbot.git"
-	inherit git-r3
-	S=${WORKDIR}/${P}/${PN}
-else
-	SRC_URI="https://github.com/${PN%-apache}/${PN%-apache}/archive/v${PV}.tar.gz -> ${PN%-apache}-${PV}.tar.gz"
-	KEYWORDS="~amd64 ~arm64 ~x86"
-	S=${WORKDIR}/${PN%-apache}-${PV}/${PN}
-fi
+PYTHON_COMPAT=( python3_{9..12} )
+DISTUTILS_USE_PEP517=setuptools
 
 inherit distutils-r1
 
-DESCRIPTION="Apache plugin for certbot (Let's Encrypt Client)"
-HOMEPAGE="https://github.com/certbot/certbot https://letsencrypt.org/"
+PARENT_PN="${PN%-apache}"
+PARENT_P="${PARENT_PN}-${PV}"
 
+if [[ "${PV}" == *9999 ]]; then
+	inherit git-r3
+
+	EGIT_REPO_URI="https://github.com/certbot/certbot.git"
+	EGIT_SUBMODULES=()
+	EGIT_CHECKOUT_DIR="${WORKDIR}/${PARENT_P}"
+else
+	SRC_URI="
+		https://github.com/certbot/certbot/archive/v${PV}.tar.gz
+			-> ${PARENT_P}.gh.tar.gz
+	"
+	# Only for amd64, arm64 and x86 because of dev-python/python-augeas
+	KEYWORDS="~amd64 ~arm64 ~x86"
+fi
+
+DESCRIPTION="Apache plugin for Certbot (Let’s Encrypt client)"
+HOMEPAGE="
+	https://github.com/certbot/certbot
+	https://letsencrypt.org/
+"
+
+S="${WORKDIR}/${PARENT_P}/${PN}"
 LICENSE="Apache-2.0"
 SLOT="0"
 
-RDEPEND=">=app-crypt/acme-${PV}[${PYTHON_USEDEP}]
+BDEPEND="
+	test? ( dev-python/pytest[${PYTHON_USEDEP}] )
+"
+
+RDEPEND="
+	>=app-crypt/acme-${PV}[${PYTHON_USEDEP}]
 	>=app-crypt/certbot-${PV}[${PYTHON_USEDEP}]
 	dev-python/python-augeas[${PYTHON_USEDEP}]
-	dev-python/zope-component[${PYTHON_USEDEP}]
-	dev-python/zope-interface[${PYTHON_USEDEP}]"
+"
 
 distutils_enable_tests pytest

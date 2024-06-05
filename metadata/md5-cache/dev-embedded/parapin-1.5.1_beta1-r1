@@ -1,12 +1,12 @@
 DEFINED_PHASES=compile install
 DESCRIPTION=A parallel port pin programming library
 EAPI=8
-HOMEPAGE=http://parapin.sourceforge.net/
+HOMEPAGE=https://parapin.sourceforge.net/
 INHERIT=toolchain-funcs
 IUSE=doc
 KEYWORDS=~amd64 ~x86
 LICENSE=LGPL-2.1
 SLOT=0
-SRC_URI=mirror://sourceforge/parapin/parapin-1.5.1-beta1.tgz
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784
-_md5_=61b95ff038a4e4fa975b1dde82d69818
+SRC_URI=https://downloads.sourceforge.net/parapin/parapin-1.5.1-beta1.tgz
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0
+_md5_=77e66a905ffa70c2275c042f47e40bcb

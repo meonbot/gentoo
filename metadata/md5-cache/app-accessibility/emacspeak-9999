@@ -1,13 +1,14 @@
-DEFINED_PHASES=compile configure install postinst postrm prepare setup unpack
-DEPEND=espeak? ( app-accessibility/espeak ) >=app-editors/emacs-24:* >=dev-vcs/git-1.8.2.1[curl]
-DESCRIPTION=the emacspeak audio desktop
-EAPI=6
+BDEPEND=>=app-editors/emacs-26.1:* >=dev-vcs/git-1.8.2.1[curl]
+DEFINED_PHASES=compile configure install postinst postrm prepare setup test unpack
+DEPEND=dev-lang/tcl:= espeak? ( app-accessibility/espeak-ng )
+DESCRIPTION=The emacspeak audio desktop
+EAPI=8
 HOMEPAGE=http://emacspeak.sourceforge.net/
-INHERIT=elisp readme.gentoo-r1 git-r3
+INHERIT=elisp toolchain-funcs readme.gentoo-r1 git-r3
 IUSE=+espeak
-LICENSE=BSD GPL-2
+LICENSE=GPL-2+ GPL-3+
 PROPERTIES=live
-RDEPEND=espeak? ( app-accessibility/espeak ) >=dev-tcltk/tclx-8.4 >=app-editors/emacs-24:*
+RDEPEND=dev-lang/tcl:= espeak? ( app-accessibility/espeak-ng ) >=dev-tcltk/tclx-8.4 >=app-editors/emacs-26.1:*
 SLOT=0
-_eclasses_=eapi7-ver	1a0a60ad07c8b32d2faba2d085dc0f24	elisp-common	cf4fd1b0835b9f3e638724840468064a	elisp	532fa549a4f54b2a3f83b827b272a4a9	readme.gentoo-r1	eebd0164fe61f4f7b64a683e83fdceb1	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=bb5e081141fefe72f22d1d7405b36da5
+_eclasses_=elisp-common	abb2dda42f680fce87602c8273f832c7	elisp	fbefa95f5e9ab880a34bc69832b7c0d7	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	readme.gentoo-r1	204091a2cde6179cd9d3db26d09412d3	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=37df216b31876ed15cfd7fb77b5b8311

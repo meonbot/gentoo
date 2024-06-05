@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # As upstream (and we aswell) are not allowed to redistribute scansyn,
@@ -8,7 +8,7 @@
 EAPI=8
 
 LUA_COMPAT=( lua5-1 luajit )
-PYTHON_COMPAT=( python3_{7,8,9,10} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit cmake lua-single python-single-r1
 
@@ -26,7 +26,7 @@ else
 fi
 
 DESCRIPTION="Sound design and signal processing system for composition and performance"
-HOMEPAGE="https://csound.github.io/"
+HOMEPAGE="https://csound.com/"
 
 LICENSE="LGPL-2.1 doc? ( FDL-1.2+ )"
 SLOT="0"
@@ -41,9 +41,10 @@ REQUIRED_USE="
 "
 
 BDEPEND="
-	sys-devel/bison
-	sys-devel/flex
-	virtual/yacc
+	app-alternatives/yacc
+	app-alternatives/lex
+	app-alternatives/yacc
+	doc? ( media-libs/libpng )
 	lua? ( dev-lang/swig )
 	nls? ( sys-devel/gettext )
 	test? (
@@ -68,8 +69,9 @@ CDEPEND="
 	osc? ( media-libs/liblo )
 	portaudio? ( media-libs/portaudio )
 	portmidi? ( media-libs/portmidi )
-	pulseaudio? ( media-sound/pulseaudio )
+	pulseaudio? ( media-libs/libpulse )
 	utils? ( !media-sound/snd )
+	vim-syntax? ( !app-vim/csound-syntax )
 "
 RDEPEND="
 	${CDEPEND}

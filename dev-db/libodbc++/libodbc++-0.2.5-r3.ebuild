@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -6,12 +6,12 @@ EAPI=8
 inherit flag-o-matic
 
 DESCRIPTION="Provides a subset of the well-known JDBC 2.0(tm) and runs on top of ODBC"
-SRC_URI="mirror://sourceforge/libodbcxx/${P}.tar.bz2"
+SRC_URI="https://downloads.sourceforge.net/libodbcxx/${P}.tar.bz2"
 HOMEPAGE="http://libodbcxx.sourceforge.net/"
 
 LICENSE="LGPL-2.1"
 SLOT=0
-KEYWORDS="~alpha ~amd64 ~hppa ~ppc ~x86"
+KEYWORDS="~alpha ~amd64 ~hppa ~ppc ~riscv ~x86"
 
 DEPEND="dev-db/unixODBC
 		sys-libs/ncurses"
@@ -27,6 +27,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-0.2.3-doxygen.patch
 	"${FILESDIR}"/${PN}-0.2.3-gcc41.patch
 	"${FILESDIR}"/${PN}-0.2.3-gcc44.patch
+	"${FILESDIR}"/${PN}-0.2.3-musl-1.2.3-null.patch
 )
 
 src_prepare() {

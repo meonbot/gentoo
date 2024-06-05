@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,17 +6,17 @@ inherit readme.gentoo-r1
 
 DESCRIPTION="FUSE filesystem for SMB shares"
 HOMEPAGE="https://sourceforge.net/projects/smbnetfs"
-SRC_URI="mirror://sourceforge/project/${PN}/${PN}/SMBNetFS-${PV}/${P}.tar.bz2"
+SRC_URI="https://downloads.sourceforge.net/project/${PN}/${PN}/SMBNetFS-${PV}/${P}.tar.bz2"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~x86-linux"
-IUSE="gnome-keyring"
+IUSE="keyring"
 
 RDEPEND=">=sys-fs/fuse-2.3:0=
 	>=net-fs/samba-4.2
 	>=dev-libs/glib-2.30
-	gnome-keyring? ( app-crypt/libsecret )"
+	keyring? ( app-crypt/libsecret )"
 
 DEPEND="${RDEPEND}
 	virtual/pkgconfig"
@@ -33,7 +33,7 @@ For quick usage, exec:
 "
 
 src_configure() {
-	econf $(use_with gnome-keyring libsecret)
+	econf $(use_with keyring libsecret)
 }
 
 src_install() {

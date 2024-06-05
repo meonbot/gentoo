@@ -1,12 +1,12 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
-inherit gnome2-utils xdg
+EAPI=8
+inherit xdg
 
 DESCRIPTION="Platform game about a blob and his quest to rescue MIAs from an alien invader"
 HOMEPAGE="https://sourceforge.net/projects/blobwars/ https://www.parallelrealities.co.uk/games/metalBlobSolid/ https://github.com/perpendicular-dimensions/blobwars"
-SRC_URI="mirror://sourceforge/blobwars/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/blobwars/${P}.tar.gz"
 
 LICENSE="BSD CC-BY-SA-3.0 CC-BY-3.0 GPL-2 LGPL-2.1 fairuse public-domain"
 SLOT="0"
@@ -22,9 +22,8 @@ RDEPEND="
 	sys-libs/zlib
 	virtual/libintl
 "
-DEPEND="${RDEPEND}
-	sys-devel/gettext
-"
+DEPEND="${RDEPEND}"
+BDEPEND="sys-devel/gettext"
 
 src_prepare() {
 	default

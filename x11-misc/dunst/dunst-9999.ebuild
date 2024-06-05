@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -12,7 +12,6 @@ HOMEPAGE="https://dunst-project.org/ https://github.com/dunst-project/dunst"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS=""
 IUSE="wayland"
 
 DEPEND="
@@ -57,6 +56,7 @@ src_configure() {
 
 src_compile() {
 	local myemakeargs=(
+		SYSCONFDIR="${EPREFIX}/etc/xdg"
 		SYSTEMD="0"
 		WAYLAND="$(usex wayland 1 0)"
 	)
@@ -67,7 +67,7 @@ src_compile() {
 src_install() {
 	local myemakeargs=(
 		PREFIX="${ED}/usr"
-		SYSCONFDIR="${ED}/etc"
+		SYSCONFDIR="${ED}/etc/xdg"
 		SYSTEMD="0"
 		WAYLAND="$(usex wayland 1 0)"
 	)

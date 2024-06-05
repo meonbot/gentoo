@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="8"
@@ -6,12 +6,12 @@ EAPI="8"
 inherit toolchain-funcs
 
 DESCRIPTION="Vietnamese input keyboard for X"
-HOMEPAGE="http://xvnkb.sourceforge.net/"
-SRC_URI="http://${PN}.sourceforge.net/${P}.tar.bz2"
+HOMEPAGE="https://xvnkb.sourceforge.net/"
+SRC_URI="https://${PN}.sourceforge.net/${P}.tar.bz2"
 
 LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="~amd64 ~ppc ~x86"
+KEYWORDS="amd64 ppc x86"
 IUSE="spell xft"
 
 RDEPEND="x11-libs/libX11:=
@@ -31,12 +31,13 @@ src_prepare() {
 }
 
 src_configure() {
-	# *not* autotools
-	./configure \
+	# *not* autotools. Uses broken logic that assumes all the world is a bash
+	bash ./configure \
 		$(usex spell '' '--no-spellcheck') \
 		$(usex xft '' '--no-xft') \
 		--use-extstroke \
 		|| die "./configure failed"
+	[[ -f Makefile ]] || die "./configure failed to set an error code, but didn't create a Makefile either"
 }
 
 src_install() {

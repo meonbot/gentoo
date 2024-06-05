@@ -2,6 +2,10 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person" proxied="yes">
+		<email>foti.giuseppe@gmail.com</email>
+		<name>Giuseppe Foti</name>
+	</maintainer>
+	<maintainer type="person" proxied="yes">
 		<email>jonas.licht@gmail.com</email>
 		<name>Jonas Licht</name>
 	</maintainer>
@@ -10,9 +14,7 @@
 		<name>Proxy Maintainers</name>
 	</maintainer>
 	<use>
-		<flag name="cron">Install a cron job to update GVM's feed daily.</flag>
-		<flag name="extras">Html docs support</flag>
-		<flag name="snmp">Build againts net-analyzer/net-snmp for "improved SNMP support"</flag>
+		<flag name="snmp">Build againts <pkg>net-analyzer/net-snmp</pkg> for "improved SNMP support"</flag>
 	</use>
 	<longdescription lang="en">
 	Open Vulnerability Assessment System (OpenVAS) Scanner is the Greenbone Vulnerability Management (GVM) Solution.

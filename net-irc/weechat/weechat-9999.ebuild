@@ -1,38 +1,45 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 LUA_COMPAT=( lua5-{1..4} )
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{10..12} )
 
-inherit cmake lua-single python-single-r1 xdg-utils
+inherit cmake lua-single python-single-r1 xdg
 
 if [[ ${PV} == "9999" ]] ; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/weechat/weechat.git"
 else
-	SRC_URI="https://weechat.org/files/src/${P}.tar.xz"
+	inherit verify-sig
+	SRC_URI="https://weechat.org/files/src/${P}.tar.xz
+		verify-sig? ( https://weechat.org/files/src/${P}.tar.xz.asc )"
+	VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/weechat.org.asc
+	BDEPEND+="verify-sig? ( sec-keys/openpgp-keys-weechat )"
 	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86 ~x64-macos"
 fi
 
 DESCRIPTION="Portable and multi-interface IRC client"
 HOMEPAGE="https://weechat.org/"
 
-LICENSE="GPL-3"
+LICENSE="GPL-3+"
 SLOT="0/${PV}"
 
 NETWORKS="+irc"
 PLUGINS="+alias +buflist +charset +exec +fifo +fset +logger +relay +scripts +spell +trigger +typing +xfer"
 # dev-lang/v8 was dropped from Gentoo so we can't enable javascript support
-SCRIPT_LANGS="guile lua +perl php +python ruby tcl"
+# dev-lang/php eclass support is lacking, php plugins don't work. bug #705702
+SCRIPT_LANGS="guile lua +perl +python ruby tcl"
 LANGS=" cs de es fr it ja pl ru"
-IUSE="doc man nls selinux test ${SCRIPT_LANGS} ${PLUGINS} ${INTERFACES} ${NETWORKS}"
+IUSE="doc enchant man nls relay-api selinux test +zstd ${SCRIPT_LANGS} ${PLUGINS} ${INTERFACES} ${NETWORKS}"
 
 REQUIRED_USE="
+	enchant? ( spell )
 	lua? ( ${LUA_REQUIRED_USE} )
 	python? ( ${PYTHON_REQUIRED_USE} )
 	test? ( nls )
+	relay-api? ( relay )
 "
 
 RDEPEND="
@@ -42,29 +49,35 @@ RDEPEND="
 	sys-libs/zlib:=
 	net-misc/curl[ssl]
 	charset? ( virtual/libiconv )
-	guile? ( >=dev-scheme/guile-2.0 )
+	guile? ( >=dev-scheme/guile-2.0:12= )
 	lua? ( ${LUA_DEPS} )
 	nls? ( virtual/libintl )
-	perl? ( dev-lang/perl:= )
-	php? ( >=dev-lang/php-7.0:*[embed] )
+	perl? (
+		dev-lang/perl:=
+		virtual/libcrypt:=
+	)
 	python? ( ${PYTHON_DEPS} )
 	ruby? (
 		|| (
-			dev-lang/ruby:3.0
-			dev-lang/ruby:2.7
-			dev-lang/ruby:2.6
+			dev-lang/ruby:3.3
+			dev-lang/ruby:3.2
+			dev-lang/ruby:3.1
 		)
 	)
 	selinux? ( sec-policy/selinux-irc )
-	spell? ( app-text/aspell )
+	spell? (
+		enchant? ( app-text/enchant:* )
+		!enchant? ( app-text/aspell )
+	)
 	tcl? ( >=dev-lang/tcl-8.4.15:0= )
+	zstd? ( app-arch/zstd:= )
 "
 
 DEPEND="${RDEPEND}
 	test? ( dev-util/cpputest )
 "
 
-BDEPEND="
+BDEPEND+="
 	virtual/pkgconfig
 	doc? ( >=dev-ruby/asciidoctor-1.5.4 )
 	man? ( >=dev-ruby/asciidoctor-1.5.4 )
@@ -98,17 +111,21 @@ src_prepare() {
 	done
 
 	# install only required documentation ; en always
-	for i in $(grep add_subdirectory doc/CMakeLists.txt \
-			| sed -e 's/.*add_subdirectory(\(..\)).*/\1/' -e '/en/d'); do
-		if ! has ${i} ${LINGUAS-${i}} ; then
-			sed -i \
-				-e '/add_subdirectory('${i}')/d' \
-				doc/CMakeLists.txt || die
-		fi
+	local j
+	for i in $(grep -e 'set(.*en.*)$' doc/CMakeLists.txt \
+			| sed -e 's/.*set(\(\w\+\).*/\1/'); do
+		for j in $(grep set.${i} doc/CMakeLists.txt \
+				| sed -e "s/.*${i}\(.*\)).*/\1/" -e 's/ en//'); do
+			if ! has ${j} ${LINGUAS-${j}} ; then
+				sed -i \
+					-e "s/\(set(${i}.*\) ${j}/\1/" \
+					doc/CMakeLists.txt || die
+			fi
+		done
 	done
 
 	# install docs in correct directory
-	sed -i "s#\${SHAREDIR}/doc/\${PROJECT_NAME}#\0-${PV}/html#" doc/*/CMakeLists.txt || die
+	sed -i "s#\${DATAROOTDIR}/doc/\${PROJECT_NAME}#\0-${PVR}/html#" doc/CMakeLists.txt || die
 
 	if [[ ${CHOST} == *-darwin* ]]; then
 		# fix linking error on Darwin
@@ -126,10 +143,16 @@ src_configure() {
 		-DENABLE_JAVASCRIPT=OFF
 		-DENABLE_LARGEFILE=ON
 		-DENABLE_NCURSES=ON
+		-DENABLE_PHP=OFF
 		-DENABLE_ALIAS=$(usex alias)
 		-DENABLE_BUFLIST=$(usex buflist)
 		-DENABLE_CHARSET=$(usex charset)
-		-DENABLE_DOC=$(usex doc)
+		# -DENABLE_DOC requires all plugins (except javascript).
+		# https://github.com/weechat/weechat/blob/v4.0.2/CMakeLists.txt#L144
+		# Impossible since php was dropped in net-irc/weechat-3.5.r1.ebuild. bug #705702
+		-DENABLE_DOC=OFF
+		-DENABLE_DOC_INCOMPLETE=$(usex doc)
+		-DENABLE_ENCHANT=$(usex enchant)
 		-DENABLE_EXEC=$(usex exec)
 		-DENABLE_FIFO=$(usex fifo)
 		-DENABLE_FSET=$(usex fset)
@@ -140,9 +163,9 @@ src_configure() {
 		-DENABLE_MAN=$(usex man)
 		-DENABLE_NLS=$(usex nls)
 		-DENABLE_PERL=$(usex perl)
-		-DENABLE_PHP=$(usex php)
 		-DENABLE_PYTHON=$(usex python)
 		-DENABLE_RELAY=$(usex relay)
+		-DENABLE_CJSON=$(usex relay-api)
 		-DENABLE_RUBY=$(usex ruby)
 		-DENABLE_SCRIPT=$(usex scripts)
 		-DENABLE_SCRIPTS=$(usex scripts)
@@ -152,6 +175,7 @@ src_configure() {
 		-DENABLE_TRIGGER=$(usex trigger)
 		-DENABLE_TYPING=$(usex typing)
 		-DENABLE_XFER=$(usex xfer)
+		-DENABLE_ZSTD=$(usex zstd)
 	)
 	cmake_src_configure
 }
@@ -163,16 +187,4 @@ src_test() {
 		eerror "en_US.UTF-8 locale is required to run ${PN}'s ${FUNCNAME}"
 		die "required locale missing"
 	fi
-}
-
-pkg_postinst() {
-	xdg_desktop_database_update
-	xdg_icon_cache_update
-	xdg_mimeinfo_database_update
-}
-
-pkg_postrm() {
-	xdg_desktop_database_update
-	xdg_icon_cache_update
-	xdg_mimeinfo_database_update
 }

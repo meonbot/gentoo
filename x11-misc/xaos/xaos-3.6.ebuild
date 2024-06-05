@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,12 +8,12 @@ inherit autotools desktop strip-linguas
 DESCRIPTION="Very fast real-time fractal zoomer"
 HOMEPAGE="http://matek.hu/xaos/doku.php"
 SRC_URI="
-	mirror://sourceforge/${PN}/${P}.tar.gz
+	https://downloads.sourceforge.net/${PN}/${P}.tar.gz
 	https://dev.gentoo.org/~jlec/distfiles/${PN}.png.tar"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 ppc sparc x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 ~ppc sparc ~x86 ~amd64-linux ~x86-linux"
 IUSE="aalib doc gtk nls png svga threads X"
 
 RDEPEND="

@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit autotools readme.gentoo-r1 toolchain-funcs
+inherit autotools flag-o-matic readme.gentoo-r1 toolchain-funcs
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
@@ -33,7 +33,7 @@ RDEPEND="
 		x11-libs/libXi
 		x11-libs/libXxf86vm
 		alsa? ( media-libs/alsa-lib )
-		flac? ( media-libs/flac )
+		flac? ( media-libs/flac:= )
 		jack? ( virtual/jack )
 		sdl? ( media-libs/libsdl[sound] )
 		vorbis? ( media-libs/libvorbis )
@@ -54,8 +54,8 @@ BDEPEND="
 	sys-devel/flex
 	virtual/pkgconfig
 	doc? (
-		app-doc/doxygen[dot]
-		media-gfx/transfig
+		app-text/doxygen[dot]
+		>=media-gfx/fig2dev-3.2.9-r1
 	)"
 
 src_prepare() {
@@ -70,6 +70,9 @@ src_prepare() {
 }
 
 src_configure() {
+	filter-lto #858755
+	unset LEX YACC #902997,884287
+
 	qf_client() {
 		usex client $(use_enable ${1}) --disable-${1}
 	}

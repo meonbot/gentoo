@@ -1,10 +1,10 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7,8,9} )
-inherit git-r3 python-any-r1 meson virtualx xdg
+PYTHON_COMPAT=( python3_{9..12} )
+inherit git-r3 meson python-any-r1 virtualx xdg
 
 DESCRIPTION="A lightweight compositor for X11 (previously a compton fork)"
 HOMEPAGE="https://github.com/yshui/picom"
@@ -23,6 +23,7 @@ RDEPEND="dev-libs/libev
 	x11-libs/libxcb
 	x11-libs/libXext
 	x11-libs/pixman
+	x11-libs/xcb-util
 	x11-libs/xcb-util-image
 	x11-libs/xcb-util-renderutil
 	config-file? (
@@ -30,9 +31,11 @@ RDEPEND="dev-libs/libev
 	)
 	dbus? ( sys-apps/dbus )
 	drm? ( x11-libs/libdrm )
-	opengl? ( virtual/opengl )
-	pcre? ( dev-libs/libpcre )
-	!x11-misc/compton"
+	opengl? (
+		media-libs/libepoxy
+		virtual/opengl
+	)
+	pcre? ( dev-libs/libpcre2:= )"
 DEPEND="${RDEPEND}
 	x11-base/xorg-proto"
 BDEPEND="virtual/pkgconfig
@@ -43,7 +46,7 @@ BDEPEND="virtual/pkgconfig
 DOCS=( README.md picom.sample.conf )
 
 python_check_deps() {
-	has_version -b "dev-python/xcffib[${PYTHON_USEDEP}]"
+	python_has_version "dev-python/xcffib[${PYTHON_USEDEP}]"
 }
 
 pkg_setup() {

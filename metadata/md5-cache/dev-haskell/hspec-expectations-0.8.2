@@ -1,15 +1,16 @@
-DEFINED_PHASES=compile configure install postinst postrm setup test
+BDEPEND=app-text/dos2unix
+DEFINED_PHASES=compile configure install postinst postrm prepare setup test
 DEPEND=dev-haskell/call-stack:=[profile?] dev-haskell/hunit:=[profile?] >=dev-lang/ghc-7.4.1:= >=dev-haskell/cabal-1.10 test? ( >=dev-haskell/hunit-1.5.0.0 dev-haskell/nanospec ) hscolour? ( dev-haskell/hscolour )
 DESCRIPTION=Catchy combinators for HUnit
 EAPI=8
 HOMEPAGE=https://github.com/hspec/hspec-expectations#readme
 INHERIT=haskell-cabal
 IUSE=doc hscolour profile test
-KEYWORDS=~amd64 ~x86
+KEYWORDS=amd64 ~arm64 ~ppc64 ~riscv ~x86
 LICENSE=MIT
-RDEPEND=dev-haskell/call-stack:=[profile?] dev-haskell/hunit:=[profile?] >=dev-lang/ghc-7.4.1:=
+RDEPEND=dev-haskell/call-stack:=[profile?] dev-haskell/hunit:=[profile?] >=dev-lang/ghc-7.4.1:= dev-lang/ghc:=[profile?]
 RESTRICT=!test? ( test )
 SLOT=0/0.8.2
 SRC_URI=https://hackage.haskell.org/package/hspec-expectations-0.8.2/hspec-expectations-0.8.2.tar.gz
-_eclasses_=multiprocessing	61c959fc55c15c00bbb1079d6a71370b	ghc-package	6344fef4405bc9a6cca6a0a39eee4a32	multilib	de4beb52bfa93c4c5d96792a6b5e1784	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	haskell-cabal	45a8f7d7c2ff5551cbe5eb57c264861d
-_md5_=9b8eae338c3a0705b783b7c37add2a5e
+_eclasses_=multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ghc-package	8e4f6eb2d0e798049f6fcaf3b84c0d4a	multilib	c19072c3cd7ac5cb21de013f7e9832e0	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	haskell-cabal	7a05e05c4a785428f7c2f31e22667fea
+_md5_=4521fa337af1ec3493d57d07467df4c1

@@ -1,47 +1,61 @@
-# Copyright 2020-2021 Gentoo Authors
+# Copyright 2020-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit systemd
+GO_OPTIONAL=1
+inherit go-module systemd toolchain-funcs
 
 DESCRIPTION="Early OOM Daemon for Linux"
 HOMEPAGE="https://github.com/rfjakob/earlyoom"
 
-LICENSE="MIT-with-advertising"
-SLOT="0"
-if [ "${PV}" = "9999" ]; then
+if [[ ${PV} == 9999 ]] ; then
 	EGIT_REPO_URI="https://github.com/rfjakob/earlyoom.git"
 	inherit git-r3
 else
 	SRC_URI="https://github.com/rfjakob/earlyoom/archive/v${PV}.tar.gz -> ${P}.tar.gz"
+	SRC_URI+=" test? ( https://dev.gentoo.org/~sam/distfiles/${CATEGORY}/${PN}/${P}-deps.tar.xz )"
+
 	KEYWORDS="~amd64 ~x86"
 fi
-IUSE="docs systemd test"
 
-RDEPEND=""
-DEPEND=""
+LICENSE="MIT"
+SLOT="0"
+IUSE="man test"
+RESTRICT="!test? ( test )"
+
 BDEPEND="
-	docs? ( app-text/pandoc )
+	man? ( virtual/pandoc )
 	test? ( dev-lang/go )
 "
 
-#tests don't work
-RESTRICT=test
+src_unpack() {
+	default
+
+	use test && go-module_src_unpack
+}
 
 src_compile() {
-	VERSION="v${PV}" emake earlyoom
-	use docs && VERSION="v${PV}" emake earlyoom.1
-	use systemd && emake PREFIX=/usr earlyoom.service
+	tc-export CC
+
+	emake \
+		PREFIX="${EPREFIX}"/usr \
+		VERSION="v${PV}" \
+		SYSTEMDUNITDIR="$(systemd_get_systemunitdir)" \
+		earlyoom earlyoom.service $(usev man 'earlyoom.1')
 }
 
 src_install() {
 	dobin earlyoom
-	use docs && doman earlyoom.1
+
+	use man && doman earlyoom.1
 
 	insinto /etc/default
 	newins earlyoom.default earlyoom
 
-	doinitd "${FILESDIR}/${PN}"
-	use systemd && systemd_dounit earlyoom.service
+	dodir /etc/conf.d
+	dosym -r /etc/default/earlyoom /etc/conf.d/earlyoom
+
+	newinitd "${FILESDIR}"/${PN}-r1 ${PN}
+	systemd_dounit earlyoom.service
 }

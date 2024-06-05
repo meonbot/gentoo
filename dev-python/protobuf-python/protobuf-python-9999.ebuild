@@ -1,65 +1,79 @@
-# Copyright 2008-2021 Gentoo Authors
+# Copyright 2008-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
-PYTHON_COMPAT=( python3_{8..10} )
-DISTUTILS_USE_SETUPTOOLS="bdepend"
+EAPI=8
+
+DISTUTILS_EXT=1
+DISTUTILS_USE_PEP517=setuptools
+PYTHON_COMPAT=( python3_{10..12} )
 
 inherit distutils-r1
 
-if [[ "${PV}" == "9999" ]]; then
+PARENT_PN="${PN/-python/}"
+PARENT_PV="$(ver_cut 2-)"
+PARENT_P="${PARENT_PN}-${PARENT_PV}"
+
+if [[ "${PV}" == *9999 ]]; then
 	inherit git-r3
 
-	EGIT_REPO_URI="https://github.com/protocolbuffers/protobuf"
+	EGIT_REPO_URI="https://github.com/protocolbuffers/protobuf.git"
 	EGIT_SUBMODULES=()
+	EGIT_CHECKOUT_DIR="${WORKDIR}/${PARENT_P}"
+else
+	SRC_URI="
+		https://github.com/protocolbuffers/protobuf/archive/v${PARENT_PV}.tar.gz
+			-> ${PARENT_P}.tar.gz
+	"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~loong ~mips ~ppc64 ~riscv ~x86 ~amd64-linux ~x86-linux ~x64-macos"
 fi
 
 DESCRIPTION="Google's Protocol Buffers - Python bindings"
-HOMEPAGE="https://developers.google.com/protocol-buffers/ https://github.com/protocolbuffers/protobuf"
-if [[ "${PV}" == "9999" ]]; then
-	SRC_URI=""
-else
-	SRC_URI="https://github.com/protocolbuffers/protobuf/archive/v${PV}.tar.gz -> protobuf-${PV}.tar.gz"
-fi
+HOMEPAGE="
+	https://developers.google.com/protocol-buffers/
+	https://pypi.org/project/protobuf/
+"
 
 LICENSE="BSD"
-SLOT="0/30"
-KEYWORDS=""
-IUSE=""
+SLOT="0/23.3.0"
 
-BDEPEND="${PYTHON_DEPS}
-	~dev-libs/protobuf-${PV}
-	dev-python/namespace-google[${PYTHON_USEDEP}]
-	dev-python/six[${PYTHON_USEDEP}]"
-DEPEND="${PYTHON_DEPS}
-	~dev-libs/protobuf-${PV}"
-RDEPEND="${BDEPEND}"
+S="${WORKDIR}/${PARENT_P}/python"
 
-S="${WORKDIR}/protobuf-${PV}/python"
+BDEPEND="
+"
+DEPEND="
+	${PYTHON_DEPS}
+"
+RDEPEND="
+	${BDEPEND}
+	dev-libs/protobuf:${SLOT}
+"
 
-if [[ "${PV}" == "9999" ]]; then
-	EGIT_CHECKOUT_DIR="${WORKDIR}/protobuf-${PV}"
-fi
+distutils_enable_tests setup.py
+
+# Same than PATCHES but from repository's root directory,
+# please see function `python_prepare_all` below.
+# Simplier for users IMHO.
+PARENT_PATCHES=(
+)
+
+# Here for patches within "python/" subdirectory.
+PATCHES=(
+)
 
 python_prepare_all() {
-	pushd "${WORKDIR}/protobuf-${PV}" > /dev/null || die
-	eapply "${FILESDIR}/${PN}-3.13.0-google.protobuf.pyext._message.PyUnknownFieldRef.patch"
+	pushd "${WORKDIR}/${PARENT_P}" > /dev/null || die
+	[[ -n "${PARENT_PATCHES[@]}" ]] && eapply "${PARENT_PATCHES[@]}"
 	eapply_user
 	popd > /dev/null || die
 
 	distutils-r1_python_prepare_all
 }
 
-python_configure_all() {
-	mydistutilsargs=(--cpp_implementation)
+src_configure() {
+	DISTUTILS_ARGS=( --cpp_implementation )
 }
 
-python_test() {
-	esetup.py test
-}
-
-python_install_all() {
-	distutils-r1_python_install_all
-
-	find "${ED}" -name "*.pth" -type f -delete || die
+python_compile() {
+	distutils-r1_python_compile
+	find "${BUILD_DIR}/install" -name "*.pth" -type f -delete || die
 }

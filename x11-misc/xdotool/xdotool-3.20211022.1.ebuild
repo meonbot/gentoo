@@ -1,9 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit toolchain-funcs
+DOCS_BUILDER="doxygen"
+
+inherit docs toolchain-funcs
 
 DESCRIPTION="Simulate keyboard input and mouse activity, move and resize windows"
 HOMEPAGE="https://www.semicomplete.com/projects/xdotool/"
@@ -11,7 +13,7 @@ SRC_URI="https://github.com/jordansissel/xdotool/releases/download/v${PV}/${P}.t
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 arm arm64 ppc ppc64 ~riscv x86"
+KEYWORDS="amd64 arm arm64 ~loong ppc ppc64 ~riscv x86"
 IUSE="examples"
 
 # Many the tests want to manually start Xvfb regardless of whether there
@@ -40,6 +42,7 @@ DOCS=( CHANGELIST README.md )
 src_compile() {
 	tc-export CC LD PKG_CONFIG
 	emake PREFIX="${EPREFIX}/usr"
+	use doc && docs_compile
 }
 
 src_install() {

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -7,7 +7,7 @@ inherit toolchain-funcs
 
 DESCRIPTION="Linux boot loader for EFI-based systems such as IA-64"
 HOMEPAGE="https://sourceforge.net/projects/elilo/"
-SRC_URI="mirror://sourceforge/elilo/${P}-all.tar.gz
+SRC_URI="https://downloads.sourceforge.net/elilo/${P}-all.tar.gz
 	mirror://debian/pool/main/e/elilo/elilo_3.14-3.debian.tar.gz"
 
 LICENSE="GPL-2"
@@ -62,7 +62,7 @@ src_compile() {
 	# "prefix" on the next line specifies where to find gcc, as, ld,
 	# etc.  It's not the usual meaning of "prefix".  By blanking it we
 	# allow PATH to be searched.
-	local libdir="${SYSROOT}${EPREFIX}/usr/$(get_libdir)"
+	local libdir="${ESYSROOT}/usr/$(get_libdir)"
 	emake -j1 \
 		prefix= \
 		AS="$(tc-getAS)" \
@@ -71,7 +71,7 @@ src_compile() {
 		OBJCOPY="$(tc-getOBJCOPY)" \
 		HOSTARCH=${iarch} \
 		ARCH=${iarch} \
-		EFIINC="${SYSROOT}${EPREFIX}/usr/include/efi" \
+		EFIINC="${ESYSROOT}/usr/include/efi" \
 		GNUEFILIB="${libdir}" \
 		EFILIB="${libdir}" \
 		EFICRT0="${libdir}" \

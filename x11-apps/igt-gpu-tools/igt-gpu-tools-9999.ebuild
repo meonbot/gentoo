@@ -1,21 +1,19 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 EGIT_REPO_URI="https://gitlab.freedesktop.org/drm/${PN}.git"
 if [[ ${PV} = *9999* ]]; then
 	GIT_ECLASS="git-r3"
 fi
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{10..12} )
 inherit ${GIT_ECLASS} meson python-any-r1
 
 DESCRIPTION="Intel GPU userland tools"
 
-HOMEPAGE="https://01.org/linuxgraphics https://gitlab.freedesktop.org/drm/igt-gpu-tools"
-if [[ ${PV} = *9999* ]]; then
-	SRC_URI=""
-else
+HOMEPAGE="https://gitlab.freedesktop.org/drm/igt-gpu-tools"
+if [[ ${PV} != *9999* ]]; then
 	KEYWORDS="~amd64 ~x86"
 	SRC_URI="https://www.x.org/releases/individual/app/${P}.tar.xz"
 fi
@@ -29,14 +27,14 @@ REQUIRED_USE="
 		|| ( X xv )
 	)
 	doc? ( tests )
+	runner? ( tests )
 "
 RESTRICT="test"
 
 RDEPEND="
 	dev-libs/elfutils
 	dev-libs/glib:2
-	sys-apps/kmod:=
-	sys-libs/libunwind:=
+	sys-apps/kmod
 	sys-libs/zlib:=
 	sys-process/procps:=
 	virtual/libudev:=
@@ -47,7 +45,7 @@ RDEPEND="
 	chamelium? (
 		dev-libs/xmlrpc-c:=[curl]
 		sci-libs/gsl:=
-		media-libs/alsa-lib:=
+		media-libs/alsa-lib
 	)
 	overlay? (
 		>=x11-libs/libXrandr-1.3
@@ -58,8 +56,8 @@ RDEPEND="
 		)
 	)
 	runner? ( dev-libs/json-c:= )
-	unwind? ( sys-libs/libunwind )
-	valgrind? ( dev-util/valgrind )
+	unwind? ( sys-libs/libunwind:= )
+	valgrind? ( dev-debug/valgrind )
 	"
 DEPEND="${RDEPEND}
 	doc? ( >=dev-util/gtk-doc-1.25-r1 )
@@ -69,8 +67,8 @@ DEPEND="${RDEPEND}
 		x11-base/xorg-proto
 	)
 	video_cards_intel? (
-		sys-devel/bison
-		sys-devel/flex
+		app-alternatives/yacc
+		app-alternatives/lex
 	)
 "
 BDEPEND="${PYTHON_DEPS}"
@@ -91,16 +89,19 @@ src_configure() {
 	use overlay && use X && overlay_backends+="x,"
 
 	local emesonargs=(
-		$(meson_feature chamelium)
-		$(meson_feature doc docs)
-		$(meson_feature man)
 		$(meson_feature overlay)
-		$(meson_feature runner)
-		$(meson_feature tests)
-		$(meson_feature valgrind)
-		$(meson_feature unwind libunwind)
 		-Doverlay_backends=${overlay_backends%?}
+		$(meson_feature chamelium)
+		$(meson_feature valgrind)
+		$(meson_feature man)
+		-Dtestplan=disabled
+		-Dsphinx=disabled
+		$(meson_feature doc docs)
+		$(meson_feature tests)
+		-Dxe_driver=disabled
 		-Dlibdrm_drivers=${gpus%?}
+		$(meson_feature unwind libunwind)
+		$(meson_feature runner)
 	)
 	meson_src_configure
 }

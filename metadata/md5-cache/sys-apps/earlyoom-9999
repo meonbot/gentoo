@@ -1,13 +1,13 @@
-BDEPEND=docs? ( app-text/pandoc ) test? ( dev-lang/go ) virtual/pkgconfig >=dev-vcs/git-1.8.2.1[curl]
+BDEPEND=man? ( virtual/pandoc ) test? ( dev-lang/go ) virtual/pkgconfig >=dev-vcs/git-1.8.2.1[curl]
 DEFINED_PHASES=compile install unpack
 DESCRIPTION=Early OOM Daemon for Linux
-EAPI=7
+EAPI=8
 HOMEPAGE=https://github.com/rfjakob/earlyoom
-INHERIT=systemd git-r3
-IUSE=docs systemd test
-LICENSE=MIT-with-advertising
+INHERIT=go-module systemd toolchain-funcs git-r3
+IUSE=man test
+LICENSE=MIT
 PROPERTIES=live
-RESTRICT=test
+RESTRICT=!test? ( test ) strip
 SLOT=0
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	systemd	2736b403a83f194b59b767f3b344c2c1	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=c4ba06262912b63fa2096d5adcea0ef0
+_eclasses_=multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	go-env	dbefaac6fd7019213514bccd65949d9a	go-module	83fd3ed1657cfc316c93d6a37018290d	systemd	c8b03e8df84486aa991d4396686e8942	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=9aa1fe25706e2bb1cfbf76c6dccdef53

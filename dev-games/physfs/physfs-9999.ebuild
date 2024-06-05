@@ -1,9 +1,8 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-CMAKE_ECLASS=cmake
 inherit cmake-multilib
 
 DESCRIPTION="Abstraction layer for filesystem and archive access"
@@ -13,7 +12,7 @@ if [[ ${PV} == *9999* ]]; then
 	EHG_REPO_URI="https://hg.icculus.org/icculus/physfs"
 	inherit mercurial
 else
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ppc64 ~x86"
+	KEYWORDS="~amd64 ~arm ~arm64 ~hppa ~loong ~ppc64 ~riscv ~x86"
 	SRC_URI="https://icculus.org/physfs/downloads/${P}.tar.bz2"
 fi
 
@@ -21,7 +20,7 @@ LICENSE="ZLIB"
 SLOT="0"
 IUSE="7zip doc grp hog iso mvl qpak slb static-libs vdf wad +zip"
 
-BDEPEND="doc? ( app-doc/doxygen )"
+BDEPEND="doc? ( app-text/doxygen )"
 
 DOCS=( docs/CHANGELOG.txt docs/CREDITS.txt docs/TODO.txt )
 

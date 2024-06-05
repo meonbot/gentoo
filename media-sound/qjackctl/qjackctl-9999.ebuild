@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit xdg cmake git-r3
 
@@ -11,7 +11,6 @@ EGIT_REPO_URI="https://git.code.sf.net/p/qjackctl/code"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS=""
 IUSE="alsa dbus debug portaudio"
 
 BDEPEND="dev-qt/linguist-tools:5"
@@ -37,6 +36,7 @@ src_configure() {
 		-DCONFIG_DBUS=$(usex dbus 1 0)
 		-DCONFIG_DEBUG=$(usex debug 1 0)
 		-DCONFIG_PORTAUDIO=$(usex portaudio 1 0)
+		-DCONFIG_QT6=no
 	)
 	cmake_src_configure
 }

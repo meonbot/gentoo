@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-inherit cmake desktop kde.org xdg-utils
+inherit cmake kde.org xdg-utils
 
 DESCRIPTION="Fast heap memory profiler"
 HOMEPAGE="https://apps.kde.org/heaptrack/
@@ -17,7 +17,7 @@ IUSE="+gui test zstd"
 RESTRICT="!test? ( test )"
 
 DEPEND="
-	dev-libs/boost:=[zstd?]
+	dev-libs/boost:=[zstd?,zlib]
 	sys-libs/libunwind:=
 	sys-libs/zlib
 	gui? (
@@ -39,9 +39,12 @@ DEPEND="
 RDEPEND="${DEPEND}
 	gui? ( >=kde-frameworks/kf-env-4 )
 "
-BDEPEND="
-	gui? ( kde-frameworks/extra-cmake-modules:5 )
-"
+BDEPEND="gui? ( kde-frameworks/extra-cmake-modules:0 )"
+
+QA_CONFIG_IMPL_DECL_SKIP=(
+	# This doesn't exist in libunwind (bug #898768).
+	unw_backtrace_skip
+)
 
 src_prepare() {
 	cmake_src_prepare

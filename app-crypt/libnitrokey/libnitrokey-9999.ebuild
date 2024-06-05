@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit udev cmake
 
@@ -29,7 +29,7 @@ RDEPEND="
 	virtual/udev"
 DEPEND="
 	${RDEPEND}
-	test? ( >=dev-cpp/catch-2.5.0:0 )"
+	test? ( <dev-cpp/catch-3:0 )"
 BDEPEND="virtual/pkgconfig"
 
 src_configure() {
@@ -44,4 +44,12 @@ src_configure() {
 		-DCOMPILE_OFFLINE_TESTS=$(usex test)
 	)
 	cmake_src_configure
+}
+
+pkg_postinst() {
+	udev_reload
+}
+
+pkg_postrm() {
+	udev_reload
 }

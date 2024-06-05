@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -12,16 +12,14 @@ if [[ ${PV} = 9999 ]]; then
 	inherit git-r3
 else
 	SRC_URI="https://gitweb.gentoo.org/proj/${PN}.git/snapshot/${P}.tar.bz2"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~x64-solaris"
 fi
 
 LICENSE="GPL-2"
 SLOT="0"
 IUSE="build +split-usr"
 
-pkg_setup() {
-	multilib_layout
-}
+RDEPEND="!sys-apps/baselayout-prefix"
 
 riscv_compat_symlink() {
 	# Here we apply some special sauce for riscv.
@@ -69,18 +67,30 @@ multilib_layout() {
 					continue
 				fi
 				if ! use split-usr && [[ ${prefix} = ${EROOT}/ ]]; then
+					# for the special case of riscv multilib, we drop the
+					# second part of two-component libdirs, e.g. lib64/lp64
 					libdir="${libdir%%/*}"
 					dir="${prefix}${libdir}"
-					einfo "symlinking ${dir} to usr/${libdir}"
-					ln -s usr/${libdir} ${dir} ||
-						die "Unable to make ${dir} symlink"
+					if [[ -h "${dir}" ]] ; then
+						if use riscv ; then
+							# with riscv we get now double entries so we
+							# need to ignore already existing symlinks
+							einfo "symlink ${dir} already exists (riscv)"
+						else
+							die "symlink ${dir} already exists"
+						fi
+					else
+						einfo "symlinking ${dir} to usr/${libdir}"
+						ln -s usr/${libdir} ${dir} ||
+							die "Unable to make ${dir} symlink"
+					fi
 				else
 					einfo "creating directory ${dir}"
 					mkdir -p "${dir}" ||
 						die "Unable to create ${dir} directory"
 				fi
 			done
-			riscv_compat_symlink "${def_libdir}" "${prefix}${def_libdir}/${DEFAULT_ABI}"
+			[[ -d "${prefix}${def_libdir}" ]] && riscv_compat_symlink "${def_libdir}" "${prefix}${def_libdir}/${DEFAULT_ABI}"
 		done
 		return 0
 	fi
@@ -162,7 +172,6 @@ multilib_layout() {
 				# only symlinked the lib dir on systems where we moved it
 				# to "lib32" ...
 				case ${CHOST} in
-				*-gentoo-freebsd*) ;; # We want it the other way on fbsd.
 				i?86*|x86_64*|powerpc*|sparc*|s390*)
 					if [[ -d ${prefix}lib32 && ! -h ${prefix}lib32 ]] ; then
 						rm -f "${prefix}lib32"/.keep || die
@@ -190,12 +199,88 @@ multilib_layout() {
 	fi
 }
 
-pkg_preinst() {
-	# This is written in src_install (so it's in CONTENTS), but punt all
-	# pending updates to avoid user having to do etc-update (and make the
-	# pkg_postinst logic simpler).
-	rm -f "${EROOT}"/etc/._cfg????_gentoo-release || die
+pkg_setup() {
+	multilib_layout
+}
 
+src_prepare() {
+	default
+
+	# don't want symlinked directories in PATH on systems with usr-merge
+	if ! use split-usr && ! use prefix-guest; then
+		sed \
+			-e 's|:/usr/sbin:|:|g' \
+			-e 's|:/sbin:|:|g' \
+			-e 's|:/bin:|:|g' \
+			-i etc/env.d/50baselayout || die
+	fi
+
+	if use prefix; then
+		hprefixify -e "/EUID/s,0,${EUID}," -q '"' etc/profile
+		hprefixify etc/shells share/passwd
+		hprefixify -w '/PATH=/' etc/env.d/50baselayout
+		hprefixify -w 1 etc/env.d/50baselayout
+		echo PATH=/usr/sbin:/sbin:/usr/bin:/bin >> etc/env.d/99host
+		echo ROOTPATH=/usr/sbin:/sbin:/usr/bin:/bin >> etc/env.d/99host
+		echo MANPATH=/usr/share/man >> etc/env.d/99host
+
+		# change branding
+		sed -i \
+			-e '/gentoo-release/s/Gentoo Base/Gentoo Prefix Base/' \
+			-e '/make_os_release/s/${OS}/Prefix/' \
+			Makefile || die
+	fi
+
+	# handle multilib paths.  do it here because we want this behavior
+	# regardless of the C library that you're using.  we do explicitly
+	# list paths which the native ldconfig searches, but this isn't
+	# problematic as it doesn't change the resulting ld.so.cache or
+	# take longer to generate.  similarly, listing both the native
+	# path and the symlinked path doesn't change the resulting cache.
+	local libdir ldpaths
+	for libdir in $(get_all_libdirs) ; do
+		if use split-usr || use prefix-guest; then
+			ldpaths+=":${EPREFIX}/${libdir}"
+		fi
+		ldpaths+=":${EPREFIX}/usr/${libdir}"
+		ldpaths+=":${EPREFIX}/usr/local/${libdir}"
+	done
+	echo "LDPATH='${ldpaths#:}'" >> etc/env.d/50baselayout
+}
+
+src_install() {
+	emake \
+		DESTDIR="${ED}" \
+		install
+
+	if [[ ${CHOST} == *-darwin* ]] ; then
+		# add SDK path which contains development manpages
+		echo "MANPATH=${EPREFIX}/MacOSX.sdk/usr/share/man" \
+			> "${ED}"/etc/env.d/98macos-sdk
+	fi
+
+	# need the makefile in pkg_preinst
+	insinto /usr/share/${PN}
+	doins Makefile
+
+	dodoc ChangeLog
+
+	# bug 858596
+	if use prefix-guest ; then
+		dodir sbin
+		cat > "${ED}"/sbin/runscript <<- EOF
+			#!/usr/bin/env sh
+			source "${EPREFIX}/lib/gentoo/functions.sh"
+
+			eerror "runscript/openrc-run not supported by Gentoo Prefix Base System release ${PV}" 1>&2
+			exit 1
+		EOF
+		chmod 755 "${ED}"/sbin/runscript || die
+		cp "${ED}"/sbin/{runscript,openrc-run} || die
+	fi
+}
+
+pkg_preinst() {
 	# We need to install directories and maybe some dev nodes when building
 	# stages, but they cannot be in CONTENTS.
 	# Also, we cannot reference $S as binpkg will break so we do this.
@@ -208,52 +293,16 @@ pkg_preinst() {
 		fi
 	fi
 	rm -f "${ED}"/usr/share/${PN}/Makefile || die
-}
 
-src_prepare() {
-	default
-	if use prefix; then
-		hprefixify -e "/EUID/s,0,${EUID}," -q '"' etc/profile
-		hprefixify etc/{env.d/50baselayout,shells} share.Linux/passwd
-		echo PATH=/usr/sbin:/sbin:/usr/bin:/bin >> etc/env.d/99host
+	# Create symlinks in pkg_preinst to avoid Portage collision check.
+	# Create the symlinks in ${ED} via dosym so that we own it.
+	# Only create the symlinks if it wont cause a conflict in ${EROOT}.
+	if [[ -L ${EROOT}/var/lock || ! -e ${EROOT}/var/lock ]]; then
+		dosym ../run/lock /var/lock
 	fi
-
-	# don't want symlinked directories in PATH on systems with usr-merge
-	if ! use split-usr; then
-		sed \
-			-e 's|/usr/local/sbin:||g' \
-			-e 's|:/usr/sbin:|:|g' \
-			-e 's|:/sbin:|:|g' \
-			-e 's|:/bin:|:|g' \
-			-i etc/env.d/50baselayout || die
+	if [[ -L ${EROOT}/var/run || ! -e ${EROOT}/var/run ]]; then
+		dosym ../run /var/run
 	fi
-
-	# handle multilib paths.  do it here because we want this behavior
-	# regardless of the C library that you're using.  we do explicitly
-	# list paths which the native ldconfig searches, but this isn't
-	# problematic as it doesn't change the resulting ld.so.cache or
-	# take longer to generate.  similarly, listing both the native
-	# path and the symlinked path doesn't change the resulting cache.
-	local libdir ldpaths
-	for libdir in $(get_all_libdirs) ; do
-		use split-usr && ldpaths+=":${EPREFIX}/${libdir}"
-		ldpaths+=":${EPREFIX}/usr/${libdir}"
-		ldpaths+=":${EPREFIX}/usr/local/${libdir}"
-	done
-	echo "LDPATH='${ldpaths#:}'" >> etc/env.d/50baselayout
-}
-
-src_install() {
-	emake \
-		OS=Linux \
-		DESTDIR="${ED}" \
-		install
-
-	# need the makefile in pkg_preinst
-	insinto /usr/share/${PN}
-	doins Makefile
-
-	dodoc ChangeLog
 }
 
 pkg_postinst() {
@@ -276,12 +325,6 @@ pkg_postinst() {
 			chmod o-rwx "${EROOT}/etc/${x}" || die
 		fi
 	done
-
-	# Take care of the etc-update for the user
-	if [ -e "${EROOT}"/etc/._cfg0000_gentoo-release ] ; then
-		mv "${EROOT}"/etc/._cfg0000_gentoo-release "${EROOT}"/etc/gentoo-release || die
-	fi
-
 	# whine about users that lack passwords #193541
 	if [[ -e "${EROOT}"/etc/shadow ]] ; then
 		local bad_users=$(sed -n '/^[^:]*::/s|^\([^:]*\)::.*|\1|p' "${EROOT}"/etc/shadow)
@@ -313,23 +356,6 @@ pkg_postinst() {
 		[[ -z ${found} ]] &&
 			ewarn "You should reboot now to get /run mounted with tmpfs!"
 	fi
-
-	for x in ${REPLACING_VERSIONS}; do
-		if ver_test 2.4 -lt ${x}; then
-			ewarn "After updating ${EROOT}/etc/profile, please run"
-			ewarn "env-update && . /etc/profile"
-		fi
-
-		if ver_test 2.6 -lt ${x}; then
-			ewarn "Please run env-update then log out and back in to"
-			ewarn "update your path."
-		fi
-		# clean up after 2.5 typos
-		# https://bugs.gentoo.org/show_bug.cgi?id=656380
-		if [[ ${x} == 2.5 ]]; then
-			rm -fr "${EROOT}/{,usr" || die
-		fi
-	done
 
 	if [[ -e "${EROOT}"/etc/env.d/00basic ]]; then
 		ewarn "${EROOT}/etc/env.d/00basic is now ${EROOT}/etc/env.d/50baselayout"

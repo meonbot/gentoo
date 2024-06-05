@@ -2,11 +2,14 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>monsieurp@gentoo.org</email>
-		<name>Patrice Clement</name>
+		<email>arkamar@gentoo.org</email>
+		<name>Petr Vaněk</name>
 	</maintainer>
 	<maintainer type="project">
 		<email>shell-tools@gentoo.org</email>
 		<name>Gentoo Shell Tools Project</name>
 	</maintainer>
+	<upstream>
+		<remote-id type="github">eradman/entr</remote-id>
+	</upstream>
 </pkgmetadata>

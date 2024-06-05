@@ -1,9 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_10 )
 
 inherit flag-o-matic python-any-r1 toolchain-funcs
 
@@ -17,7 +17,7 @@ SRC_URI="mirror://gnu/${PN}/${P}.tar.xz
 	)
 "
 
-LICENSE="GPL-3"
+LICENSE="GPL-3+"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 hppa ~ia64 ~m68k ~mips ppc ppc64 ~riscv ~s390 sparc x86 ~x86-linux"
 IUSE="acl caps gmp hostname kill multicall nls selinux +split-usr static test vanilla xattr"
@@ -38,9 +38,9 @@ BDEPEND="
 	app-arch/xz-utils
 	dev-lang/perl
 	test? (
+		dev-debug/strace
 		dev-lang/perl
 		dev-perl/Expect
-		dev-util/strace
 		${PYTHON_DEPS}
 	)
 "
@@ -50,7 +50,6 @@ RDEPEND+="
 		!sys-apps/util-linux[kill]
 		!sys-process/procps[kill]
 	)
-	!app-misc/realpath
 	!<sys-apps/util-linux-2.13
 	!<sys-apps/sandbox-2.10-r4
 	!sys-apps/stat
@@ -171,7 +170,7 @@ src_test() {
 
 	addwrite /dev/full
 	#export RUN_EXPENSIVE_TESTS="yes"
-	#export FETISH_GROUPS="portage wheel"
+	#export COREUTILS_GROUPS="portage wheel"
 	env PATH="${T}/mount-wrappers:${PATH}" \
 	emake -j1 -k check
 }

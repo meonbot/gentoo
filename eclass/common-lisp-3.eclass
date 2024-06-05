@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # @ECLASS: common-lisp-3.eclass
@@ -11,34 +11,32 @@
 # to provide a simple way to write ebuilds with these characteristics.
 
 case ${EAPI} in
-	[67]) ;;
-	*) die "EAPI=${EAPI:-0} is not supported" ;;
+	6|7) ;;
+	*) die "${ECLASS}: EAPI ${EAPI:-0} not supported" ;;
 esac
-
-inherit eutils
 
 if [[ -z ${_COMMON_LISP_3_ECLASS} ]]; then
 _COMMON_LISP_3_ECLASS=1
 
-# @ECLASS-VARIABLE: CLIMPLEMENTATIONS
+# @ECLASS_VARIABLE: CLIMPLEMENTATIONS
 # @DESCRIPTION:
 # Common Lisp implementations
-CLIMPLEMENTATIONS="sbcl clisp clozurecl cmucl ecls gcl abcl"
+CLIMPLEMENTATIONS="sbcl clisp clozurecl cmucl ecl gcl abcl"
 
-# @ECLASS-VARIABLE: CLSOURCEROOT
+# @ECLASS_VARIABLE: CLSOURCEROOT
 # @DESCRIPTION:
 # Default path of Common Lisp libraries sources. Sources will
 # be installed into ${CLSOURCEROOT}/${CLPACKAGE}.
 CLSOURCEROOT="${ROOT%/}"/usr/share/common-lisp/source
 
-# @ECLASS-VARIABLE: CLSYSTEMROOT
+# @ECLASS_VARIABLE: CLSYSTEMROOT
 # @DESCRIPTION:
 # Default path to find any asdf file. Any asdf files will be
 # symlinked in ${CLSYSTEMROOT}/${CLSYSTEM} as they may be in
 # an arbitrarily deeply nested directory under ${CLSOURCEROOT}/${CLPACKAGE}.
 CLSYSTEMROOT="${ROOT%/}"/usr/share/common-lisp/systems
 
-# @ECLASS-VARIABLE: CLPACKAGE
+# @ECLASS_VARIABLE: CLPACKAGE
 # @DESCRIPTION:
 # Default package name. To override, set these after inheriting this eclass.
 CLPACKAGE="${PN}"
@@ -127,7 +125,17 @@ common-lisp-install-sources() {
 		if [[ -f ${path} ]] ; then
 			common-lisp-install-one-source ${fpredicate} "${path}" "$(dirname "${path}")"
 		elif [[ -d ${path} ]] ; then
-			common-lisp-install-sources -t ${ftype} $(find "${path}" -type f)
+			local files
+			# test can be dropped in EAPI 8 which guarantees bash-5.0
+			if [[ ${BASH_VERSINFO[0]} -ge 5 ]]; then
+				readarray -d '' files < <(find "${path}" -type f -print0 \
+											|| die "cannot traverse ${path}")
+			else
+				# readarray has no -d option in bash-4.2
+				readarray -t files < <(find "${path}" -type f -print \
+											|| die "cannot traverse ${path}")
+			fi
+			common-lisp-install-sources -t ${ftype} "${files[@]}"
 		else
 			die "${path} is neither a regular file nor a directory"
 		fi

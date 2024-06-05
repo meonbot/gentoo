@@ -1,10 +1,9 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-#this doesn't work in eapi 7, even with emake or cmake.eclass
-EAPI=6
+EAPI=8
 
-inherit cmake-utils
+inherit cmake
 
 DESCRIPTION="Decode OOK modulated signals"
 HOMEPAGE="https://github.com/merbanan/rtl_433"
@@ -21,22 +20,25 @@ fi
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="+rtlsdr soapysdr"
+IUSE="+rtlsdr soapysdr test"
 
-DEPEND="rtlsdr? ( net-wireless/rtl-sdr:=
+DEPEND="dev-libs/openssl:=
+	rtlsdr? ( net-wireless/rtl-sdr:=
 			virtual/libusb:1 )
 	soapysdr? ( net-wireless/soapysdr:= )"
 RDEPEND="${DEPEND}"
+RESTRICT="!test? ( test )"
 
-src_configure() {
-	mycmakeargs=(
-		-DENABLE_RTLSDR="$(usex rtlsdr)"
-		-DENABLE_SOAPYSDR="$(usex soapysdr)"
-	)
-	cmake-utils_src_configure
+src_prepare() {
+	sed -i 's#data data.c#data STATIC data.c#' src/CMakeLists.txt || die
+	cmake_src_prepare
 }
 
-src_install() {
-	cmake-utils_src_install
-	mv "${ED}/usr/etc" "${ED}/" || die
+src_configure() {
+	local mycmakeargs=(
+		-DENABLE_RTLSDR="$(usex rtlsdr)"
+		-DENABLE_SOAPYSDR="$(usex soapysdr)"
+		-DBUILD_TESTING="$(usex test)"
+	)
+	cmake_src_configure
 }

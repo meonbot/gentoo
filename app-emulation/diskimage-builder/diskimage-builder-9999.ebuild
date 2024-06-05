@@ -1,10 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7,8,9} )
-DISTUTILS_USE_SETUPTOOLS=rdepend
+PYTHON_COMPAT=( python3_{9,10,11,12} )
+DISTUTILS_USE_PEP517=setuptools
+PYPI_NO_NORMALIZE=1
 inherit distutils-r1
 
 DESCRIPTION="Golden Disk Image builder"
@@ -13,7 +14,7 @@ if [[ ${PV} == 9999* ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://opendev.org/openstack/diskimage-builder.git"
 else
-	SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
+	inherit pypi
 	KEYWORDS="~amd64 ~arm64 ~x86 ~amd64-linux ~x86-linux"
 fi
 
@@ -29,6 +30,7 @@ RDEPEND="${CDEPEND}
 	!~dev-python/Babel-2.4.0[${PYTHON_USEDEP}]
 	>=dev-python/networkx-1.10[${PYTHON_USEDEP}]
 	>=dev-python/pyyaml-3.12[${PYTHON_USEDEP}]
+	dev-python/setuptools[${PYTHON_USEDEP}]
 	>=dev-python/six-1.10.0[${PYTHON_USEDEP}]
 	>=dev-python/stevedore-1.20.0[${PYTHON_USEDEP}]
 	app-emulation/qemu

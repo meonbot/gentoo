@@ -1,13 +1,13 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit desktop toolchain-funcs
+inherit desktop flag-o-matic toolchain-funcs
 
 DESCRIPTION="Author a DVD-Audio DVD"
-HOMEPAGE="http://dvd-audio.sourceforge.net"
-SRC_URI="mirror://sourceforge/dvd-audio/${P}-300.tar.gz"
+HOMEPAGE="https://dvd-audio.sourceforge.net"
+SRC_URI="https://downloads.sourceforge.net/dvd-audio/${P}-300.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
@@ -15,10 +15,11 @@ KEYWORDS="~amd64 ~x86"
 IUSE="debug"
 
 RDEPEND="
+	media-libs/flac:=[ogg]
 	media-sound/sox[png]
-	media-libs/flac[ogg]"
+"
 DEPEND="${RDEPEND}"
-BDEPEND="sys-devel/libtool"
+BDEPEND="dev-build/libtool"
 
 PATCHES=(
 	"${FILESDIR}"/${P}-fno-common.patch
@@ -42,6 +43,12 @@ src_prepare() {
 }
 
 src_configure() {
+	# -Werror=lto-type-mismatch
+	# https://bugs.gentoo.org/860516
+	#
+	# Upstream on sourceforge is inactive for several years now. No bug filed.
+	filter-lto
+
 	econf \
 		--with-config="${EPREFIX}/etc" \
 		$(use_with debug debug full)

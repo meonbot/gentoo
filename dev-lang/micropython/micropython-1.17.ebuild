@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2022 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -9,7 +9,7 @@ DESCRIPTION="Python implementation for microcontrollers"
 HOMEPAGE="https://github.com/micropython/micropython"
 SRC_URI="https://github.com/${PN}/${PN}/releases/download/v${PV}/${P}.tar.xz"
 
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~arm64 ~x86"
 LICENSE="MIT"
 SLOT="0"
 IUSE="test"
@@ -22,6 +22,7 @@ DEPEND="
 PATCHES=(
 	"${FILESDIR}/${P}-prevent-stripping.patch"
 	"${FILESDIR}/${P}-exclude-float-parse-tests.patch"
+	"${FILESDIR}/${P}-gcc13-build-fix.patch"
 )
 
 src_prepare() {

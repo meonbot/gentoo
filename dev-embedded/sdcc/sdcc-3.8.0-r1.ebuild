@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -9,14 +9,14 @@ if [[ ${PV} == "9999" ]] ; then
 	inherit subversion
 else
 	SRC_URI="
-		mirror://sourceforge/sdcc/${PN}-src-${PV}.tar.bz2
-		doc? ( mirror://sourceforge/sdcc/${PN}-doc-${PV}.tar.bz2 )
+		https://downloads.sourceforge.net/sdcc/${PN}-src-${PV}.tar.bz2
+		doc? ( https://downloads.sourceforge.net/sdcc/${PN}-doc-${PV}.tar.bz2 )
 	"
 	KEYWORDS="amd64 x86"
 fi
 
 DESCRIPTION="Small device C compiler (for various microprocessors)"
-HOMEPAGE="http://sdcc.sourceforge.net/"
+HOMEPAGE="https://sdcc.sourceforge.net/"
 
 LICENSE="
 	GPL-2 ZLIB

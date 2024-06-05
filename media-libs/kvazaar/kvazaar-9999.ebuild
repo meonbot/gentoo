@@ -1,7 +1,7 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 GREATEST_PV="1.2.1"
 
@@ -11,9 +11,9 @@ if [[ ${PV} = *9999 ]] ; then
 else
 	SRC_URI="https://github.com/ultravideo/kvazaar/archive/v${PV}.tar.gz -> ${P}.tar.gz
 		test? ( https://github.com/silentbicycle/greatest/archive/v${GREATEST_PV}.tar.gz -> greatest-${GREATEST_PV}.tar.gz )"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86"
+	KEYWORDS="~alpha amd64 arm ~arm64 ~hppa ~ia64 ~loong ~mips ~ppc ~ppc64 ~riscv"
 fi
-inherit autotools flag-o-matic multilib-minimal toolchain-funcs
+inherit autotools multilib-minimal
 
 DESCRIPTION="Open-source HEVC encoder"
 HOMEPAGE="http://ultravideo.cs.tut.fi/ https://github.com/ultravideo/kvazaar"
@@ -30,6 +30,7 @@ RDEPEND=""
 DEPEND="${RDEPEND}
 	test? (
 		media-video/ffmpeg
+		media-video/hevc-hm
 	)
 	abi_x86_32? ( ${ASM_DEP} )
 	abi_x86_64? ( ${ASM_DEP} )
@@ -44,19 +45,15 @@ src_prepare() {
 		rmdir "${S}/greatest" || die
 		mv "${WORKDIR}/greatest-${GREATEST_PV}" "${S}/greatest" || die
 	fi
-	# Some m4 macros append Werror, we do not want that.
-	append-flags "-Wno-error"
-
-	# valgrind isn't available on all archs
-	# also, the valgrind tests fail with new ffmpeg (upstream only tests again ffmpeg 2.6.3)
-	# see https://github.com/ultravideo/kvazaar/issues/216
-	find "${S}/tests/" -type f -exec grep -q 'valgrind_test' '{}' \; -delete || die
 }
 
 multilib_src_configure() {
 	ECONF_SOURCE="${S}" econf \
-		--disable-werror \
 		$(use_enable static-libs static)
+}
+
+multilib_src_test() {
+	KVZ_TEST_VALGRIND=0 emake check
 }
 
 multilib_src_install_all() {

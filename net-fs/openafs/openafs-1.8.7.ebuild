@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -26,14 +26,14 @@ SLOT="0"
 KEYWORDS="amd64 -riscv ~sparc x86 ~amd64-linux ~x86-linux"
 
 IUSE="apidoc bitmap-later debug doc fuse kauth kerberos +modules +namei
-ncurses perl +pthreaded-ubik +supergroups tsm ubik-read-while-write"
+ncurses perl +pthreaded-ubik selinux +supergroups tsm ubik-read-while-write"
 
 BDEPEND="
 	dev-lang/perl
-	sys-devel/flex
-	virtual/yacc
+	app-alternatives/lex
+	app-alternatives/yacc
 	apidoc? (
-		app-doc/doxygen[dot]
+		app-text/doxygen[dot]
 		media-gfx/graphviz
 	)
 	doc? (
@@ -57,7 +57,9 @@ DEPEND="
 	kauth? ( sys-libs/pam )
 	kerberos? ( virtual/krb5 )
 	ncurses? ( sys-libs/ncurses:0= )"
-RDEPEND="${DEPEND}"
+RDEPEND="
+	${DEPEND}
+	selinux? ( sec-policy/selinux-afs )"
 
 S="${WORKDIR}/${MY_P}"
 
@@ -66,9 +68,6 @@ PATCHES=( "${WORKDIR}/gentoo/patches" )
 CONFIG_CHECK="~!AFS_FS KEYS"
 ERROR_AFS_FS="OpenAFS conflicts with the in-kernel AFS-support. Make sure not to load both at the same time!"
 ERROR_KEYS="OpenAFS needs CONFIG_KEYS option enabled"
-
-QA_TEXTRELS_x86_fbsd="/boot/modules/libafs.ko"
-QA_TEXTRELS_amd64_fbsd="/boot/modules/libafs.ko"
 
 pkg_pretend() {
 	if use modules && use kernel_linux && kernel_is -ge ${KERNEL_LIMIT/\./ } ; then
@@ -114,6 +113,9 @@ src_prepare() {
 
 src_configure() {
 	local -a myconf
+
+	# bug #861368
+	filter-lto
 
 	if use debug; then
 		use kauth && myconf+=( --enable-debug-pam )

@@ -1,7 +1,7 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit autotools systemd
 DESCRIPTION="protects hosts from brute force attacks against ssh"
@@ -11,15 +11,15 @@ if [[ "${PV}" == 99999 ]] ; then
 	inherit git-r3
 	EGIT_REPO_URI="https://bitbucket.org/${PN}/${PN}"
 else
-	SRC_URI="mirror://sourceforge/${PN}/${P}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~x86"
+	SRC_URI="https://downloads.sourceforge.net/${PN}/${P}.tar.gz"
+	KEYWORDS="~amd64 ~arm ~arm64 ~riscv ~x86"
 fi
 
 LICENSE="BSD"
 SLOT="0"
 
 DEPEND="
-	sys-devel/flex
+	app-alternatives/lex
 "
 RDEPEND="
 	virtual/logger

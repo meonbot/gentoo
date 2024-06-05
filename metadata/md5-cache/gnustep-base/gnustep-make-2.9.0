@@ -1,14 +1,14 @@
 DEFINED_PHASES=compile configure install postinst prepare setup
-DEPEND=doc? ( virtual/texi2dvi dev-tex/latex2html app-text/texi2html ) >=sys-devel/make-3.75 libobjc2? ( gnustep-base/libobjc2 sys-devel/clang:* ) !libobjc2? ( !!gnustep-base/libobjc2 || ( sys-devel/gcc:*[objc] sys-devel/clang:* ) )
+DEPEND=doc? ( virtual/texi2dvi dev-tex/latex2html app-text/texi2html ) >=dev-build/make-3.75 libobjc2? ( gnustep-base/libobjc2 sys-devel/clang:* ) !libobjc2? ( !!gnustep-base/libobjc2 || ( sys-devel/gcc:*[objc] sys-devel/clang:* ) )
 DESCRIPTION=GNUstep Makefile Package
 EAPI=7
-HOMEPAGE=http://www.gnustep.org
+HOMEPAGE=https://gnustep.github.io
 INHERIT=gnustep-base prefix toolchain-funcs
 IUSE=libobjc2 native-exceptions debug doc
-KEYWORDS=~alpha ~amd64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-linux ~x86-linux ~sparc-solaris ~x86-solaris
+KEYWORDS=~alpha amd64 ppc ppc64 sparc x86 ~amd64-linux ~x86-linux
 LICENSE=GPL-2
-RDEPEND=doc? ( virtual/texi2dvi dev-tex/latex2html app-text/texi2html ) >=sys-devel/make-3.75 libobjc2? ( gnustep-base/libobjc2 sys-devel/clang:* ) !libobjc2? ( !!gnustep-base/libobjc2 || ( sys-devel/gcc:*[objc] sys-devel/clang:* ) )
+RDEPEND=doc? ( virtual/texi2dvi dev-tex/latex2html app-text/texi2html ) >=dev-build/make-3.75 libobjc2? ( gnustep-base/libobjc2 sys-devel/clang:* ) !libobjc2? ( !!gnustep-base/libobjc2 || ( sys-devel/gcc:*[objc] sys-devel/clang:* ) )
 SLOT=0
 SRC_URI=ftp://ftp.gnustep.org/pub/gnustep/core/gnustep-make-2.9.0.tar.gz
-_eclasses_=edos2unix	33e347e171066657f91f8b0c72ec8773	strip-linguas	ac3ee41ee2d31d8c41a77c0838320cc7	wrapper	4251d4c84c25f59094fd557e0063a974	eutils	dab5d8ec471d025b79c9e6906bcf3bff	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	flag-o-matic	d5e1306543bc457213f68bb18f830d14	gnustep-base	9572b3101ddfc57358483561c0439981	prefix	d04f14b297013ad1410550c0757f14f8
-_md5_=d3483a43fbe1cc91fb7618818dea0a0e
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	gnustep-base	2b9571bc4b56a107f4efee592fa2f2a8	prefix	eab3c99d77fe00506c109c8a736186f7
+_md5_=5bef0cbe3679563f4d8ca67cbeba55c7

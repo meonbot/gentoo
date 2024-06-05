@@ -1,9 +1,10 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7..9} )
+DISTUTILS_EXT=1
+PYTHON_COMPAT=( python3_{10..12} )
 PYTHON_REQ_USE='threads(+)'
 DISTUTILS_USE_SETUPTOOLS=no
 
@@ -13,52 +14,65 @@ if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://gitlab.com/NTPsec/ntpsec.git"
 else
-	SRC_URI="ftp://ftp.ntpsec.org/pub/releases/${PN}-${PV}.tar.gz"
-	RESTRICT="mirror"
-	KEYWORDS="amd64 arm arm64 ~riscv ~x86"
+	VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/ntpsec.asc
+	inherit verify-sig
+	SRC_URI="
+		https://ftp.ntpsec.org/pub/releases/${P}.tar.gz
+		verify-sig? ( https://ftp.ntpsec.org/pub/releases/${P}.tar.gz.asc )
+	"
+	KEYWORDS="~amd64 ~arm ~arm64 ~riscv ~x86"
+
+	BDEPEND="verify-sig? ( sec-keys/openpgp-keys-ntpsec )"
 fi
 
 DESCRIPTION="The NTP reference implementation, refactored"
 HOMEPAGE="https://www.ntpsec.org/"
 
+LICENSE="HPND MIT BSD-2 BSD CC-BY-SA-4.0"
+SLOT="0"
+
 NTPSEC_REFCLOCK=(
 	oncore trimble truetime gpsd jjy generic spectracom
 	shm pps hpgps zyfer arbiter nmea modem local
-	)
+)
 
 IUSE_NTPSEC_REFCLOCK=${NTPSEC_REFCLOCK[@]/#/rclock_}
 
-LICENSE="HPND MIT BSD-2 BSD CC-BY-SA-4.0"
-SLOT="0"
-IUSE="${IUSE_NTPSEC_REFCLOCK} debug doc early gdb heat libbsd nist ntpviz samba seccomp smear tests" #ionice
+IUSE="${IUSE_NTPSEC_REFCLOCK} debug doc early heat libbsd nist ntpviz samba seccomp smear" #ionice
 REQUIRED_USE="${PYTHON_REQUIRED_USE} nist? ( rclock_local )"
 
 # net-misc/pps-tools oncore,pps
-CDEPEND="${PYTHON_DEPS}
-	sys-libs/libcap
+DEPEND="
+	${PYTHON_DEPS}
+	dev-libs/openssl:=
 	dev-python/psutil[${PYTHON_USEDEP}]
+	sys-libs/libcap
 	libbsd? ( dev-libs/libbsd:0= )
-	dev-libs/openssl:0=
 	seccomp? ( sys-libs/libseccomp )
+	rclock_oncore? ( net-misc/pps-tools )
+	rclock_pps? ( net-misc/pps-tools )
 "
-RDEPEND="${CDEPEND}
-	ntpviz? ( sci-visualization/gnuplot media-fonts/liberation-fonts )
+RDEPEND="
+	${DEPEND}
 	!net-misc/ntp
 	!net-misc/openntpd
 	acct-group/ntp
 	acct-user/ntp
+	ntpviz? (
+		media-fonts/liberation-fonts
+		sci-visualization/gnuplot
+	)
 "
-DEPEND="${CDEPEND}
+BDEPEND+="
 	>=app-text/asciidoc-8.6.8
 	dev-libs/libxslt
 	app-text/docbook-xsl-stylesheets
-	sys-devel/bison
-	rclock_oncore? ( net-misc/pps-tools )
-	rclock_pps? ( net-misc/pps-tools )
+	app-alternatives/yacc
 "
 
 PATCHES=(
 	"${FILESDIR}/${PN}-1.1.9-remove-asciidoctor-from-config.patch"
+	"${FILESDIR}/${PN}-1.2.2-logrotate.patch"
 )
 
 WAF_BINARY="${S}/waf"
@@ -78,7 +92,7 @@ src_prepare() {
 }
 
 src_configure() {
-	is-flagq -flto* && filter-flags -flto* -fuse-linker-plugin
+	filter-lto
 
 	local string_127=""
 	local rclocks="";
@@ -91,7 +105,8 @@ src_configure() {
 	done
 	CLOCKSTRING="`echo ${string_127}|sed 's|,$||'`"
 
-	local myconf=(
+	myconf=(
+		--notests
 		--nopyc
 		--nopyo
 		--enable-pylib ext
@@ -99,41 +114,35 @@ src_configure() {
 		#--build-epoch="$(date +%s)"
 		$(use doc	|| echo "--disable-doc")
 		$(use early	&& echo "--enable-early-droproot")
-		$(use gdb	&& echo "--enable-debug-gdb")
 		$(use samba	&& echo "--enable-mssntp")
 		$(use seccomp	&& echo "--enable-seccomp")
 		$(use smear	&& echo "--enable-leap-smear")
-		$(use tests	&& echo "--alltests")
 		$(use debug	&& echo "--enable-debug")
 	)
 
-	python_configure() {
-		waf-utils_src_configure "${myconf[@]}"
-	}
-	python_foreach_impl run_in_build_dir python_configure
+	distutils-r1_src_configure
 }
 
-src_compile() {
-	unset MAKEOPTS
-	python_compile() {
-		waf-utils_src_compile
-	}
-	python_foreach_impl run_in_build_dir python_compile
+python_configure() {
+	waf-utils_src_configure "${myconf[@]}"
+}
+
+python_compile() {
+	waf-utils_src_compile --notests
+}
+
+python_test() {
+	waf-utils_src_compile check
 }
 
 src_install() {
-	python_install() {
-		waf-utils_src_install
-		python_fix_shebang "${ED}"
-	}
-	python_foreach_impl run_in_build_dir python_install
-	python_foreach_impl python_optimize
+	distutils-r1_src_install
 
 	# Install heat generating scripts
 	use heat && dosbin "${S}"/contrib/ntpheat{,usb}
 
 	# Install the openrc files
-	newinitd "${FILESDIR}"/ntpd.rc-r2 ntp
+	newinitd "${FILESDIR}"/ntpd.rc-r3 ntp
 	newconfd "${FILESDIR}"/ntpd.confd ntp
 
 	# Install the systemd unit file
@@ -145,7 +154,7 @@ src_install() {
 	chmod 770 "${ED}"/var/lib/ntp
 	keepdir /var/lib/ntp
 
-	# Install a log rotate script
+	# Install a logrotate script
 	mkdir -pv "${ED}"/etc/logrotate.d
 	cp -v "${S}"/etc/logrotate-config.ntpd "${ED}"/etc/logrotate.d/ntpd
 
@@ -155,6 +164,12 @@ src_install() {
 
 	# move doc files to /usr/share/doc/"${P}"
 	use doc && mv -v "${ED}"/usr/share/doc/"${PN}" "${ED}"/usr/share/doc/"${P}"/html
+}
+
+python_install() {
+	waf-utils_src_install --notests
+	python_fix_shebang "${ED}"
+	python_optimize
 }
 
 pkg_postinst() {

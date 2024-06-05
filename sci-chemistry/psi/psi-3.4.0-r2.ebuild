@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,11 +7,11 @@ inherit autotools fortran-2 toolchain-funcs
 
 DESCRIPTION="Suite for ab initio quantum chemistry computing various molecular properties"
 HOMEPAGE="http://www.psicode.org/"
-SRC_URI="mirror://sourceforge/psicode/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/psicode/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 ~x86"
 IUSE="test"
 # psi3/psiclean segfault because tests were never run before
 RESTRICT="test"

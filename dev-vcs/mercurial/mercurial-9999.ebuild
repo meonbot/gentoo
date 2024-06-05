@@ -1,12 +1,13 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{7..10} )
-PYTHON_REQ_USE="threads(+)"
-DISTUTILS_USE_SETUPTOOLS=no
 CARGO_OPTIONAL=1
+DISTUTILS_USE_PEP517="setuptools"
+DISTUTILS_EXT=1
+PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_REQ_USE="threads(+)"
 
 inherit bash-completion-r1 cargo elisp-common distutils-r1 mercurial flag-o-matic multiprocessing
 
@@ -16,7 +17,6 @@ EHG_REPO_URI="https://www.mercurial-scm.org/repo/hg"
 
 LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS=""
 IUSE="+chg emacs gpg test tk rust"
 
 BDEPEND="
@@ -58,8 +58,8 @@ python_prepare_all() {
 src_compile() {
 	if use rust; then
 		pushd rust/hg-cpython || die
-		cargo_src_compile --no-default-features --features python3 --jobs $(makeopts_jobs)
-		popd
+		cargo_src_compile --no-default-features --jobs $(makeopts_jobs)
+		popd || die
 	fi
 	distutils-r1_src_compile
 }
@@ -78,6 +78,11 @@ python_compile_all() {
 	if use chg; then
 		emake -C contrib/chg
 	fi
+	if use rust; then
+		pushd rust/rhg || die
+		cargo_src_compile --no-default-features --jobs $(makeopts_jobs)
+		popd || die
+	fi
 	if use emacs; then
 		cd contrib || die
 		elisp-compile mercurial.el || die "elisp-compile failed!"
@@ -92,7 +97,9 @@ python_install() {
 	if use rust; then
 		local -x HGWITHRUSTEXT="cpython"
 	fi
+
 	distutils-r1_python_install build_ext
+	python_doscript contrib/hg-ssh
 }
 
 python_install_all() {
@@ -107,11 +114,10 @@ python_install_all() {
 	if use tk; then
 		dobin contrib/hgk
 	fi
-	python_foreach_impl python_doscript contrib/hg-ssh
 
 	if use emacs; then
 		elisp-install ${PN} contrib/mercurial.el* || die "elisp-install failed!"
-		elisp-site-file-install "${FILESDIR}"/${SITEFILE}
+		elisp-make-site-file "${SITEFILE}"
 	fi
 
 	local RM_CONTRIB=( hgk hg-ssh bash_completion zsh_completion plan9 *.el )
@@ -120,6 +126,9 @@ python_install_all() {
 		dobin contrib/chg/chg
 		doman contrib/chg/chg.1
 		RM_CONTRIB+=( chg )
+	fi
+	if use rust; then
+		dobin rust/target/release/rhg
 	fi
 
 	for f in ${RM_CONTRIB[@]}; do
@@ -163,11 +172,6 @@ src_test() {
 }
 
 python_test() {
-	if [[ ${EPYTHON} == python3.10 ]]; then
-		einfo "Skipping tests for unsupported Python 3.10"
-		return
-	fi
-	distutils_install_for_testing
 	cd tests || die
 	PYTHONWARNINGS=ignore "${PYTHON}" run-tests.py \
 		--jobs $(makeopts_jobs) \

@@ -1,10 +1,13 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-# Andrey Grozin <grozin@gentoo.org> (2021-05-06)
-# Upstream bug: old versions fail to compile
-# bug #782688
-<media-gfx/asymptote-2.74 offscreen
+# Matt Turner <mattst88@gentoo.org> (2024-01-29)
+# Causes various issues. See bugs #919858, #923054
+media-libs/mesa zink
+
+# Sam James <sam@gentoo.org> (2023-06-06)
+# Needs linux-only dev-libs/libaio.
+app-emulation/qemu -aio
 
 # Peter Levine <plevine457@gmail.com> (2019-10-01)
 # Native inotify support is preferred on linux.
@@ -20,7 +23,7 @@ net-fs/samba fam
 # Native inotify support is preferred on linux.
 kde-frameworks/kcoreaddons fam
 
-# Diego Elio Pettenò (2012-08-27)
+# Diego Elio Pettenò <flameeyes@gentoo.org> (2012-08-27)
 # The libpci access is only used for linux.
 net-analyzer/net-snmp -pci
 
@@ -29,27 +32,21 @@ net-analyzer/net-snmp -pci
 # should use it until documentation improves.
 sys-fs/zfs kernel-builtin
 
-# Diego Elio Pettenò (2012-08-20)
+# Diego Elio Pettenò <flameeyes@gentoo.org> (2012-08-20)
 # The prevent-removal USE flag is only implemented for Linux.
 sys-auth/pam_mktemp -prevent-removal
-
-sys-devel/gcc hardened
 
 # Samuli Suominen <ssuominen@gentoo.org> (2012-01-10)
 # Masked in base/package.use.mask as Linux -only feature
 app-arch/libarchive -e2fsprogs
 
-# Diego E. Pettenò <flameeyes@gentoo.org> (2009-08-20)
-#
-# Mask oss USE flag for PulseAudio; it's present for compatibility
-# with FreeBSD and other operating systems that have no better
-# interfaces, but people would probably abuse it with Linux as well.
-#
-# Older versions also had an OSS compatibility wrapper on that USE so
-# they are excluded.
->=media-sound/pulseaudio-0.9.16_rc5 oss
-
 # Diego E. Pettenò <flameeyes@gentoo.org> (2011-03-27)
 #
 # Unmask pdnsd's Linux-specific USE flags.
 net-dns/pdnsd -urandom
+
+# Diego E. Pettenò <flameeyes@gentoo.org> (2009-08-20)
+# Mask oss USE flag for PulseAudio; it's present for compatibility
+# with FreeBSD and other operating systems that have no better
+# interfaces, but people would probably abuse it with Linux as well.
+media-sound/pulseaudio-daemon oss

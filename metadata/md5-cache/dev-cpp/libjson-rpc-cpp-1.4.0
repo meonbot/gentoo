@@ -1,9 +1,9 @@
-BDEPEND=test? ( dev-cpp/catch:0 ) dev-util/ninja >=dev-util/cmake-3.20.5
+BDEPEND=test? ( <dev-cpp/catch-3 ) app-alternatives/ninja >=dev-build/cmake-3.20.5
 DEFINED_PHASES=compile configure install prepare test
 DEPEND=dev-libs/jsoncpp:= http-client? ( net-misc/curl:= ) http-server? ( net-libs/libmicrohttpd:= ) redis-client? ( dev-libs/hiredis:= ) redis-server? ( dev-libs/hiredis:= ) stubgen? ( dev-libs/argtable:= )
 DESCRIPTION=JSON-RPC (1.0 & 2.0) framework for C++
 EAPI=8
-HOMEPAGE=https://github.com/cinemast/libjson-rpc-cpp
+HOMEPAGE=https://github.com/cinemast/libjson-rpc-cpp/
 INHERIT=cmake
 IUSE=+http-client +http-server redis-client redis-server +stubgen test
 KEYWORDS=~amd64 ~x86
@@ -12,5 +12,5 @@ RDEPEND=dev-libs/jsoncpp:= http-client? ( net-misc/curl:= ) http-server? ( net-l
 RESTRICT=!test? ( test )
 SLOT=0/1
 SRC_URI=https://github.com/cinemast/libjson-rpc-cpp/archive/v1.4.0.tar.gz -> libjson-rpc-cpp-1.4.0.tar.gz
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	flag-o-matic	d5e1306543bc457213f68bb18f830d14	multiprocessing	61c959fc55c15c00bbb1079d6a71370b	ninja-utils	a4dab848a4490e8e48cf0baab3e61bc2	xdg-utils	4f29a8b760a594a212abe9c2ba957c31	cmake	11fee991ab428a3370e5c20fa8231fb6
-_md5_=43d1d87196ef04c102a996d3e1ba4aed
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653	multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	ninja-utils	2df4e452cea39a9ec8fb543ce059f8d6	xdg-utils	baea6080dd821f5562d715887954c9d3	cmake	c7c9a62d6232cac66d4ea32d575c3e7c
+_md5_=1a353ab62dfb7346668756fb072b2be5

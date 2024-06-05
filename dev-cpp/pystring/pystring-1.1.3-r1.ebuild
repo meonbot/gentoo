@@ -1,4 +1,4 @@
-# Copyright 2020-2021 Gentoo Authors
+# Copyright 2020-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -13,17 +13,13 @@ if [[ "${PV}" == "9999" ]];  then
 	EGIT_REPO_URI="https://github.com/imageworks/pystring.git"
 else
 	SRC_URI="https://github.com/imageworks/pystring/archive/v${PV}.tar.gz -> ${P}.tar.gz"
-	KEYWORDS="amd64 ~arm ~arm64 ~ppc64 ~x86"
+	KEYWORDS="amd64 ~arm ~arm64 ~ppc64 ~riscv x86"
 fi
-
-BDEPEND="
-	virtual/libc
-	sys-devel/libtool
-"
-RESTRICT="mirror"
 
 LICENSE="BSD"
 SLOT="0"
+
+BDEPEND="dev-build/libtool"
 
 PATCHES=(
 	# Patch to convert the project into cmake. Taken from:

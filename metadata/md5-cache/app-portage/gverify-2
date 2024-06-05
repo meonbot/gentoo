@@ -1,15 +1,15 @@
+BDEPEND=python_single_target_python3_10? ( dev-lang/python:3.10 ) python_single_target_python3_11? ( dev-lang/python:3.11 ) python_single_target_python3_12? ( dev-lang/python:3.12 )
 DEFINED_PHASES=compile install setup
-DEPEND=python_single_target_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9 ) python_single_target_python3_10? ( >=dev-lang/python-3.10.0_p1-r1:3.10 )
 DESCRIPTION=gentoo.git signature verification tool
-EAPI=7
-HOMEPAGE=https://github.com/mgorny/gverify
+EAPI=8
+HOMEPAGE=https://github.com/projg2/gverify/
 INHERIT=python-single-r1
-IUSE=python_single_target_python3_8 python_single_target_python3_9 python_single_target_python3_10
+IUSE=python_single_target_python3_10 python_single_target_python3_11 python_single_target_python3_12
 KEYWORDS=~amd64 ~x86
 LICENSE=BSD-2
-RDEPEND=python_single_target_python3_8? ( >=dev-lang/python-3.8.12_p1-r1:3.8 ) python_single_target_python3_9? ( >=dev-lang/python-3.9.9-r1:3.9 ) python_single_target_python3_10? ( >=dev-lang/python-3.10.0_p1-r1:3.10 ) app-crypt/gnupg sec-keys/openpgp-keys-gentoo-auth dev-vcs/git
-REQUIRED_USE=^^ ( python_single_target_python3_8 python_single_target_python3_9 python_single_target_python3_10 )
+RDEPEND=python_single_target_python3_10? ( dev-lang/python:3.10 ) python_single_target_python3_11? ( dev-lang/python:3.11 ) python_single_target_python3_12? ( dev-lang/python:3.12 ) app-crypt/gnupg sec-keys/openpgp-keys-gentoo-auth dev-vcs/git
+REQUIRED_USE=^^ ( python_single_target_python3_10 python_single_target_python3_11 python_single_target_python3_12 )
 SLOT=0
-SRC_URI=https://github.com/mgorny/gverify/archive/v2.tar.gz -> gverify-2.tar.gz
-_eclasses_=eapi8-dosym	cd7d420bb5be5ee079f27239ce76b8f5	multiprocessing	61c959fc55c15c00bbb1079d6a71370b	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	python-utils-r1	54423f1e035828362c248fad528ebbba	python-single-r1	9783802d3840cbbd78c02b313df760cc
-_md5_=f9ba98af72077b9e461e470de5f9d59f
+SRC_URI=https://github.com/projg2/gverify/archive/v2.tar.gz -> gverify-2.tar.gz
+_eclasses_=multiprocessing	30ead54fa2e2b5f9cd4e612ffc34d0fe	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	python-utils-r1	8b220bbce5c119fb1d4d5c2f5588f3ea	python-single-r1	75118e916668a74c660a13b0ecb22562
+_md5_=47b64ab277f35b1dc9efd3781bd021e8

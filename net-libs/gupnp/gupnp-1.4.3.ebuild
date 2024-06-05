@@ -1,10 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
-VALA_USE_DEPEND="vapigen"
-PYTHON_COMPAT=( python3_{7..10} )
-PYTHON_REQ_USE="xml"
+EAPI=7
+PYTHON_COMPAT=( python3_{10..12} )
+PYTHON_REQ_USE="xml(+)"
 
 inherit gnome.org meson-multilib python-single-r1 vala xdg
 
@@ -13,7 +12,7 @@ HOMEPAGE="https://wiki.gnome.org/Projects/GUPnP https://gitlab.gnome.org/GNOME/g
 
 LICENSE="LGPL-2+ GPL-2+" # gupnp-binding-tool is GPL-2+
 SLOT="0/1.2-0" # <API version>-<soname>
-KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~sparc ~x86"
+KEYWORDS="~alpha amd64 ~arm arm64 ~hppa ~ia64 ~loong ~ppc ppc64 ~riscv ~sparc x86"
 
 IUSE="connman gtk-doc +introspection networkmanager vala"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
@@ -45,9 +44,17 @@ BDEPEND="
 	)
 "
 
+PATCHES=(
+	"${FILESDIR}"/${PN}-1.4.3-meson-1.2.0-fix.patch
+	"${FILESDIR}"/${PN}-1.4.3-libxml2-2.12.patch
+)
+
 src_prepare() {
 	use introspection && vala_src_prepare
 	xdg_src_prepare
+
+	# This makes sense for upstream but not for us downstream, bug #906124.
+	sed -i -e '/-Werror=deprecated-declarations/d' meson.build || die
 }
 
 multilib_src_configure() {

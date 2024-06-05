@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-	<maintainer type="person">
-		<email>fordfrog@gentoo.org</email>
-		<name>Miroslav Šulc</name>
+	<maintainer type="project">
+		<email>proaudio@gentoo.org</email>
+		<name>Gentoo ProAudio Project</name>
 	</maintainer>
 	<maintainer type="person" proxied="yes">
 		<email>alexander@tsoy.me</email>
@@ -18,4 +18,7 @@
 		<flag name="nsm">Build NSM (Non Session Manager) support</flag>
 		<flag name="standalone">Build standalone application</flag>
 	</use>
+	<upstream>
+		<remote-id type="github">brummer10/guitarix</remote-id>
+	</upstream>
 </pkgmetadata>

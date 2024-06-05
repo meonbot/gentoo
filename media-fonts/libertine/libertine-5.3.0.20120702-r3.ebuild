@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -11,14 +11,14 @@ MY_P_TTF="LinLibertineTTF_${MY_PV}"
 inherit font
 
 DESCRIPTION="Fonts from the Linux Libertine Open Fonts Project"
-HOMEPAGE="http://libertine-fonts.org/"
-SRC_URI="mirror://sourceforge/linuxlibertine/${MY_P_OTF}.tgz
-	mirror://sourceforge/linuxlibertine/${MY_P_TTF}.tgz"
+HOMEPAGE="https://libertine-fonts.org/"
+SRC_URI="https://downloads.sourceforge.net/linuxlibertine/${MY_P_OTF}.tgz
+	https://downloads.sourceforge.net/linuxlibertine/${MY_P_TTF}.tgz"
 S="${WORKDIR}"
 
 LICENSE="|| ( GPL-2-with-font-exception OFL-1.1 )"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm ~arm64 ~ia64 ppc ppc64 ~riscv sparc x86"
+KEYWORDS="~alpha amd64 arm ~arm64 ~ia64 ~loong ppc ppc64 ~riscv sparc x86"
 IUSE=""
 
 RDEPEND="!<x11-libs/pango-1.20.4"

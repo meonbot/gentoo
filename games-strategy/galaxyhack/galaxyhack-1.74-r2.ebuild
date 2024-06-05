@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,8 +6,8 @@ EAPI=7
 inherit desktop edos2unix toolchain-funcs readme.gentoo-r1
 
 DESCRIPTION="Multiplayer AI script based strategy game"
-HOMEPAGE="http://galaxyhack.sourceforge.net/"
-SRC_URI="mirror://sourceforge/${PN}/${P}.tar.bz2
+HOMEPAGE="https://galaxyhack.sourceforge.net/"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${P}.tar.bz2
 	mirror://gentoo/${PN}.png"
 S="${WORKDIR}/${PN}/src"
 
@@ -16,7 +16,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 
 DEPEND="
-	>=dev-libs/boost-1.34:=
+	dev-libs/boost:=
 	media-libs/libsdl[video]
 	media-libs/sdl-image[png]
 	media-libs/sdl-mixer[mod,vorbis]
@@ -31,7 +31,7 @@ Per user settings can be specified by creating
 ~/.galaxyhack/settings.dat
 
 Additional user submitted fleets can be downloaded from
-http://galaxyhack.sourceforge.net/viewfleets.php
+https://galaxyhack.sourceforge.net/viewfleets.php
 "
 
 PATCHES=(

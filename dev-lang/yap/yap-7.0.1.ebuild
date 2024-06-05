@@ -1,11 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 PV_COMMIT=5bebd8e3aae655690ddf33dfb32289766910fa25
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit cmake flag-o-matic python-single-r1
 
@@ -18,7 +18,7 @@ SRC_URI="https://github.com/vscosta/yap/archive/${PV_COMMIT}.tar.gz -> ${PN}-${P
 
 LICENSE="Artistic LGPL-2"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="amd64 ~x86"
 IUSE="R debug doc examples java mpi mysql odbc postgres python raptor readline sqlite static threads xml"
 
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
@@ -43,7 +43,7 @@ RDEPEND="dev-libs/libutf8proc
 	xml? ( dev-libs/libxml2 )"
 
 DEPEND="${RDEPEND}
-	doc? ( app-doc/doxygen[dot] )
+	doc? ( app-text/doxygen[dot] )
 	java? ( dev-lang/swig )
 	python? ( dev-lang/swig )"
 

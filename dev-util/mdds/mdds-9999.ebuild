@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -8,7 +8,7 @@ if [[ ${PV} == *9999* ]]; then
 	inherit git-r3
 else
 	SRC_URI="https://kohei.us/files/${PN}/src/${P}.tar.xz"
-	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linux"
+	KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 ~riscv ~x86 ~amd64-linux ~x86-linux"
 fi
 inherit autotools toolchain-funcs
 
@@ -16,19 +16,19 @@ DESCRIPTION="Collection of multi-dimensional data structure and indexing algorit
 HOMEPAGE="https://gitlab.com/mdds/mdds"
 
 LICENSE="MIT"
-SLOT="1/${PV%.*}" # Check API version on version bumps!
-IUSE="doc openmp valgrind test"
+SLOT="1/3.0" # Check API version on version bumps!
+IUSE="doc openmp test"
 RESTRICT="!test? ( test )"
 
-BDEPEND="
-	doc? (
-		app-doc/doxygen
-		dev-python/sphinx
-	)
-	valgrind? ( dev-util/valgrind )
-"
 DEPEND="dev-libs/boost:="
 RDEPEND="${DEPEND}"
+BDEPEND="
+	doc? (
+		app-text/doxygen
+		dev-python/sphinx
+	)
+	test? ( dev-util/dejagnu )
+"
 
 PATCHES=( "${FILESDIR}/${PN}-1.5.0-buildsystem.patch" )
 
@@ -48,13 +48,8 @@ src_prepare() {
 src_configure() {
 	local myeconfargs=(
 		$(use_enable doc docs)
-		$(use_enable valgrind memory_tests)
+		$(use_enable openmp)
 	)
-	if use openmp && tc-has-openmp; then
-		myeconfargs+=( --enable-openmp )
-	else
-		myeconfargs+=( --disable-openmp )
-	fi
 	econf "${myeconfargs[@]}"
 }
 

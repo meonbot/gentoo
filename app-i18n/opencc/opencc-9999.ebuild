@@ -1,8 +1,8 @@
-# Copyright 2010-2021 Gentoo Authors
+# Copyright 2010-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
-PYTHON_COMPAT=(python{3_7,3_8,3_9})
+EAPI="8"
+PYTHON_COMPAT=( python3_{9..10} )
 
 inherit cmake python-any-r1
 
@@ -27,7 +27,7 @@ IUSE="doc test"
 RESTRICT="!test? ( test )"
 
 BDEPEND="${PYTHON_DEPS}
-	doc? ( app-doc/doxygen )"
+	doc? ( app-text/doxygen )"
 DEPEND="dev-cpp/tclap
 	dev-libs/darts
 	dev-libs/marisa:0=

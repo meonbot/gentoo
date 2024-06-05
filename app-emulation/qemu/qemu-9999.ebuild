@@ -1,29 +1,53 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8,9,10} )
+# Generate using https://github.com/thesamesam/sam-gentoo-scripts/blob/main/niche/generate-qemu-docs
+# Set to 1 if prebuilt, 0 if not
+# (the construct below is to allow overriding from env for script)
+QEMU_DOCS_PREBUILT=${QEMU_DOCS_PREBUILT:-0}
+QEMU_DOCS_PREBUILT_DEV=sam
+QEMU_DOCS_VERSION=$(ver_cut 1-3)
+# Default to generating docs (inc. man pages) if no prebuilt; overridden later
+# bug #830088
+QEMU_DOC_USEFLAG="+doc"
+
+PYTHON_COMPAT=( python3_{10..12} )
 PYTHON_REQ_USE="ncurses,readline"
 
-FIRMWARE_ABI_VERSION="6.2.0"
+FIRMWARE_ABI_VERSION="7.2.0"
 
 inherit linux-info toolchain-funcs python-r1 udev fcaps readme.gentoo-r1 \
 		pax-utils xdg-utils
 
-if [[ ${PV} = *9999* ]]; then
-	EGIT_REPO_URI="https://git.qemu.org/git/qemu.git"
-	EGIT_SUBMODULES=(
-		meson
-		tests/fp/berkeley-softfloat-3
-		tests/fp/berkeley-testfloat-3
-		ui/keycodemapdb
-	)
+if [[ ${PV} == *9999* ]]; then
+	QEMU_DOCS_PREBUILT=0
+
+	EGIT_REPO_URI="https://gitlab.com/qemu-project/qemu.git/"
+	EGIT_SUBMODULES=()
 	inherit git-r3
 	SRC_URI=""
+	declare -A SUBPROJECTS=(
+		[keycodemapdb]="f5772a62ec52591ff6870b7e8ef32482371f22c6"
+		[berkeley-softfloat-3]="b64af41c3276f97f0e181920400ee056b9c88037"
+		[berkeley-testfloat-3]="e7af9751d9f9fd3b47911f51a5cfd08af256a9ab"
+	)
+
+	for proj in "${!SUBPROJECTS[@]}"; do
+		c=${SUBPROJECTS[${proj}]}
+		SRC_URI+=" https://gitlab.com/qemu-project/${proj}/-/archive/${c}/${proj}-${c}.tar.bz2"
+	done
 else
-	SRC_URI="https://download.qemu.org/${P}.tar.xz"
-	KEYWORDS="~amd64 ~arm64 ~ppc ~ppc64 ~x86"
+	MY_P="${PN}-${PV/_rc/-rc}"
+	SRC_URI="https://download.qemu.org/${MY_P}.tar.xz"
+
+	if [[ ${QEMU_DOCS_PREBUILT} == 1 ]] ; then
+		SRC_URI+=" !doc? ( https://dev.gentoo.org/~${QEMU_DOCS_PREBUILT_DEV}/distfiles/${CATEGORY}/${PN}/${PN}-${QEMU_DOCS_VERSION}-docs.tar.xz )"
+	fi
+
+	S="${WORKDIR}/${MY_P}"
+	[[ "${PV}" != *_rc* ]] && KEYWORDS="~amd64 ~arm ~arm64 ~loong ~ppc ~ppc64 ~riscv ~x86"
 fi
 
 DESCRIPTION="QEMU + Kernel-based Virtual Machine userland tools"
@@ -32,16 +56,18 @@ HOMEPAGE="https://www.qemu.org https://www.linux-kvm.org"
 LICENSE="GPL-2 LGPL-2 BSD-2"
 SLOT="0"
 
-IUSE="accessibility +aio alsa bpf bzip2 capstone +caps +curl debug +doc
-	+fdt fuse glusterfs gnutls gtk infiniband iscsi io-uring
-	jack jemalloc +jpeg
+[[ ${QEMU_DOCS_PREBUILT} == 1 ]] && QEMU_DOC_USEFLAG="doc"
+
+IUSE="accessibility +aio alsa bpf bzip2 capstone +curl debug ${QEMU_DOC_USEFLAG}
+	+fdt fuse glusterfs +gnutls gtk infiniband iscsi io-uring
+	jack jemalloc +jpeg keyutils
 	lzo multipath
-	ncurses nfs nls numa opengl +oss pam +pin-upstream-blobs
+	ncurses nfs nls numa opengl +oss pam +pin-upstream-blobs pipewire
 	plugins +png pulseaudio python rbd sasl +seccomp sdl sdl-image selinux
 	+slirp
-	smartcard snappy spice ssh static static-user systemtap test udev usb
-	usbredir vde +vhost-net vhost-user-fs virgl virtfs +vnc vte xattr xen
-	xfs zstd"
+	smartcard snappy spice ssh static-user systemtap test udev usb
+	usbredir vde +vhost-net virgl virtfs +vnc vte xattr xen
+	zstd"
 
 COMMON_TARGETS="
 	aarch64
@@ -50,6 +76,7 @@ COMMON_TARGETS="
 	cris
 	hppa
 	i386
+	loongarch64
 	m68k
 	microblaze
 	microblazeel
@@ -57,7 +84,6 @@ COMMON_TARGETS="
 	mips64
 	mips64el
 	mipsel
-	nios2
 	or1k
 	ppc
 	ppc64
@@ -85,7 +111,6 @@ IUSE_USER_TARGETS="
 	hexagon
 	mipsn32
 	mipsn32el
-	ppc64abi32
 	ppc64le
 	sparc32plus
 "
@@ -95,9 +120,11 @@ use_user_targets=$(printf ' qemu_user_targets_%s' ${IUSE_USER_TARGETS})
 IUSE+=" ${use_softmmu_targets} ${use_user_targets}"
 
 RESTRICT="!test? ( test )"
+
 # Allow no targets to be built so that people can get a tools-only build.
 # Block USE flag configurations known to not work.
-REQUIRED_USE="${PYTHON_REQUIRED_USE}
+REQUIRED_USE="
+	${PYTHON_REQUIRED_USE}
 	qemu_softmmu_targets_arm? ( fdt )
 	qemu_softmmu_targets_microblaze? ( fdt )
 	qemu_softmmu_targets_mips64el? ( fdt )
@@ -107,15 +134,17 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 	qemu_softmmu_targets_riscv64? ( fdt )
 	qemu_softmmu_targets_x86_64? ( fdt )
 	sdl-image? ( sdl )
-	static? ( static-user !alsa !gtk !jack !opengl !pam !pulseaudio !plugins !rbd !snappy !udev )
 	static-user? ( !plugins )
-	vhost-user-fs? ( caps seccomp )
 	virgl? ( opengl )
-	virtfs? ( caps xattr )
+	virtfs? ( xattr )
+	vnc? ( gnutls )
 	vte? ( gtk )
 	multipath? ( udev )
-	plugins? ( !static !static-user )
+	plugins? ( !static-user )
 "
+for smname in ${IUSE_SOFTMMU_TARGETS} ; do
+	REQUIRED_USE+=" qemu_softmmu_targets_${smname}? ( kernel_linux? ( seccomp ) )"
+done
 
 # Dependencies required for qemu tools (qemu-nbd, qemu-img, qemu-io, ...)
 # and user/softmmu targets (qemu-*, qemu-system-*).
@@ -126,16 +155,16 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}
 # respected).  This is because qemu supports using the C library's API
 # when available rather than always using the external library.
 ALL_DEPEND="
-	>=dev-libs/glib-2.0[static-libs(+)]
+	dev-libs/glib:2[static-libs(+)]
 	sys-libs/zlib[static-libs(+)]
 	python? ( ${PYTHON_DEPS} )
-	systemtap? ( dev-util/systemtap )
-	xattr? ( sys-apps/attr[static-libs(+)] )"
+	systemtap? ( dev-debug/systemtap )
+	xattr? ( sys-apps/attr[static-libs(+)] )
+"
 
 # Dependencies required for qemu tools (qemu-nbd, qemu-img, qemu-io, ...)
 # softmmu targets (qemu-system-*).
 SOFTMMU_TOOLS_DEPEND="
-	dev-libs/libxml2[static-libs(+)]
 	>=x11-libs/pixman-0.28.0[static-libs(+)]
 	accessibility? (
 		app-accessibility/brltty[api]
@@ -145,15 +174,14 @@ SOFTMMU_TOOLS_DEPEND="
 	alsa? ( >=media-libs/alsa-lib-1.0.13 )
 	bpf? ( dev-libs/libbpf:= )
 	bzip2? ( app-arch/bzip2[static-libs(+)] )
-	capstone? ( dev-libs/capstone:= )
-	caps? ( sys-libs/libcap-ng[static-libs(+)] )
+	capstone? ( dev-libs/capstone:=[static-libs(+)] )
 	curl? ( >=net-misc/curl-7.15.4[static-libs(+)] )
-	fdt? ( >=sys-apps/dtc-1.5.0[static-libs(+)] )
+	fdt? ( >=sys-apps/dtc-1.5.1[static-libs(+)] )
 	fuse? ( >=sys-fs/fuse-3.1:3[static-libs(+)] )
 	glusterfs? ( >=sys-cluster/glusterfs-3.4.0[static-libs(+)] )
 	gnutls? (
-		dev-libs/nettle:=[static-libs(+)]
 		>=net-libs/gnutls-3.0:=[static-libs(+)]
+		dev-libs/nettle:=[static-libs(+)]
 	)
 	gtk? (
 		x11-libs/gtk+:3
@@ -164,7 +192,9 @@ SOFTMMU_TOOLS_DEPEND="
 	io-uring? ( sys-libs/liburing:=[static-libs(+)] )
 	jack? ( virtual/jack )
 	jemalloc? ( dev-libs/jemalloc )
-	jpeg? ( virtual/jpeg:0=[static-libs(+)] )
+	jpeg? ( media-libs/libjpeg-turbo:=[static-libs(+)] )
+	kernel_linux? ( sys-libs/libcap-ng[static-libs(+)] )
+	keyutils? ( sys-apps/keyutils[static-libs(+)] )
 	lzo? ( dev-libs/lzo:2[static-libs(+)] )
 	multipath? ( sys-fs/multipath-tools )
 	ncurses? (
@@ -180,8 +210,9 @@ SOFTMMU_TOOLS_DEPEND="
 		media-libs/mesa[egl(+),gbm(+)]
 	)
 	pam? ( sys-libs/pam )
-	png? ( media-libs/libpng:0=[static-libs(+)] )
-	pulseaudio? ( media-sound/pulseaudio )
+	pipewire? ( >=media-video/pipewire-0.3.60 )
+	png? ( >=media-libs/libpng-1.6.34:=[static-libs(+)] )
+	pulseaudio? ( media-libs/libpulse )
 	rbd? ( sys-cluster/ceph )
 	sasl? ( dev-libs/cyrus-sasl[static-libs(+)] )
 	sdl? (
@@ -194,95 +225,107 @@ SOFTMMU_TOOLS_DEPEND="
 	smartcard? ( >=app-emulation/libcacard-2.5.0[static-libs(+)] )
 	snappy? ( app-arch/snappy:= )
 	spice? (
-		>=app-emulation/spice-protocol-0.12.3
-		>=app-emulation/spice-0.12.0[static-libs(+)]
+		>=app-emulation/spice-protocol-0.14.0
+		>=app-emulation/spice-0.14.0[static-libs(+)]
 	)
 	ssh? ( >=net-libs/libssh-0.8.6[static-libs(+)] )
 	udev? ( virtual/libudev:= )
-	usb? ( >=virtual/libusb-1-r2[static-libs(+)] )
+	usb? ( >=virtual/libusb-1-r2:1[static-libs(+)] )
 	usbredir? ( >=sys-apps/usbredir-0.6[static-libs(+)] )
 	vde? ( net-misc/vde[static-libs(+)] )
 	virgl? ( media-libs/virglrenderer[static-libs(+)] )
 	virtfs? ( sys-libs/libcap )
 	xen? ( app-emulation/xen-tools:= )
-	xfs? ( sys-fs/xfsprogs[static-libs(+)] )
 	zstd? ( >=app-arch/zstd-1.4.0[static-libs(+)] )
 "
 
-EDK2_OVMF_VERSION="202105"
-SEABIOS_VERSION="1.14.0"
+EDK2_OVMF_VERSION="202202"
+SEABIOS_VERSION="1.16.0"
 
 X86_FIRMWARE_DEPEND="
 	pin-upstream-blobs? (
-		~sys-firmware/edk2-ovmf-${EDK2_OVMF_VERSION}[binary]
+		~sys-firmware/edk2-ovmf-bin-${EDK2_OVMF_VERSION}
 		~sys-firmware/ipxe-1.21.1[binary,qemu]
-		~sys-firmware/seabios-${SEABIOS_VERSION}[binary,seavgabios]
+		~sys-firmware/seabios-bin-${SEABIOS_VERSION}
 		~sys-firmware/sgabios-0.1_pre10[binary]
 	)
 	!pin-upstream-blobs? (
-		>=sys-firmware/edk2-ovmf-${EDK2_OVMF_VERSION}
+		|| (
+			>=sys-firmware/edk2-ovmf-${EDK2_OVMF_VERSION}
+			>=sys-firmware/edk2-ovmf-bin-${EDK2_OVMF_VERSION}
+		)
 		sys-firmware/ipxe[qemu]
-		>=sys-firmware/seabios-${SEABIOS_VERSION}[seavgabios]
+		|| (
+			>=sys-firmware/seabios-${SEABIOS_VERSION}[seavgabios]
+			>=sys-firmware/seabios-bin-${SEABIOS_VERSION}
+		)
 		sys-firmware/sgabios
-	)"
+	)
+"
 PPC_FIRMWARE_DEPEND="
 	pin-upstream-blobs? (
-		~sys-firmware/seabios-${SEABIOS_VERSION}[binary,seavgabios]
+		~sys-firmware/seabios-bin-${SEABIOS_VERSION}
 	)
 	!pin-upstream-blobs? (
-		>=sys-firmware/seabios-${SEABIOS_VERSION}[seavgabios]
+		|| (
+			>=sys-firmware/seabios-${SEABIOS_VERSION}[seavgabios]
+			>=sys-firmware/seabios-bin-${SEABIOS_VERSION}
+		)
 	)
 "
 
+# See bug #913084 for pip dep
 BDEPEND="
 	$(python_gen_impl_dep)
 	dev-lang/perl
-	sys-apps/texinfo
+	>=dev-build/meson-0.63.0
+	app-alternatives/ninja
+	dev-python/pip[${PYTHON_USEDEP}]
 	virtual/pkgconfig
 	doc? (
-		dev-python/sphinx[${PYTHON_USEDEP}]
-		dev-python/sphinx_rtd_theme[${PYTHON_USEDEP}]
+		>=dev-python/sphinx-1.6.0[${PYTHON_USEDEP}]
+		dev-python/sphinx-rtd-theme[${PYTHON_USEDEP}]
 	)
 	gtk? ( nls? ( sys-devel/gettext ) )
 	test? (
 		dev-libs/glib[utils]
-		sys-devel/bc
+		app-alternatives/bc
 	)
 "
 CDEPEND="
-	!static? (
-		${ALL_DEPEND//\[static-libs(+)]}
-		${SOFTMMU_TOOLS_DEPEND//\[static-libs(+)]}
-	)
+	${ALL_DEPEND//\[static-libs(+)]}
+	${SOFTMMU_TOOLS_DEPEND//\[static-libs(+)]}
 	qemu_softmmu_targets_i386? ( ${X86_FIRMWARE_DEPEND} )
 	qemu_softmmu_targets_x86_64? ( ${X86_FIRMWARE_DEPEND} )
 	qemu_softmmu_targets_ppc? ( ${PPC_FIRMWARE_DEPEND} )
 	qemu_softmmu_targets_ppc64? ( ${PPC_FIRMWARE_DEPEND} )
 "
-DEPEND="${CDEPEND}
+DEPEND="
+	${CDEPEND}
 	kernel_linux? ( >=sys-kernel/linux-headers-2.6.35 )
-	static? (
-		${ALL_DEPEND}
-		${SOFTMMU_TOOLS_DEPEND}
-	)
-	static-user? ( ${ALL_DEPEND} )"
-RDEPEND="${CDEPEND}
+	static-user? ( ${ALL_DEPEND} )
+"
+RDEPEND="
+	${CDEPEND}
 	acct-group/kvm
 	selinux? (
 		sec-policy/selinux-qemu
 		sys-libs/libselinux
-	)"
+	)
+"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-2.11.1-capstone_include_path.patch
-	"${FILESDIR}"/${PN}-5.2.0-disable-keymap.patch
-	"${FILESDIR}"/${PN}-6.0.0-make.patch
-	"${FILESDIR}"/${PN}-6.1.0-strings.patch
-	"${FILESDIR}"/${PN}-6.2.0-also-build-virtfs-proxy-helper.patch
+	"${FILESDIR}"/${PN}-9.0.0-disable-keymap.patch
+	"${FILESDIR}"/${PN}-9.0.0-capstone-include-path.patch
+	"${FILESDIR}"/${PN}-9.0.0-also-build-virtfs-proxy-helper.patch
+	"${FILESDIR}"/${PN}-8.1.0-skip-tests.patch
+	"${FILESDIR}"/${PN}-8.1.0-find-sphinx.patch
+
 )
 
 QA_PREBUILT="
 	usr/share/qemu/hppa-firmware.img
+	usr/share/qemu/hppa-firmware64.img
 	usr/share/qemu/openbios-ppc
 	usr/share/qemu/openbios-sparc64
 	usr/share/qemu/openbios-sparc32
@@ -294,7 +337,8 @@ QA_PREBUILT="
 	usr/share/qemu/u-boot.e500
 "
 
-QA_WX_LOAD="usr/bin/qemu-i386
+QA_WX_LOAD="
+	usr/bin/qemu-i386
 	usr/bin/qemu-x86_64
 	usr/bin/qemu-alpha
 	usr/bin/qemu-arm
@@ -307,7 +351,6 @@ QA_WX_LOAD="usr/bin/qemu-i386
 	usr/bin/qemu-or1k
 	usr/bin/qemu-ppc
 	usr/bin/qemu-ppc64
-	usr/bin/qemu-ppc64abi32
 	usr/bin/qemu-sh4
 	usr/bin/qemu-sh4eb
 	usr/bin/qemu-sparc
@@ -360,6 +403,8 @@ pkg_pretend() {
 			use vhost-net && CONFIG_CHECK+=" ~VHOST_NET"
 			ERROR_VHOST_NET="You must enable VHOST_NET to have vhost-net"
 			ERROR_VHOST_NET+=" support"
+			use test && CONFIG_CHECK+=" IP_MULTICAST"
+			ERROR_IP_MULTICAST="Test suite requires IP_MULTICAST"
 
 			if use amd64 || use x86 || use amd64-linux || use x86-linux; then
 				if grep -q AuthenticAMD /proc/cpuinfo; then
@@ -406,6 +451,23 @@ check_targets() {
 	popd >/dev/null
 }
 
+src_unpack() {
+	if [[ ${PV} == 9999 ]] ; then
+		git-r3_src_unpack
+		for file in ${A}; do
+			unpack "${file}"
+		done
+		cd "${WORKDIR}" || die
+		for proj in "${!SUBPROJECTS[@]}"; do
+			mv "${proj}-${SUBPROJECTS[${proj}]}" "${S}/subprojects/${proj}" || die
+		done
+		cd "${S}" || die
+		meson subprojects packagefiles --apply || die
+	else
+		default
+	fi
+}
+
 src_prepare() {
 	check_targets IUSE_SOFTMMU_TARGETS softmmu
 	check_targets IUSE_USER_TARGETS linux-user
@@ -419,8 +481,8 @@ src_prepare() {
 	# Verbose builds
 	MAKEOPTS+=" V=1"
 
-	# Remove bundled copy of libfdt
-	rm -r dtc || die
+	# Remove bundled modules
+	rm -r roms/*/ || die
 }
 
 ##
@@ -433,7 +495,7 @@ qemu_src_configure() {
 	local buildtype=$1
 	local builddir="${S}/${buildtype}-build"
 
-	mkdir "${builddir}"
+	mkdir "${builddir}" || die
 
 	local conf_opts=(
 		--prefix=/usr
@@ -448,7 +510,7 @@ qemu_src_configure() {
 		--disable-containers # bug #732972
 		--disable-guest-agent
 		--disable-strip
-		--with-git-submodules=ignore
+		--disable-download
 
 		# bug #746752: TCG interpreter has a few limitations:
 		# - it does not support FPU
@@ -465,16 +527,18 @@ qemu_src_configure() {
 		# are enabled), but it's not really worth the hassle.  Disable it
 		# all the time to avoid automatically detecting it. #568856
 		--disable-gcrypt
-		--python="${PYTHON}"
 		--cc="$(tc-getCC)"
 		--cxx="$(tc-getCXX)"
+		--objcc="$(tc-getCC)"
 		--host-cc="$(tc-getBUILD_CC)"
+
 		$(use_enable alsa)
 		$(use_enable debug debug-info)
 		$(use_enable debug debug-tcg)
 		$(use_enable jack)
 		$(use_enable nls gettext)
 		$(use_enable oss)
+		$(use_enable pipewire)
 		$(use_enable plugins)
 		$(use_enable pulseaudio pa)
 		$(use_enable selinux)
@@ -519,7 +583,6 @@ qemu_src_configure() {
 		$(conf_softmmu bpf)
 		$(conf_notuser bzip2)
 		$(conf_notuser capstone)
-		$(conf_notuser caps cap-ng)
 		$(conf_notuser curl)
 		$(conf_tools doc docs)
 		$(conf_notuser fdt)
@@ -534,6 +597,7 @@ qemu_src_configure() {
 		$(conf_malloc jemalloc)
 		$(conf_notuser jpeg vnc-jpeg)
 		$(conf_notuser kernel_linux kvm)
+		$(conf_notuser keyutils libkeyutils)
 		$(conf_notuser lzo)
 		$(conf_notuser multipath mpath)
 		$(conf_notuser ncurses curses)
@@ -541,13 +605,13 @@ qemu_src_configure() {
 		$(conf_notuser numa)
 		$(conf_notuser opengl)
 		$(conf_notuser pam auth-pam)
-		$(conf_notuser png vnc-png)
+		$(conf_notuser png)
 		$(conf_notuser rbd)
 		$(conf_notuser sasl vnc-sasl)
 		$(conf_notuser sdl)
 		$(conf_softmmu sdl-image)
 		$(conf_notuser seccomp)
-		$(conf_notuser slirp slirp system)
+		$(conf_notuser slirp)
 		$(conf_notuser smartcard)
 		$(conf_notuser snappy)
 		$(conf_notuser spice)
@@ -557,25 +621,16 @@ qemu_src_configure() {
 		$(conf_notuser usbredir usb-redir)
 		$(conf_notuser vde)
 		$(conf_notuser vhost-net)
-		$(conf_notuser vhost-user-fs)
-		$(conf_tools vhost-user-fs virtiofsd)
 		$(conf_notuser virgl virglrenderer)
 		$(conf_softmmu virtfs)
 		$(conf_notuser vnc)
 		$(conf_notuser vte)
 		$(conf_notuser xen)
 		$(conf_notuser xen xen-pci-passthrough)
-		$(conf_notuser xfs xfsctl)
 		# use prebuilt keymaps, bug #759604
 		--disable-xkbcommon
 		$(conf_notuser zstd)
 	)
-
-	if [[ ${buildtype} == "user" ]] ; then
-		conf_opts+=( --disable-libxml2 )
-	else
-		conf_opts+=( --enable-libxml2 )
-	fi
 
 	if [[ ! ${buildtype} == "user" ]] ; then
 		# audio options
@@ -583,6 +638,7 @@ qemu_src_configure() {
 			# Note: backend order matters here: #716202
 			# We iterate from higher-level to lower level.
 			$(usex pulseaudio pa "")
+			$(usev pipewire)
 			$(usev jack)
 			$(usev sdl)
 			$(usev alsa)
@@ -598,8 +654,9 @@ qemu_src_configure() {
 		conf_opts+=(
 			--enable-linux-user
 			--disable-system
-			--disable-blobs
 			--disable-tools
+			--disable-cap-ng
+			--disable-seccomp
 		)
 		local static_flag="static-user"
 		;;
@@ -608,17 +665,19 @@ qemu_src_configure() {
 			--disable-linux-user
 			--enable-system
 			--disable-tools
+			--enable-cap-ng
+			--enable-seccomp
 		)
-		local static_flag="static"
+		local static_flag="none"
 		;;
 	tools)
 		conf_opts+=(
 			--disable-linux-user
 			--disable-system
-			--disable-blobs
 			--enable-tools
+			--enable-cap-ng
 		)
-		local static_flag="static"
+		local static_flag="none"
 		;;
 	esac
 
@@ -626,12 +685,12 @@ qemu_src_configure() {
 	[[ -n ${targets} ]] && conf_opts+=( --target-list="${!targets}" )
 
 	# Add support for SystemTAP
-	use systemtap && conf_opts+=( --enable-trace-backend=dtrace )
+	use systemtap && conf_opts+=( --enable-trace-backends="dtrace" )
 
 	# We always want to attempt to build with PIE support as it results
 	# in a more secure binary. But it doesn't work with static or if
 	# the current GCC doesn't have PIE support.
-	if use ${static_flag}; then
+	if [[ ${static_flag} != "none" ]] && use ${static_flag}; then
 		conf_opts+=( --static --disable-pie )
 	else
 		tc-enables-pie && conf_opts+=( --enable-pie )
@@ -681,22 +740,22 @@ src_configure() {
 
 src_compile() {
 	if [[ -n ${user_targets} ]]; then
-		cd "${S}/user-build"
+		cd "${S}/user-build" || die
 		default
 	fi
 
 	if [[ -n ${softmmu_targets} ]]; then
-		cd "${S}/softmmu-build"
+		cd "${S}/softmmu-build" || die
 		default
 	fi
 
-	cd "${S}/tools-build"
+	cd "${S}/tools-build" || die
 	default
 }
 
 src_test() {
 	if [[ -n ${softmmu_targets} ]]; then
-		cd "${S}/softmmu-build"
+		cd "${S}/softmmu-build" || die
 		pax-mark m */qemu-system-* #515550
 		emake check
 	fi
@@ -793,20 +852,25 @@ src_install() {
 		fi
 	fi
 
-	cd "${S}/tools-build"
+	cd "${S}/tools-build" || die
 	emake DESTDIR="${ED}" install
 
+	# If USE=doc, there'll be newly generated docs which we install instead.
+	if ! use doc && [[ ${QEMU_DOCS_PREBUILT} == 1 ]] ; then
+		doman "${WORKDIR}"/${PN}-${QEMU_DOCS_VERSION}-docs/docs/*.[0-8]
+	fi
+
 	# Disable mprotect on the qemu binaries as they use JITs to be fast #459348
-	pushd "${ED}"/usr/bin >/dev/null
+	pushd "${ED}"/usr/bin >/dev/null || die
 	pax-mark mr "${softmmu_bins[@]}" "${user_bins[@]}" # bug 575594
-	popd >/dev/null
+	popd >/dev/null || die
 
 	# Install config file example for qemu-bridge-helper
 	insinto "/etc/qemu"
 	doins "${FILESDIR}/bridge.conf"
 
-	cd "${S}"
-	dodoc MAINTAINERS docs/specs/pci-ids.txt
+	cd "${S}" || die
+	dodoc MAINTAINERS
 	newdoc pc-bios/README README.pc-bios
 
 	# Disallow stripping of prebuilt firmware files.
@@ -814,10 +878,7 @@ src_install() {
 
 	if [[ -n ${softmmu_targets} ]]; then
 		# Remove SeaBIOS since we're using the SeaBIOS packaged one
-		rm "${ED}/usr/share/qemu/bios.bin"
-		rm "${ED}/usr/share/qemu/bios-256k.bin"
 		if use qemu_softmmu_targets_x86_64 || use qemu_softmmu_targets_i386; then
-			dosym ../seabios/bios.bin /usr/share/qemu/bios.bin
 			dosym ../seabios/bios-256k.bin /usr/share/qemu/bios-256k.bin
 		fi
 
@@ -828,6 +889,7 @@ src_install() {
 		rm "${ED}/usr/share/qemu/vgabios-stdvga.bin"
 		rm "${ED}/usr/share/qemu/vgabios-virtio.bin"
 		rm "${ED}/usr/share/qemu/vgabios-vmware.bin"
+
 		# PPC/PPC64 loads vgabios-stdvga
 		if use qemu_softmmu_targets_x86_64 || use qemu_softmmu_targets_i386 || use qemu_softmmu_targets_ppc || use qemu_softmmu_targets_ppc64; then
 			dosym ../seavgabios/vgabios-isavga.bin /usr/share/qemu/vgabios.bin
@@ -839,13 +901,11 @@ src_install() {
 		fi
 
 		# Remove sgabios since we're using the sgabios packaged one
-		rm "${ED}/usr/share/qemu/sgabios.bin"
 		if use qemu_softmmu_targets_x86_64 || use qemu_softmmu_targets_i386; then
 			dosym ../sgabios/sgabios.bin /usr/share/qemu/sgabios.bin
 		fi
 
 		# Remove iPXE since we're using the iPXE packaged one
-		rm "${ED}"/usr/share/qemu/pxe-*.rom
 		if use qemu_softmmu_targets_x86_64 || use qemu_softmmu_targets_i386; then
 			dosym ../ipxe/8086100e.rom /usr/share/qemu/pxe-e1000.rom
 			dosym ../ipxe/80861209.rom /usr/share/qemu/pxe-eepro100.rom
@@ -878,16 +938,27 @@ pkg_postinst() {
 	xdg_icon_cache_update
 
 	[[ -z ${EPREFIX} ]] && [[ -f ${EROOT}/usr/libexec/qemu-bridge-helper ]] && \
-		fcaps cap_net_admin ${EROOT}/usr/libexec/qemu-bridge-helper
+		fcaps cap_net_admin "${EROOT}"/usr/libexec/qemu-bridge-helper
 
 	DISABLE_AUTOFORMATTING=true
 	readme.gentoo_print_elog
 
 	if use pin-upstream-blobs && firmware_abi_change; then
 		ewarn "This version of qemu pins new versions of firmware blobs:"
-		ewarn "	$(best_version sys-firmware/edk2-ovmf)"
+
+		if has_version 'sys-firmware/edk2-ovmf-bin'; then
+			ewarn "	$(best_version sys-firmware/edk2-ovmf-bin)"
+		else
+			ewarn " $(best_version sys-firmware/edk2-ovmf)"
+		fi
+
+		if has_version 'sys-firmware/seabios-bin'; then
+			ewarn "	$(best_version sys-firmware/seabios-bin)"
+		else
+			ewarn " $(best_version sys-firmware/seabios)"
+		fi
+
 		ewarn "	$(best_version sys-firmware/ipxe)"
-		ewarn "	$(best_version sys-firmware/seabios)"
 		ewarn "	$(best_version sys-firmware/sgabios)"
 		ewarn "This might break resume of hibernated guests (started with a different"
 		ewarn "firmware version) and live migration to/from qemu versions with different"
@@ -901,22 +972,24 @@ pkg_postinst() {
 pkg_info() {
 	echo "Using:"
 	echo "  $(best_version app-emulation/spice-protocol)"
-	echo "  $(best_version sys-firmware/edk2-ovmf)"
-	if has_version 'sys-firmware/edk2-ovmf[binary]'; then
-		echo "    USE=binary"
+
+	if has_version 'sys-firmware/edk2-ovmf-bin'; then
+		echo "  $(best_version sys-firmware/edk2-ovmf-bin)"
 	else
-		echo "    USE=''"
+		echo "  $(best_version sys-firmware/edk2-ovmf)"
 	fi
+
+	if has_version 'sys-firmware/seabios-bin'; then
+		echo "  $(best_version sys-firmware/seabios-bin)"
+	else
+		echo "  $(best_version sys-firmware/seabios)"
+	fi
+
 	echo "  $(best_version sys-firmware/ipxe)"
-	echo "  $(best_version sys-firmware/seabios)"
-	if has_version 'sys-firmware/seabios[binary]'; then
-		echo "    USE=binary"
-	else
-		echo "    USE=''"
-	fi
 	echo "  $(best_version sys-firmware/sgabios)"
 }
 
 pkg_postrm() {
 	xdg_icon_cache_update
+	udev_reload
 }

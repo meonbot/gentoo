@@ -5,11 +5,10 @@
 		<email>rich0@gentoo.org</email>
 		<name>Rich Freeman</name>
 	</maintainer>
-	<maintainer type="person" proxied="yes">
-		<email>gentoo@seichter.de</email>
-		<name>Ralph Seichter</name>
-	</maintainer>
 	<use>
 		<flag name="s3">Support for backing up to the Amazon S3 system</flag>
 	</use>
+	<upstream>
+		<remote-id type="pypi">duplicity</remote-id>
+	</upstream>
 </pkgmetadata>

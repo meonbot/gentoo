@@ -1,8 +1,8 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools font
+inherit font
 
 DESCRIPTION="Window Maker Dock Applet Library"
 HOMEPAGE="https://www.dockapps.net/libdockapp"
@@ -10,7 +10,7 @@ SRC_URI="https://www.dockapps.net/download/${P}.tar.gz"
 
 LICENSE="MIT public-domain"
 SLOT="0/3"
-KEYWORDS="~alpha amd64 ppc ppc64 sparc x86"
+KEYWORDS="~alpha amd64 ~mips ppc ppc64 sparc x86"
 # X required for font eclass
 IUSE="+X static-libs"
 REQUIRED_USE="X"
@@ -37,4 +37,6 @@ src_configure() {
 src_install() {
 	emake DESTDIR="${D}" install
 	font_src_install
+
+	find "${ED}" -type f -name '*.la' -delete || die
 }

@@ -1,68 +1,100 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{8..9} )
-
-inherit python-single-r1 git-r3 xdg
+PYTHON_COMPAT=( python3_{10..12} )
+inherit python-single-r1 xdg
 
 DESCRIPTION="Backup system inspired by TimeVault and FlyBack"
 HOMEPAGE="https://backintime.readthedocs.io/en/latest/ https://github.com/bit-team/backintime/"
-EGIT_REPO_URI="https://github.com/bit-team/backintime/"
+
+if [[ ${PV} == 9999 ]] ; then
+	EGIT_REPO_URI="https://github.com/bit-team/backintime/"
+	inherit git-r3
+else
+	SRC_URI="https://github.com/bit-team/${PN}/releases/download/v${PV}/${P}.tar.gz"
+	KEYWORDS="~amd64 ~x86"
+fi
 
 LICENSE="GPL-2"
 SLOT="0"
-IUSE="examples qt5"
+IUSE="examples gui test"
+RESTRICT="!test? ( test )"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
-DEPEND="${PYTHON_DEPS}
+DEPEND="
+	${PYTHON_DEPS}
 	$(python_gen_cond_dep '
 		dev-python/dbus-python[${PYTHON_USEDEP}]
 		dev-python/keyring[${PYTHON_USEDEP}]
-	')"
-RDEPEND="${DEPEND}
-	net-misc/openssh
+		dev-python/packaging[${PYTHON_USEDEP}]
+	')
+"
+RDEPEND="
+	${DEPEND}
+	virtual/openssh
 	net-misc/rsync[xattr,acl]
-	qt5? ( dev-python/PyQt5[gui,widgets] )"
+	gui? ( dev-python/PyQt6[gui,widgets] )
+"
+BDEPEND="
+	sys-devel/gettext
+	test? (
+		$(python_gen_cond_dep '
+			dev-python/pyfakefs[${PYTHON_USEDEP}]
+		')
+	)
+"
 
-PATCHES=( "${FILESDIR}/${PN}-1.2.1-no-compress-docs-examples.patch" )
+PATCHES=(
+	"${FILESDIR}/${PN}-1.4.3-no-compress-docs-examples.patch"
+)
+
+src_prepare() {
+	default
+
+	# Looks at host system too much, so too flaky
+	rm common/test/test_tools.py || die
+	# Fails with dbus/udev issue (likely sandbox)
+	rm common/test/test_snapshots.py || die
+}
 
 src_configure() {
+	# TODO: Review https://github.com/bit-team/backintime/blob/dev/CONTRIBUTING.md#dependencies
+	# for deps (some may be optfeatures).
 	pushd common > /dev/null || die
 	# Not autotools
-	./configure --python3 --no-fuse-group || die
+	./configure --python="${PYTHON}" --no-fuse-group || die
 	popd > /dev/null || die
 
-	if use qt5 ; then
+	if use gui ; then
 		pushd qt > /dev/null || die
-		./configure --python3 || die
+		./configure --python="${PYTHON}" || die
 		popd > /dev/null || die
 	fi
 }
 
 src_compile() {
-	pushd common > /dev/null || die
-	emake
-	popd > /dev/null || die
+	emake -C common
 
-	if use qt5 ; then
-		pushd qt > /dev/null || die
-		emake
-		popd > /dev/null || die
+	if use gui ; then
+		emake -C qt
 	fi
 }
 
-src_install() {
-	pushd common > /dev/null || die
-	emake DESTDIR="${D}" install
-	popd > /dev/null || die
+src_test() {
+	# pytest should work but it can't find the backintime binary, so
+	# use the unittest-based runner instead.
+	# https://github.com/bit-team/backintime/blob/dev/CONTRIBUTING.md#how-to-contribute-to-back-in-time
+	emake -C common test-v
+}
 
-	if use qt5 ; then
-		pushd qt > /dev/null || die
-		emake DESTDIR="${D}" install
-		popd > /dev/null || die
+src_install() {
+	emake -C common DESTDIR="${D}" install
+
+	if use gui ; then
+		emake -C qt DESTDIR="${D}" install
 	fi
 
 	einstalldocs

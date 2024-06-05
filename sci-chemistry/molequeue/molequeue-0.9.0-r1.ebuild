@@ -1,8 +1,9 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{7..9} )
+
+PYTHON_COMPAT=( python3_{10..11} )
 
 inherit cmake python-r1 virtualx
 
@@ -15,16 +16,16 @@ LICENSE="BSD"
 KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
 
 IUSE="+client doc server test +zeromq"
-RESTRICT="!test? ( test )"
-
 REQUIRED_USE="
 	server? ( client )
 	test? ( server )
 	zeromq? ( ${PYTHON_REQUIRED_USE} )
 "
+# Some tests still fail
+RESTRICT="test !test? ( test )"
 
 BDEPEND="
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 "
 RDEPEND="
 	dev-qt/qtcore:5
@@ -38,9 +39,6 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}"
 
-# Some tests still fail
-RESTRICT="test"
-
 src_configure() {
 	configuration() {
 		local mycmakeargs=(
@@ -51,9 +49,9 @@ src_configure() {
 			-DENABLE_TESTING=$(usex test)
 			-DUSE_ZERO_MQ=$(usex zeromq)
 			-DINSTALL_LIBRARY_DIR=$(get_libdir)
-			)
+		)
 		use zeromq && \
-			mycmakeargs+=( -DZeroMQ_ROOT_DIR=\"${EPREFIX}/usr\" )
+			mycmakeargs+=( "-DZeroMQ_ROOT_DIR=\"${EPREFIX}/usr\"" )
 
 		cmake_src_configure
 	}
@@ -66,9 +64,14 @@ src_configure() {
 
 src_compile() {
 	if use zeromq; then
-		python_foreach_impl run_in_build_dir cmake_src_compile all $(usex doc documentation "")
+		my_src_compile() {
+			run_in_build_dir cmake_src_compile all $(usex doc documentation "")
+			use doc && export HTML_DOCS=( "${BUILD_DIR}"/docs/html/. )
+		}
+		python_foreach_impl my_src_compile
 	else
 		cmake_src_compile all $(usex doc documentation "")
+		use doc && export HTML_DOCS=( "${BUILD_DIR}"/docs/html/. )
 	fi
 }
 
@@ -81,7 +84,6 @@ src_test() {
 }
 
 src_install() {
-	use doc && local HTML_DOCS=( "${BUILD_DIR}"/docs/html/. )
 	if use zeromq; then
 		python_foreach_impl run_in_build_dir cmake_src_install
 		python_foreach_impl run_in_build_dir python_optimize

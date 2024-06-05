@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="7"
@@ -17,7 +17,7 @@ REQUIRED_USE="|| ( ${CODECS//+/} )"
 
 LICENSE="CC-BY-SA-3.0"
 SLOT="0"
-KEYWORDS="amd64 ~arm ~arm64 ppc ~ppc64 x86"
+KEYWORDS="amd64 ~arm ~arm64 ppc ~ppc64 ~sparc x86"
 
 S="${WORKDIR}"
 
@@ -36,7 +36,6 @@ src_install() {
 	diropts -m 0755 -o root -g root
 	insopts -m 0644 -o root -g root
 
-	dodir /var/lib/asterisk/moh
 	insinto /var/lib/asterisk/moh
 	doins -r .
 }

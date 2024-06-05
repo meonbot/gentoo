@@ -1,29 +1,30 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit flag-o-matic multilib-minimal multilib toolchain-funcs
+inherit flag-o-matic multilib-minimal multilib multibuild toolchain-funcs
 
 PV1="$(ver_cut 1)"
 PV2="$(ver_cut 2)"
 MY_PV="${PV1}_U${PV2}"
 
 DESCRIPTION="High level abstract threading library"
-HOMEPAGE="https://www.threadingbuildingblocks.org"
+HOMEPAGE="https://github.com/oneapi-src/oneTBB"
 SRC_URI="https://github.com/intel/${PN}/archive/${MY_PV}.tar.gz -> ${P}.tar.gz"
 LICENSE="Apache-2.0"
 SLOT="0"
 KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv ~sparc x86 ~amd64-linux ~x86-linux"
 IUSE="debug examples"
 
-DEPEND=""
-RDEPEND="${DEPEND}"
 S="${WORKDIR}/oneTBB-${MY_PV}"
 
 DOCS=( CHANGES README README.md doc/Release_Notes.txt )
 
-PATCHES=( "${FILESDIR}"/${PN}-2020.1-makefile-debug.patch )
+PATCHES=(
+	"${FILESDIR}"/${PN}-2020.1-makefile-debug.patch
+	"${FILESDIR}"/${PN}-2020.3-gcc13.patch
+)
 
 src_prepare() {
 	default
@@ -39,6 +40,9 @@ src_prepare() {
 }
 
 multilib_src_configure() {
+	# Workaround for bug #912210
+	append-ldflags $(test-flags-CCLD -Wl,--undefined-version)
+
 	# pc files are for debian and fedora compatibility
 	# some deps use them
 	cat <<-EOF > ${PN}.pc.template
@@ -142,10 +146,9 @@ multilib_src_install_all() {
 	einstalldocs
 
 	if use examples ; then
-		insinto /usr/share/doc/${PF}/examples/build
-		doins build/*.inc
-		insinto /usr/share/doc/${PF}/examples
-		doins -r examples
-		docompress -x "/usr/share/doc/${PF}/examples"
+		dodoc -r examples
+		docinto examples/build
+		dodoc build/*.inc
+		docompress -x /usr/share/doc/${PF}/examples
 	fi
 }

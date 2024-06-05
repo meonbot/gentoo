@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-	<maintainer type="person">
-		<email>monsieurp@gentoo.org</email>
-		<name>Patrice Clement</name>
-	</maintainer>
+	<!-- maintainer-needed -->
 	<longdescription>
 	Vifm is a ncurses based file manager with vi like keybindings. If you
 	use vi, vifm gives you complete keyboard control over your files without
@@ -23,6 +20,7 @@
 		<flag name="vim">Install the vifm vim plugin and vim-compatible documentation</flag>
 	</use>
 	<upstream>
+		<remote-id type="github">vifm/vifm</remote-id>
 		<remote-id type="sourceforge">vifm</remote-id>
 	</upstream>
 </pkgmetadata>

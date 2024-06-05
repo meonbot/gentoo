@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -11,12 +11,12 @@ SRC_URI="https://dev-www.libreoffice.org/src/${PN}/${P}.tar.xz"
 
 LICENSE="MPL-2.0"
 SLOT="0"
-KEYWORDS="amd64 ~arm arm64 ~ppc64 x86"
+KEYWORDS="amd64 ~arm arm64 ~loong ppc64 ~riscv x86"
 IUSE="doc static-libs"
 
 BDEPEND="
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 "
 RDEPEND="
 	dev-libs/librevenge
@@ -24,8 +24,8 @@ RDEPEND="
 	sys-libs/zlib
 "
 DEPEND="${RDEPEND}
-	>=dev-libs/boost-1.46
-	sys-devel/libtool
+	dev-libs/boost
+	dev-build/libtool
 "
 
 src_configure() {

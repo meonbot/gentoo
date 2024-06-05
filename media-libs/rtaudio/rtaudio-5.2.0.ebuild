@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -11,7 +11,7 @@ SRC_URI="https://github.com/thestk/${PN}/archive/refs/tags/${PV}.tar.gz -> ${P}.
 
 LICENSE="MIT"
 SLOT="0/6"
-KEYWORDS="amd64 arm64 ~ppc64 x86"
+KEYWORDS="amd64 arm64 ~ppc64 ~riscv x86"
 IUSE="+alsa doc jack pulseaudio static-libs"
 REQUIRED_USE="|| ( alsa jack pulseaudio )"
 
@@ -23,7 +23,7 @@ RDEPEND="alsa? ( media-libs/alsa-lib )
 	pulseaudio? ( media-sound/pulseaudio )"
 DEPEND="${RDEPEND}"
 BDEPEND="
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 "
 
 PATCHES=(

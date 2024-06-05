@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -20,21 +20,18 @@ HOMEPAGE="https://vmc-project.github.io/ https://github.com/vmc-project/vmc"
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE="c++11 c++14 +c++17 doc"
+IUSE="doc"
 
-REQUIRED_USE="^^ ( c++11 c++14 c++17 )"
-
-RDEPEND=">=sci-physics/root-6.18:=[c++11?,c++14?,c++17?,-vmc]"
+RDEPEND="sci-physics/root:="
 DEPEND="${RDEPEND}"
-BDEPEND="doc? ( app-doc/doxygen[dot] )"
+BDEPEND="doc? ( app-text/doxygen[dot] )"
 
 DOCS=(README.md History)
 
 src_compile() {
 	cmake_src_compile
 	if use doc; then
-		# TRAVIS_BUILD_DIR hardcoded in Doxyfile by upstream.
-		TRAVIS_BUILD_DIR="${S}" doxygen doc/doxygen/Doxyfile || die
+		doxygen doc/doxygen/Doxyfile || die
 	fi
 }
 

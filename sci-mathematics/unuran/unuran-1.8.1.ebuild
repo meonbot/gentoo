@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,12 +6,12 @@ EAPI=7
 inherit out-of-source
 
 DESCRIPTION="Universal Non-Uniform Random number generator"
-HOMEPAGE="http://statmath.wu.ac.at/unuran/"
-SRC_URI="http://statmath.wu.ac.at/unuran/${P}.tar.gz"
+HOMEPAGE="https://statmath.wu.ac.at/unuran/"
+SRC_URI="https://statmath.wu.ac.at/unuran/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 ~x86 ~amd64-linux ~x86-linux"
 IUSE="doc examples gsl prng +rngstreams"
 
 DEPEND="

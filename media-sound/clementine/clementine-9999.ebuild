@@ -1,36 +1,27 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
+
+DESCRIPTION="Modern music player and library organizer based on Amarok 1.4 and Qt"
+HOMEPAGE="https://www.clementine-player.org https://github.com/clementine-player/Clementine"
 
 PLOCALES="af ar be bg bn br bs ca cs cy da de el en en_CA en_GB eo es et eu fa fi fr ga gl he he_IL hi hr hu hy ia id is it ja ka kk ko lt lv mk_MK mr ms my nb nl oc pa pl pt pt_BR ro ru si_LK sk sl sr sr@latin sv te tr tr_TR uk uz vi zh_CN zh_TW"
 
 inherit cmake flag-o-matic plocale virtualx xdg
 
-MY_P="${P/_}"
 if [[ ${PV} == *9999* ]]; then
 	EGIT_REPO_URI="https://github.com/clementine-player/Clementine.git"
 	inherit git-r3
 else
-	S="${WORKDIR}/${P/_}"
-	SRC_URI_BASE="https://github.com/clementine-player/${PN^}"
-	COMMIT=""
-	if [[ -n "${COMMIT}" ]] ; then
-		SRC_URI="${SRC_URI_BASE}/archive/${COMMIT}.tar.gz -> ${P}.tar.gz"
-		S="${WORKDIR}/${PN^}-${COMMIT}"
-	elif [[ $(ver_cut 3) -gt 90 ]] ; then
-		SRC_URI="${SRC_URI_BASE}/archive/${PV}.tar.gz -> ${P}.tar.gz"
-	else
-		SRC_URI="${SRC_URI_BASE}/releases/download/${PV/_}/${P/_}.tar.xz"
-	fi
+	SRC_URI="https://github.com/clementine-player/Clementine/archive/refs/tags/${PV/_}.tar.gz -> ${P}.tar.gz"
+	S="${WORKDIR}/Clementine-${PV/_}"
 	KEYWORDS="~amd64 ~arm64 ~ppc64 ~x86"
 fi
-DESCRIPTION="Modern music player and library organizer based on Amarok 1.4 and Qt"
-HOMEPAGE="https://www.clementine-player.org https://github.com/clementine-player/Clementine"
 
 LICENSE="GPL-3"
 SLOT="0"
-IUSE="box cdda +dbus debug dropbox googledrive ipod lastfm mms moodbar mtp projectm pulseaudio seafile skydrive test +udisks wiimote"
+IUSE="alsa box cdda +dbus debug dropbox googledrive ipod lastfm moodbar mtp projectm pulseaudio seafile skydrive test +udisks wiimote"
 RESTRICT="!test? ( test )"
 
 REQUIRED_USE="
@@ -38,6 +29,58 @@ REQUIRED_USE="
 	wiimote? ( dbus )
 "
 
+COMMON_DEPEND="
+	dev-cpp/abseil-cpp:=
+	dev-db/sqlite:3
+	dev-libs/glib:2
+	dev-libs/protobuf:=
+	dev-qt/qtconcurrent:5
+	dev-qt/qtcore:5
+	dev-qt/qtgui:5
+	dev-qt/qtnetwork:5[ssl]
+	dev-qt/qtsql:5[sqlite]
+	dev-qt/qtwidgets:5
+	dev-qt/qtx11extras:5
+	media-libs/chromaprint:=
+	media-libs/gstreamer:1.0
+	media-libs/gst-plugins-base:1.0
+	>=media-libs/libmygpo-qt-1.0.9[qt5(+)]
+	>=media-libs/taglib-1.11.1_p20181028
+	sys-libs/zlib
+	x11-libs/libX11
+	alsa? ( media-libs/alsa-lib )
+	cdda? ( dev-libs/libcdio:= )
+	dbus? ( dev-qt/qtdbus:5 )
+	ipod? ( >=media-libs/libgpod-0.8.0 )
+	lastfm? ( >=media-libs/liblastfm-1.1.0_pre20150206 )
+	moodbar? ( sci-libs/fftw:3.0= )
+	mtp? ( >=media-libs/libmtp-1.0.0:= )
+	projectm? (
+		media-libs/glew:=
+		>=media-libs/libprojectm-3.1.12:0=
+		virtual/opengl
+	)
+	pulseaudio? ( media-libs/libpulse )
+"
+RDEPEND="${COMMON_DEPEND}
+	media-plugins/gst-plugins-meta:1.0
+	media-plugins/gst-plugins-soup:1.0
+	media-plugins/gst-plugins-taglib:1.0
+	mtp? ( gnome-base/gvfs[mtp] )
+	udisks? ( sys-fs/udisks:2 )
+"
+DEPEND="${COMMON_DEPEND}
+	dev-libs/boost
+	dev-libs/libxml2
+	dev-qt/qtopengl:5
+	dev-qt/qtxml:5
+	virtual/glu
+	box? ( dev-cpp/sparsehash )
+	dropbox? ( dev-cpp/sparsehash )
+	googledrive? ( dev-cpp/sparsehash )
+	seafile? ( dev-cpp/sparsehash )
+	skydrive? ( dev-cpp/sparsehash )
+"
 BDEPEND="
 	>=dev-cpp/gtest-1.8.0
 	dev-qt/linguist-tools:5
@@ -48,59 +91,12 @@ BDEPEND="
 		gnome-base/gsettings-desktop-schemas
 	)
 "
-COMMON_DEPEND="
-	app-crypt/qca:2[qt5(+)]
-	dev-db/sqlite:=
-	dev-libs/crypto++:=
-	dev-libs/glib:2
-	dev-libs/libxml2
-	dev-libs/protobuf:=
-	dev-qt/qtconcurrent:5
-	dev-qt/qtcore:5
-	dev-qt/qtgui:5
-	dev-qt/qtnetwork:5[ssl]
-	dev-qt/qtsql:5[sqlite]
-	dev-qt/qtwidgets:5
-	media-libs/chromaprint:=
-	media-libs/gstreamer:1.0
-	media-libs/gst-plugins-base:1.0
-	>=media-libs/libmygpo-qt-1.0.9[qt5(+)]
-	>=media-libs/taglib-1.11.1_p20181028
-	sys-libs/zlib
-	virtual/glu
-	x11-libs/libX11
-	cdda? ( dev-libs/libcdio:= )
-	dbus? ( dev-qt/qtdbus:5 )
-	ipod? ( >=media-libs/libgpod-0.8.0 )
-	lastfm? ( >=media-libs/liblastfm-1.1.0_pre20150206 )
-	moodbar? ( sci-libs/fftw:3.0 )
-	mtp? ( >=media-libs/libmtp-1.0.0 )
-	projectm? (
-		media-libs/glew:=
-		>=media-libs/libprojectm-3.1.12:0=
-		virtual/opengl
-	)
-"
-RDEPEND="${COMMON_DEPEND}
-	media-plugins/gst-plugins-meta:1.0
-	media-plugins/gst-plugins-soup:1.0
-	media-plugins/gst-plugins-taglib:1.0
-	mms? ( media-plugins/gst-plugins-libmms:1.0 )
-	mtp? ( gnome-base/gvfs[mtp] )
-	udisks? ( sys-fs/udisks:2 )
-"
-DEPEND="${COMMON_DEPEND}
-	dev-libs/boost
-	dev-qt/qtopengl:5
-	dev-qt/qtx11extras:5
-	dev-qt/qtxml:5
-	box? ( dev-cpp/sparsehash )
-	dropbox? ( dev-cpp/sparsehash )
-	googledrive? ( dev-cpp/sparsehash )
-	pulseaudio? ( media-sound/pulseaudio )
-	seafile? ( dev-cpp/sparsehash )
-	skydrive? ( dev-cpp/sparsehash )
-"
+
+PATCHES=(
+	"${FILESDIR}/clementine-1.4.0_rc2-c17.patch"
+	"${FILESDIR}/clementine-1.4.0_rc2-absl.patch"
+	"${FILESDIR}/clementine-1.4.0_rc2-projectm-dir.patch"
+)
 
 DOCS=( Changelog README.md )
 
@@ -118,22 +114,16 @@ src_prepare() {
 		cmake_comment_add_subdirectory tests
 	fi
 
-	rm -r 3rdparty/{libmygpo-qt,libmygpo-qt5,taglib} || die
+	rm -r 3rdparty/{libmygpo-qt5,taglib} || die
 }
 
 src_configure() {
-	# spotify is not in portage
 	local mycmakeargs=(
 		-DBUILD_WERROR=OFF
-		# force to find crypto++ see bug #548544
-		-DCRYPTOPP_LIBRARIES="cryptopp"
-		-DCRYPTOPP_FOUND=ON
 		# avoid automagically enabling of ccache (bug #611010)
 		-DCCACHE_EXECUTABLE=OFF
 		-DENABLE_BREAKPAD=OFF  #< disable crash reporting
-		-DENABLE_DEVICEKIT=OFF
 		-DENABLE_GIO=ON
-		-DENABLE_SPOTIFY_BLOB=OFF
 		-DUSE_SYSTEM_GMOCK=ON
 		-DUSE_SYSTEM_PROJECTM=ON
 		-DBUNDLE_PROJECTM_PRESETS=OFF
@@ -153,6 +143,8 @@ src_configure() {
 		-DENABLE_LIBPULSE="$(usex pulseaudio)"
 		-DENABLE_UDISKS2="$(usex udisks)"
 		-DENABLE_WIIMOTEDEV="$(usex wiimote)"
+		"$(cmake_use_find_package alsa ALSA)"
+		-DGENTOO_FIX_ABSL_LIBS="$(test-flags-CCLD -labsl_log_internal_check_op -labsl_log_internal_message)"
 	)
 
 	use !debug && append-cppflags -DQT_NO_DEBUG_OUTPUT
@@ -162,7 +154,7 @@ src_configure() {
 
 src_test() {
 	cd "${CMAKE_BUILD_DIR}" || die
-	virtx emake test
+	virtx cmake_build clementine_test
 }
 
 pkg_postinst() {

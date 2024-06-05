@@ -12,7 +12,7 @@ S="${WORKDIR}/opam-${PV/_/-}"
 
 LICENSE="LGPL-2.1-with-linking-exception"
 SLOT="0/${PV}"
-KEYWORDS="amd64 arm arm64 ppc ppc64 x86"
+KEYWORDS="amd64 arm arm64 ~ppc ppc64 x86"
 IUSE="+ocamlopt"
 
 RDEPEND="
@@ -22,6 +22,7 @@ RDEPEND="
 	dev-ml/extlib:=
 	~dev-ml/opam-client-${PV}:=
 	dev-ml/opam-file-format:=
+	sys-apps/bubblewrap
 	dev-ml/re:="
 DEPEND="${RDEPEND}"
 

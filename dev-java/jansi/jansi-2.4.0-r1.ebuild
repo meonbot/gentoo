@@ -17,7 +17,7 @@ SRC_URI="https://github.com/fusesource/${PN}/archive/refs/tags/${P}.tar.gz"
 
 LICENSE="Apache-2.0"
 SLOT="2"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm arm64 ppc64 x86"
 
 # Compile dependencies
 # POM: pom.xml
@@ -71,7 +71,7 @@ src_compile() {
 
 src_install() {
 	# default # https://bugs.gentoo.org/789582
-	# deafult fails with
+	# default fails with
 	# make: *** No rule to make target 'install'.  Stop.
 	java-pkg_doso target/native--/libjansi-$(ver_cut 1-2).so
 	java-pkg-simple_src_install

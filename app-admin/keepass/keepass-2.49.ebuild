@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -8,12 +8,12 @@ inherit desktop optfeature wrapper xdg-utils
 MY_PN="KeePass"
 DESCRIPTION="A free, open source, light-weight and easy-to-use password manager"
 HOMEPAGE="https://keepass.info/"
-SRC_URI="mirror://sourceforge/${PN}/${MY_PN}-${PV}-Source.zip"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${MY_PN}-${PV}-Source.zip"
 S="${WORKDIR}"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 ~arm64 x86"
 IUSE="aot"
 
 BDEPEND="app-arch/unzip"

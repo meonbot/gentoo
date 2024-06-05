@@ -1,15 +1,15 @@
-BDEPEND=virtual/pkgconfig doc? ( app-doc/doxygen )
+BDEPEND=virtual/pkgconfig doc? ( app-text/doxygen ) >=app-portage/elt-patches-20240116 sys-devel/gnuconfig || ( >=dev-build/automake-1.16.5:1.16 ) || ( >=dev-build/autoconf-2.72-r1:2.72 >=dev-build/autoconf-2.71-r6:2.71 ) >=dev-build/libtool-2.4.7-r3
 DEFINED_PHASES=configure install prepare
-DEPEND=dev-libs/icu:= dev-libs/librevenge sys-libs/zlib dev-libs/boost sys-devel/libtool
+DEPEND=dev-libs/icu:= dev-libs/librevenge sys-libs/zlib dev-build/libtool dev-libs/boost
 DESCRIPTION=Library parsing Microsoft Publisher documents
-EAPI=7
+EAPI=8
 HOMEPAGE=https://wiki.documentfoundation.org/DLP/Libraries/libmspub
-INHERIT=flag-o-matic
+INHERIT=autotools flag-o-matic
 IUSE=doc static-libs
-KEYWORDS=amd64 ~arm arm64 ~hppa ppc ppc64 ~sparc x86
+KEYWORDS=amd64 ~arm arm64 ~hppa ~loong ppc ppc64 ~riscv ~sparc x86
 LICENSE=LGPL-2.1
 RDEPEND=dev-libs/icu:= dev-libs/librevenge sys-libs/zlib
 SLOT=0
 SRC_URI=https://dev-www.libreoffice.org/src/libmspub/libmspub-0.1.4.tar.xz
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	edos2unix	33e347e171066657f91f8b0c72ec8773	strip-linguas	ac3ee41ee2d31d8c41a77c0838320cc7	wrapper	4251d4c84c25f59094fd557e0063a974	eutils	dab5d8ec471d025b79c9e6906bcf3bff	flag-o-matic	d5e1306543bc457213f68bb18f830d14
-_md5_=8e0fc3566a6d75590fd1677afbb133e6
+_eclasses_=gnuconfig	a397adda6984a4c423e28ac274c1ba98	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	libtool	5f49a16f67f81bdf873e3d1f10b10001	autotools	dc70c1dc473b68317fc4a86f5fbfc57d	flag-o-matic	d309b9713dfc18e754cba88d3ba69653
+_md5_=720f6cafb1127e3a123abbd5c4ce2c27

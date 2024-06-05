@@ -1,8 +1,46 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # Unmask the flag which corresponds to ARCH.
 -x86
+
+# Paul Zander <negril.nx+gentoo@gmail.com> (2024-04-14)
+# media-libs/quirc is keyworded on amd64
+-quirc
+
+# Paul Zander <negril.nx+gentoo@gmail.com> (2024-03-29)
+# not keyworded
+openimageio
+
+# Paul Zander <negril.nx+gentoo@gmail.org> (2024-02-14)
+# sci-libs/atlas works on x86
+-atlas
+
+# Paul Zander <negril.nx+gentoo@gmail.org> (2024-02-14)
+# media-libs/jasper works on x86
+-jasper
+
+# Andrew Ammerlaan <andrewammerlaan@gentoo.org> (2023-07-11)
+# Unmask secureboot flag on arches where sbsigntools is keyworded
+-secureboot
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2023-06-10)
+# Requires media-libs/opencolorio, broken on x86, bug #884115
+color-management
+
+# Andreas Sturmlechner <asturm@gentoo.org> (2023-02-06)
+# Successful build of dev-qt/qtwebengine depends on 64-bit host
+# Bug #893234
+pdfium
+webengine
+
+# matoro <matoro_gentoo@matoro.tk> (2022-09-29)
+# dev-util/google-perftools is supported here
+-tcmalloc
+
+# Matt Turner <mattst88@gentoo.org> (2022-04-16)
+# dev-util/sysprof-capture is keyworded on x86
+-sysprof
 
 # Michał Górny <mgorny@gentoo.org> (2021-01-07)
 # Prebuilt kernels are supported here.
@@ -30,28 +68,17 @@
 # dev-db/firebird is keyworded ~x86
 -firebird
 
-# cilk has been ported to this arch.
--cilk
-
-# Mike Gilbert <floppym@gentoo.org (2014-10-19)
-# sys-libs/libapparmor
--apparmor
-
 # Michał Górny <mgorny@gentoo.org> (2014-03-30)
 # PyPy is keyworded on this arch.
 -python_targets_pypy3
 -python_single_target_pypy3
-
-# Michał Górny <mgorny@gentoo.org> (2013-05-04)
-# Unmask systemd since it is keyworded here.
--systemd
 
 # Andrey Grozin <grozin@gentoo.org> (2014-06-25)
 # keyworded on x86
 -clisp
 -clozurecl
 -cmucl
--ecls
+-ecl
 -gcl
 -sbcl
 
@@ -97,7 +124,6 @@
 
 # Unmask x86 instruction sets
 -lilo
--mpx
 -svga
 -cpu_flags_x86_3dnow
 -cpu_flags_x86_3dnowext
@@ -119,20 +145,15 @@
 -cpu_flags_x86_ssse3
 -cpu_flags_x86_xop
 
-# Unmask nvidia XvMC support
--nvidia
-
 # Modular X: unmask for architectures on which they are available
 -input_devices_synaptics
 -input_devices_vmmouse
 -input_devices_wacom
 -video_cards_ast
--video_cards_crocus
+-video_cards_d3d12
 -video_cards_i915
 -video_cards_i965
 -video_cards_intel
--video_cards_iris
--video_cards_nvidia
 -video_cards_siliconmotion
 -video_cards_vmware
 -video_cards_geode

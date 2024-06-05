@@ -10,5 +10,5 @@ LICENSE=GPL-2
 RDEPEND=sys-libs/glibc[nscd(+)] virtual/tmpfiles
 SLOT=0
 SRC_URI=https://busybox.net/~vda/unscd/nscd-0.54.c -> nscd-0.54-r1.c
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	systemd	2736b403a83f194b59b767f3b344c2c1	tmpfiles	11d91b11caf3bbb725c7d9eba90335c8
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	systemd	c8b03e8df84486aa991d4396686e8942	tmpfiles	216aa76c3a6fcb5d893c23a0de86048f
 _md5_=3ef19520f285153f8b1c0f66dfa094ed

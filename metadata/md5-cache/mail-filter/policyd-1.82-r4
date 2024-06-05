@@ -2,12 +2,12 @@ DEFINED_PHASES=compile configure install postinst prepare
 DEPEND=dev-db/mysql-connector-c:0= dev-libs/openssl:0=
 DESCRIPTION=Policy daemon for postfix and other MTAs
 EAPI=7
-HOMEPAGE=http://policyd.sf.net/
+HOMEPAGE=https://wiki.policyd.org
 INHERIT=flag-o-matic toolchain-funcs
 KEYWORDS=amd64 ~hppa x86
-LICENSE=GPL-2
+LICENSE=GPL-2+
 RDEPEND=dev-db/mysql-connector-c:0= dev-libs/openssl:0=
 SLOT=0
-SRC_URI=http://policyd.sourceforge.net/policyd-1.82.tar.gz
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	edos2unix	33e347e171066657f91f8b0c72ec8773	strip-linguas	ac3ee41ee2d31d8c41a77c0838320cc7	wrapper	4251d4c84c25f59094fd557e0063a974	eutils	dab5d8ec471d025b79c9e6906bcf3bff	flag-o-matic	d5e1306543bc457213f68bb18f830d14
-_md5_=2a617676f3b6ae9d981641726a0c4477
+SRC_URI=https://download.policyd.org/v1.82/policyd-1.82.tar.gz
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653
+_md5_=3c8d35bcfc6d5e3721aded7caa293d1a

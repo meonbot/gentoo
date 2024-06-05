@@ -1,9 +1,9 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8..10} )
+PYTHON_COMPAT=( python3_{10..12} )
 
 inherit check-reqs python-r1 toolchain-funcs
 
@@ -11,7 +11,7 @@ if [[ ${PV} == *9999 ]]; then
 	EGIT_REPO_URI="https://git.skewed.de/count0/graph-tool.git"
 	inherit autotools git-r3
 else
-	SRC_URI="https://downloads.skewed.de/${PN}/${P}.tar.bz2"
+	SRC_URI="https://downloads.skewed.de/${PN}/${P}.tar.xz"
 	KEYWORDS="~amd64"
 fi
 
@@ -25,7 +25,7 @@ REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 RDEPEND="
 	${PYTHON_DEPS}
-	>=dev-libs/boost-1.70:=[context,python,${PYTHON_USEDEP}]
+	dev-libs/boost:=[context,python,${PYTHON_USEDEP}]
 	dev-libs/expat
 	dev-python/numpy[${PYTHON_USEDEP}]
 	dev-python/scipy[${PYTHON_USEDEP}]
@@ -34,6 +34,7 @@ RDEPEND="
 	cairo? (
 		dev-cpp/cairomm:0
 		dev-python/pycairo[${PYTHON_USEDEP}]
+		x11-libs/cairo[X]
 	)"
 DEPEND="${RDEPEND}
 	dev-cpp/sparsehash"

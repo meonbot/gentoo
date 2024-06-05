@@ -7,10 +7,14 @@
 	</maintainer>
 	<upstream>
 		<bugs-to>https://bugs.kde.org/</bugs-to>
+		<remote-id type="kde-invent">frameworks/kglobalaccel</remote-id>
 	</upstream>
 	<slots>
 		<subslots>
 			Must only be used by packages that are known to use private parts of the Frameworks API.
 		</subslots>
 	</slots>
+	<use>
+		<flag name="kf6compat">Disable components colliding with KF6, depend on KF6 components instead</flag>
+	</use>
 </pkgmetadata>

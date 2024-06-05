@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -19,7 +19,6 @@ IUSE="cpu_flags_arm_v7 cpu_flags_x86_avx2 cpu_flags_x86_popcnt cpu_flags_x86_sse
 	general-32 general-64 +optimize"
 
 DEPEND="|| ( app-arch/unzip app-arch/zip )"
-RDEPEND=""
 
 S="${WORKDIR}/Stockfish-sf_${PV}/src"
 
@@ -62,8 +61,8 @@ src_compile() {
 	# COMPILER to support Travis CI and we abuse it to make sure that we
 	# build with our compiler of choice.
 	emake all ARCH="${my_arch}" \
-		COMP=$(tc-getCXX) \
-		COMPILER=$(tc-getCXX) \
+		COMP="$(tc-getCXX)" \
+		COMPILER="$(tc-getCXX)" \
 		debug=$(usex debug "yes" "no") \
 		optimize=$(usex optimize "yes" "no")
 }

@@ -1,4 +1,4 @@
-BDEPEND=gnome-base/librsvg:2 sys-devel/gettext virtual/pkgconfig x11-libs/gtk+:3 >=app-portage/elt-patches-20170815 app-arch/xz-utils
+BDEPEND=gnome-base/librsvg:2 sys-devel/gettext virtual/pkgconfig x11-libs/gtk+:3 >=app-portage/elt-patches-20240116 app-arch/xz-utils
 DEFINED_PHASES=compile configure install postinst postrm preinst prepare
 DEPEND=>=x11-themes/hicolor-icon-theme-0.10 dev-util/desktop-file-utils x11-misc/shared-mime-info
 DESCRIPTION=GNOME default icon theme
@@ -6,11 +6,11 @@ EAPI=7
 HOMEPAGE=https://gitlab.gnome.org/GNOME/adwaita-icon-theme
 INHERIT=gnome2
 IUSE=branding
-KEYWORDS=~alpha amd64 arm arm64 hppa ~ia64 ~mips ppc ppc64 ~s390 sparc x86 ~amd64-linux ~x86-linux ~sparc-solaris ~x64-solaris ~x86-solaris
+KEYWORDS=~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ~mips ppc ppc64 ~s390 sparc x86 ~amd64-linux ~x86-linux ~x64-solaris
 LICENSE=|| ( LGPL-3 CC-BY-SA-3.0 ) branding? ( CC-BY-SA-4.0 )
 RDEPEND=>=x11-themes/hicolor-icon-theme-0.10 gnome-base/librsvg:2
 RESTRICT=binchecks strip
 SLOT=0
 SRC_URI=mirror://gnome/sources/adwaita-icon-theme/3.32/adwaita-icon-theme-3.32.0.tar.xz branding? ( https://www.mail-archive.com/tango-artists@lists.freedesktop.org/msg00043/tango-gentoo-v1.1.tar.gz )
-_eclasses_=toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784	libtool	241a8f577b9781a42a7421e53448a44e	gnome.org	b5c48cddff1da36a205d924d722b28c9	xdg-utils	4f29a8b760a594a212abe9c2ba957c31	gnome2-utils	239e7afa214b50012f83b8bb61de7555	xdg	6024fbc93167fad782e2032933654857	gnome2	397207e07bdf58b07ce295d0bc1049fe
-_md5_=0664a8dc1b489ce044e00658cf7dbfc4
+_eclasses_=toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	libtool	5f49a16f67f81bdf873e3d1f10b10001	gnome.org	6b39404f1491c60a2d32e3c693a683fe	xdg-utils	baea6080dd821f5562d715887954c9d3	gnome2-utils	30dbce54b89e77b86f366548f94419ad	xdg	4a14c5c24f121e7da66e5aab4a168c6e	gnome2	fc9e598eaac41c6ac9ed1a44bc004d03
+_md5_=97c896f8289b1a93f717c31738a218c0

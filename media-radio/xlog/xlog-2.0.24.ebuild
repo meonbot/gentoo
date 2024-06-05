@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -13,7 +13,6 @@ SRC_URI="https://download.savannah.gnu.org/releases/${PN}/${MY_P}.tar.gz"
 LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS="amd64 x86"
-IUSE=""
 
 RDEPEND="media-libs/hamlib:=
 	dev-libs/glib:2
@@ -30,6 +29,7 @@ DOCS=( AUTHORS data/doc/THANKS NEWS README )
 src_prepare() {
 	eapply_user
 	eapply -p0 "${FILESDIR}/${PN}-2.0.7-desktop.patch"
+	eapply "${FILESDIR}/${PN}-2.0.24-musl.patch"
 
 	# Drop -Werror
 	sed -i -e "s:-Werror::g" configure.ac || die

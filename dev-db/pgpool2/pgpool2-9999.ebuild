@@ -1,13 +1,13 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 EGIT_REPO_URI="https://git.postgresql.org/git/pgpool2.git"
 
-POSTGRES_COMPAT=( 9.6 {10..13} )
+POSTGRES_COMPAT=( 9.6 {10..15} )
 
-inherit autotools git-r3 postgres-multi
+inherit autotools flag-o-matic git-r3 postgres-multi
 
 DESCRIPTION="Connection pool server for PostgreSQL"
 HOMEPAGE="https://www.pgpool.net/"
@@ -18,6 +18,8 @@ IUSE="doc memcached pam ssl static-libs"
 
 RDEPEND="
 	${POSTGRES_DEP}
+	acct-group/postgres
+	acct-user/pgpool
 	net-libs/libnsl:0=
 	virtual/libcrypt:=
 	memcached? ( dev-libs/libmemcached )
@@ -35,8 +37,6 @@ DEPEND="${RDEPEND}
 "
 
 pkg_setup() {
-	postgres_new_user pgpool
-
 	postgres-multi_pkg_setup
 }
 
@@ -45,7 +45,7 @@ src_prepare() {
 		"${FILESDIR}/pgpool-4.2.0-configure-memcached.patch" \
 		"${FILESDIR}/pgpool-configure-pam.patch" \
 		"${FILESDIR}/pgpool-4.2.0-configure-pthread.patch" \
-		"${FILESDIR}/pgpool-4.2.0-run_paths.patch"
+		"${FILESDIR}/pgpool-9999-run_paths.patch"
 
 	eautoreconf
 
@@ -53,9 +53,15 @@ src_prepare() {
 }
 
 src_configure() {
+	# -Werror=lto-type-mismatch
+	# https://bugs.gentoo.org/855248
+	# https://github.com/pgpool/pgpool2/issues/42
+	#
+	filter-lto
+
 	postgres-multi_foreach econf \
 		--disable-rpath \
-		--sysconfdir="${EROOT}/etc/${PN}" \
+		--sysconfdir="${EPREFIX}/etc/${PN}" \
 		--with-pgsql-includedir='/usr/include/postgresql-@PG_SLOT@' \
 		--with-pgsql-libdir="/usr/$(get_libdir)/postgresql-@PG_SLOT@/$(get_libdir)" \
 		$(use_enable static-libs static) \
@@ -70,7 +76,7 @@ src_compile() {
 	# of that directory built, too.
 	postgres-multi_foreach emake
 	postgres-multi_foreach emake -C src/sql
-	use doc && postgres-multi_forbest emake DESTDIR="${D}" -C doc
+	use doc && postgres-multi_forbest emake -C doc
 }
 
 src_install() {

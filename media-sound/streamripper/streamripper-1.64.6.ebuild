@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,12 +6,12 @@ EAPI=7
 inherit autotools
 
 DESCRIPTION="Extracts and records individual MP3 file tracks from shoutcast streams"
-HOMEPAGE="http://streamripper.sourceforge.net"
-SRC_URI="mirror://sourceforge/${PN}/${P}.tar.gz"
+HOMEPAGE="https://streamripper.sourceforge.net"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${P}.tar.gz"
 
-LICENSE="GPL-2"
+LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="~alpha amd64 ~arm ~hppa ppc ppc64 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
+KEYWORDS="~alpha amd64 ~arm ~arm64 ~hppa ppc ppc64 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos"
 IUSE="vorbis"
 
 RDEPEND="

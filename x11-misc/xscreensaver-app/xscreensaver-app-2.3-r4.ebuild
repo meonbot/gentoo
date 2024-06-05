@@ -1,16 +1,16 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-inherit autotools toolchain-funcs
+inherit autotools
 
 MY_PN=${PN/-a/.A}
 MY_PN=${MY_PN/xs/XS}
 MY_PN=${MY_PN/s/S}
 
 DESCRIPTION="XScreenSaver dockapp for the Window Maker window manager"
-HOMEPAGE="http://xscreensaverapp.sourceforge.net/"
-SRC_URI="mirror://sourceforge/project/xscreensaverapp/${MY_PN}/${PV}/${MY_PN}-${PV}.tar.gz"
+HOMEPAGE="https://xscreensaverapp.sourceforge.net/"
+SRC_URI="https://downloads.sourceforge.net/project/xscreensaverapp/${MY_PN}/${PV}/${MY_PN}-${PV}.tar.gz"
 
 SLOT="0"
 LICENSE="GPL-2"

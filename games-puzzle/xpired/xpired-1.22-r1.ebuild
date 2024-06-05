@@ -1,12 +1,12 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 inherit desktop
 
-DESCRIPTION="A Sokoban-styled puzzle game with lots more action"
-HOMEPAGE="http://xpired.sourceforge.net"
-SRC_URI="mirror://sourceforge/xpired/${P}-linux_source.tar.gz"
+DESCRIPTION="Sokoban-styled puzzle game with lots more action"
+HOMEPAGE="https://xpired.sourceforge.net"
+SRC_URI="https://downloads.sourceforge.net/xpired/${P}-linux_source.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"

@@ -1,13 +1,13 @@
-BDEPEND=>=app-editors/emacs-23.1:*
-DEFINED_PHASES=compile configure install postinst postrm prepare setup unpack
+BDEPEND=>=app-editors/emacs-25.3:*
+DEFINED_PHASES=compile configure install postinst postrm prepare setup test unpack
 DESCRIPTION=Emacs front-end to mpg123 audio player and OggVorbis audio player
 EAPI=7
 HOMEPAGE=http://www.gentei.org/~yuuji/software/mpg123el/
 INHERIT=elisp toolchain-funcs
 KEYWORDS=amd64 ppc x86
 LICENSE=mpg123-el
-RDEPEND=media-sound/mpg123 media-sound/alsa-utils >=app-editors/emacs-23.1:*
+RDEPEND=media-sound/mpg123 media-sound/alsa-utils >=app-editors/emacs-25.3:*
 SLOT=0
 SRC_URI=https://dev.gentoo.org/~ulm/distfiles/mpg123-el-1.61.tar.xz
-_eclasses_=elisp-common	cf4fd1b0835b9f3e638724840468064a	elisp	532fa549a4f54b2a3f83b827b272a4a9	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784
-_md5_=c2df5a5d31240af5a83095b6ff566981
+_eclasses_=elisp-common	abb2dda42f680fce87602c8273f832c7	elisp	fbefa95f5e9ab880a34bc69832b7c0d7	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0
+_md5_=a13c78da71249b574ff1c1d456d87668

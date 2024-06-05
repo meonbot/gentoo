@@ -1,28 +1,23 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
 
-PYTHON_COMPAT=( python3_{8,9} )
+PYTHON_COMPAT=( python3_{10..12} )
 
-inherit check-reqs cmake optfeature python-single-r1 xdg
+inherit check-reqs cmake flag-o-matic optfeature python-single-r1 qmake-utils xdg
 
 DESCRIPTION="QT based Computer Aided Design application"
-HOMEPAGE="https://www.freecadweb.org/ https://github.com/FreeCAD/FreeCAD"
+HOMEPAGE="https://www.freecad.org/ https://github.com/FreeCAD/FreeCAD"
 
 MY_PN=FreeCAD
-MY_PATCH="${P}-Gentoo-specific-fix-install-locations-of-Ext-and-Mod"
 
 if [[ ${PV} = *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/${MY_PN}/${MY_PN}.git"
-	SRC_URI="https://raw.githubusercontent.com/waebbl/waebbl-gentoo/master/patches/${MY_PATCH}.patch.xz"
 	S="${WORKDIR}/freecad-${PV}"
 else
-	MY_PV=$(ver_cut 1-2)
-	MY_PV=$(ver_rs 1 '_' ${MY_PV})
-	SRC_URI="https://github.com/${MY_PN}/${MY_PN}/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz
-		https://raw.githubusercontent.com/waebbl/waebbl-gentoo/master/patches/${P}-0005-Make-smesh-compile-with-vtk9.patch.xz"
+	SRC_URI="https://github.com/${MY_PN}/${MY_PN}/archive/refs/tags/${PV}.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~amd64"
 	S="${WORKDIR}/FreeCAD-${PV}"
 fi
@@ -31,10 +26,9 @@ fi
 # examples are licensed CC-BY-SA (without note of specific version)
 LICENSE="LGPL-2 CC-BY-SA-4.0"
 SLOT="0"
-IUSE="debug headless pcl test"
-RESTRICT="!test? ( test )"
+IUSE="debug designer +gui qt6 test"
 
-FREECAD_EXPERIMENTAL_MODULES="cloud plot ship"
+FREECAD_EXPERIMENTAL_MODULES="cloud netgen pcl"
 FREECAD_STABLE_MODULES="addonmgr fem idf image inspection material
 	openscad part-design path points raytracing robot show surface
 	techdraw tux"
@@ -47,50 +41,85 @@ for module in ${FREECAD_EXPERIMENTAL_MODULES}; do
 done
 unset module
 
+RESTRICT="!test? ( test )"
+
 RDEPEND="
 	${PYTHON_DEPS}
+	dev-cpp/yaml-cpp
 	dev-libs/OpenNI2[opengl(+)]
+	dev-libs/boost:=
+	dev-libs/libfmt:=
 	dev-libs/libspnav[X]
 	dev-libs/xerces-c[icu]
-	dev-qt/designer:5
-	dev-qt/qtconcurrent:5
-	dev-qt/qtcore:5
-	dev-qt/qtgui:5
-	dev-qt/qtnetwork:5
-	dev-qt/qtopengl:5
-	dev-qt/qtprintsupport:5
-	dev-qt/qtsvg:5
-	dev-qt/qtwebengine:5[widgets]
-	dev-qt/qtwidgets:5
-	dev-qt/qtx11extras:5
-	dev-qt/qtxml:5
-	>=media-libs/coin-4.0.0
+	!qt6? (
+		dev-qt/qtconcurrent:5
+		dev-qt/qtcore:5
+		dev-qt/qtnetwork:5
+		dev-qt/qtxml:5
+		dev-qt/qtxmlpatterns:5
+	)
+	qt6? (
+		dev-qt/qtbase:6[concurrent,network,xml]
+	)
 	media-libs/freetype
 	media-libs/qhull:=
-	sci-libs/flann[openmp]
 	sci-libs/hdf5:=[fortran,zlib]
-	>=sci-libs/med-4.0.0-r1[python,${PYTHON_SINGLE_USEDEP}]
-	sci-libs/opencascade:=[vtk(+)]
+	>=sci-libs/med-4.0.0-r1
+	sci-libs/opencascade:=[json,vtk]
 	sci-libs/orocos_kdl:=
 	sys-libs/zlib
-	virtual/glu
 	virtual/libusb:1
-	virtual/opengl
 	cloud? (
 		dev-libs/openssl:=
 		net-misc/curl
 	)
-	fem? ( sci-libs/vtk:=[boost(+),python,qt5,rendering,${PYTHON_SINGLE_USEDEP}] )
+	fem? (
+		!qt6? ( sci-libs/vtk:=[qt5,rendering] )
+		qt6? ( sci-libs/vtk:=[-qt5,qt6,rendering] )
+	)
+	gui? (
+		>=media-libs/coin-4.0.0
+		virtual/glu
+		virtual/opengl
+		!qt6? (
+			dev-qt/designer:5
+			dev-qt/qtgui:5
+			dev-qt/qtopengl:5
+			dev-qt/qtprintsupport:5
+			dev-qt/qtsvg:5
+			dev-qt/qtwebengine:5[widgets]
+			dev-qt/qtwidgets:5
+			dev-qt/qtx11extras:5
+			pcl? ( sci-libs/pcl[qt5] )
+			$(python_gen_cond_dep '
+				dev-python/matplotlib[${PYTHON_USEDEP}]
+				>=dev-python/pivy-0.6.5[${PYTHON_USEDEP}]
+				dev-python/pyside2:=[gui,svg,webchannel,webengine,${PYTHON_USEDEP}]
+				dev-python/shiboken2:=[${PYTHON_USEDEP}]
+			' python3_{10..11} )
+		)
+		qt6? (
+			designer? ( dev-qt/qttools:6[designer] )
+			dev-qt/qt5compat:6
+			dev-qt/qttools:6[widgets]
+			dev-qt/qtbase:6[gui,opengl,widgets]
+			dev-qt/qtsvg:6
+			dev-qt/qtwebengine:6[widgets]
+			pcl? ( sci-libs/pcl[-qt5,qt6(-)] )
+			$(python_gen_cond_dep '
+				dev-python/matplotlib[${PYTHON_USEDEP}]
+				>=dev-python/pivy-0.6.5[${PYTHON_USEDEP}]
+				dev-python/pyside6:=[gui,svg,webchannel,webengine,${PYTHON_USEDEP}]
+				dev-python/shiboken6:=[${PYTHON_USEDEP}]
+			' )
+		)
+	)
+	netgen? ( media-gfx/netgen[opencascade] )
 	openscad? ( media-gfx/openscad )
-	pcl? ( sci-libs/pcl:=[opengl,openni2(+),qt5(+),vtk(+)] )
+	pcl? ( sci-libs/pcl:=[opengl,openni2,vtk] )
 	$(python_gen_cond_dep '
-		dev-libs/boost:=[python,threads(+),${PYTHON_USEDEP}]
-		dev-python/matplotlib[${PYTHON_USEDEP}]
 		dev-python/numpy[${PYTHON_USEDEP}]
-		>=dev-python/pivy-0.6.5[${PYTHON_USEDEP}]
 		dev-python/pybind11[${PYTHON_USEDEP}]
-		dev-python/pyside2[gui,svg,${PYTHON_USEDEP}]
-		dev-python/shiboken2[${PYTHON_USEDEP}]
 		addonmgr? ( dev-python/GitPython[${PYTHON_USEDEP}] )
 		fem? ( dev-python/ply[${PYTHON_USEDEP}] )
 	')
@@ -98,10 +127,18 @@ RDEPEND="
 DEPEND="
 	${RDEPEND}
 	>=dev-cpp/eigen-3.3.1:3
+	test? (
+		$(python_gen_cond_dep 'dev-python/pyyaml[${PYTHON_USEDEP}]')
+		!qt6? ( dev-qt/qttest:5 )
+	)
 "
 BDEPEND="
 	app-text/dos2unix
 	dev-lang/swig
+	test? (
+		$(python_gen_cond_dep 'dev-python/pyyaml[${PYTHON_USEDEP}]')
+		!qt6? ( dev-qt/qttest:5 )
+	)
 "
 
 # To get required dependencies:
@@ -119,50 +156,44 @@ BDEPEND="
 # test suite when compiled with a minimal set of USE flags.
 REQUIRED_USE="
 	${PYTHON_REQUIRED_USE}
+	designer? ( gui )
 	inspection? ( points )
 	path? ( robot )
-	ship? ( image plot )
+	python_single_target_python3_12? ( gui? ( qt6 ) )
 "
+# There is no py3.12 support planned for pyside2
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-0.19_pre20201231-0003-Gentoo-specific-don-t-check-vcs.patch
-	"${FILESDIR}"/${PN}-0.19.1-0001-Gentoo-specific-Remove-ccache-usage.patch
+	"${FILESDIR}"/${PN}-9999-Gentoo-specific-don-t-check-vcs.patch
+	"${FILESDIR}"/${PN}-0.21.0-0001-Gentoo-specific-disable-ccache-usage.patch
+	"${FILESDIR}"/${PN}-9999-tests-src-Qt-only-build-test-for-BUILD_GUI-ON.patch
 )
 
-DOCS=( CODE_OF_CONDUCT.md ChangeLog.txt README.md )
+DOCS=( CODE_OF_CONDUCT.md README.md )
 
 CHECKREQS_DISK_BUILD="2G"
 
 pkg_setup() {
 	check-reqs_pkg_setup
 	python-single-r1_pkg_setup
-	[[ -z ${CASROOT} ]] && die "\${CASROOT} not set, plesae run eselect opencascade"
-}
-
-src_unpack() {
-	git-r3_src_unpack
-	unpack ${MY_PATCH}.patch.xz
+	[[ -z ${CASROOT} ]] && die "\${CASROOT} not set, please run eselect opencascade"
 }
 
 src_prepare() {
-	# the upstream provided file doesn't find the coin doc tag file,
-	# but cmake ships a working one, so we use this.
-	rm "${S}/cMake/FindCoin3D.cmake" || die
-
 	# Fix desktop file
-	sed -e 's/Exec=FreeCAD/Exec=freecad/' -i src/XDGData/org.freecadweb.FreeCAD.desktop || die
+	sed -e 's/Exec=FreeCAD/Exec=freecad/' -i src/XDGData/org.freecad.FreeCAD.desktop || die
+
+	find "${S}" -type f -exec dos2unix -q {} \; || die "failed to convert to unix line endings"
 
 	cmake_src_prepare
-
-	# Fix line endings on a few files for patching
-	for f in src/Mod/{Cloud,Inspection,Start/StartPage}/CMakeLists.txt; do
-		dos2unix -q ${f}
-	done
-
-	eapply "${WORKDIR}"/${P}-Gentoo-specific-fix-install-locations-of-Ext-and-Mod.patch
 }
 
 src_configure() {
+	# -Werror=odr, -Werror=lto-type-mismatch
+	# https://bugs.gentoo.org/875221
+	# https://github.com/FreeCAD/FreeCAD/issues/13173
+	filter-lto
+
 	local mycmakeargs=(
 		-DBUILD_ADDONMGR=$(usex addonmgr)
 		-DBUILD_ARCH=ON
@@ -170,14 +201,14 @@ src_configure() {
 		-DBUILD_CLOUD=$(usex cloud)
 		-DBUILD_COMPLETE=OFF					# deprecated
 		-DBUILD_DRAFT=ON
-		-DBUILD_DRAWING=ON
+		-DBUILD_DESIGNER_PLUGIN=$(usex designer)
 		-DBUILD_ENABLE_CXX_STD:STRING="C++17"	# needed for current git master
 		-DBUILD_FEM=$(usex fem)
-		-DBUILD_FEM_NETGEN=OFF
+		-DBUILD_FEM_NETGEN=$(usex netgen)
 		-DBUILD_FLAT_MESH=ON
 		-DBUILD_FORCE_DIRECTORY=ON				# force building in a dedicated directory
 		-DBUILD_FREETYPE=ON						# automagic dep
-		-DBUILD_GUI=$(usex !headless)
+		-DBUILD_GUI=$(usex gui)
 		-DBUILD_IDF=$(usex idf)
 		-DBUILD_IMAGE=$(usex image)
 		-DBUILD_IMPORT=ON						# import module for various file formats
@@ -190,13 +221,10 @@ src_configure() {
 		-DBUILD_PART=ON
 		-DBUILD_PART_DESIGN=$(usex part-design)
 		-DBUILD_PATH=$(usex path)
-		-DBUILD_PLOT=$(usex plot)				# conflicts with possible external workbench
 		-DBUILD_POINTS=$(usex points)
-		-DBUILD_QT5=ON							# OFF means to use Qt4
 		-DBUILD_RAYTRACING=$(usex raytracing)
 		-DBUILD_REVERSEENGINEERING=OFF			# currently only an empty sandbox
 		-DBUILD_ROBOT=$(usex robot)
-		-DBUILD_SHIP=$(usex ship)				# conflicts with possible external workbench
 		-DBUILD_SHOW=$(usex show)
 		-DBUILD_SKETCHER=ON						# needed by draft workspace
 		-DBUILD_SMESH=ON
@@ -210,10 +238,10 @@ src_configure() {
 		-DBUILD_WEB=ON							# needed by start workspace
 		-DBUILD_WITH_CONDA=OFF
 
-		-DCMAKE_INSTALL_DATADIR=share/${PN}/data
-		-DCMAKE_INSTALL_DOCDIR=share/doc/${PF}
-		-DCMAKE_INSTALL_INCLUDEDIR=include/${PN}
-		-DCMAKE_INSTALL_LIBDIR=$(get_libdir)/${PN}
+		-DCMAKE_INSTALL_DATADIR=/usr/share/${PN}/data
+		-DCMAKE_INSTALL_DOCDIR=/usr/share/doc/${PF}
+		-DCMAKE_INSTALL_INCLUDEDIR=/usr/include/${PN}
+		-DCMAKE_INSTALL_PREFIX=/usr/$(get_libdir)/${PN}
 
 		-DFREECAD_BUILD_DEBIAN=OFF
 
@@ -250,12 +278,36 @@ src_configure() {
 		)
 	fi
 
+	if use qt6; then
+		mycmakeargs+=(
+			-DFREECAD_QT_MAJOR_VERSION=6
+			-DFREECAD_QT_VERSION=6
+			-DQT_DEFAULT_MAJOR_VERSION=6
+			-DQt6Core_MOC_EXECUTABLE="$(qt6_get_bindir)/moc"
+			-DQt6Core_RCC_EXECUTABLE="$(qt6_get_bindir)/rcc"
+			-DBUILD_QT5=OFF
+			# Drawing module unmaintained and not ported to qt6
+			-DBUILD_DRAWING=OFF
+		)
+	else
+		mycmakeargs+=(
+			-DFREECAD_QT_MAJOR_VERSION=5
+			-DFREECAD_QT_VERSION=5
+			-DQT_DEFAULT_MAJOR_VERSION=5
+			-DQt5Core_MOC_EXECUTABLE="$(qt5_get_bindir)/moc"
+			-DQt5Core_RCC_EXECUTABLE="$(qt5_get_bindir)/rcc"
+			-DBUILD_QT5=ON
+			# Drawing module unmaintained and not ported to qt6
+			-DBUILD_DRAWING=ON
+		)
+	fi
+
 	cmake_src_configure
 }
 
 # We use the FreeCADCmd binary instead of the FreeCAD binary here
 # for two reasons:
-# 1. It works out of the box with USE=headless as well, not needing a guard
+# 1. It works out of the box with USE=-gui as well, not needing a guard
 # 2. We don't need virtualx.eclass and it's dependencies
 # The exported environment variables are needed, so freecad does know
 # where to save it's temporary files, and where to look and write it's
@@ -275,55 +327,56 @@ src_install() {
 
 	dobin src/Tools/freecad-thumbnailer
 
+	if use gui; then
+		newbin - freecad <<- _EOF_
+		#!/bin/sh
+		# https://github.com/coin3d/coin/issues/451
+		: \${QT_QPA_PLATFORM:=xcb}
+		export QT_QPA_PLATFORM
+		exec /usr/$(get_libdir)/${PN}/bin/FreeCAD \${@}
+		_EOF_
+		mv "${ED}"/usr/$(get_libdir)/${PN}/share/* "${ED}"/usr/share || die "failed to move shared resources"
+	fi
+	dosym -r /usr/$(get_libdir)/${PN}/bin/FreeCADCmd /usr/bin/freecadcmd
+
+	rm -r "${ED}"/usr/$(get_libdir)/${PN}/include/E57Format || die "failed to drop unneeded include directory E57Format"
+	use test && (rm -r "${ED}"/usr/include/${PN}/{gmock,gtest} || die)
+
 	python_optimize "${ED}"/usr/share/${PN}/data/Mod/Start/StartPage "${ED}"/usr/$(get_libdir)/${PN}{/Ext,/Mod}/
 	# compile main package in python site-packages as well
 	python_optimize
-
-	doenvd "${FILESDIR}/99${PN}"
 }
 
 pkg_postinst() {
 	xdg_pkg_postinst
 
-	if use plot; then
-		einfo "Note: You are enabling the 'plot' USE flag."
-		einfo "This conflicts with the plot workbench that can be loaded"
-		einfo "via the addon manager! You can only install one of those."
-	fi
-
-	if use ship; then
-		einfo "Note: You are enabling the 'ship' USE flag."
-		einfo "This conflicts with the ship workbench that can be loaded"
-		einfo "via the addon manager! You can only install one of those."
-	fi
-
 	einfo "You can load a lot of additional workbenches using the integrated"
 	einfo "AddonManager."
 
 	# ToDo: check opencv, pysolar (::science), elmerfem (::science)
-	#		ifc++, ifcopenshell, netgen, z88 (no pkgs), calculix-ccx (::waebbl)
+	#		ifc++, ifcopenshell, z88 (no pkgs), calculix-ccx (::waebbl)
 	einfo "There are a lot of additional tools, for which FreeCAD has builtin"
 	einfo "support. Some of them are available in Gentoo. Take a look at"
 	einfo "https://wiki.freecadweb.org/Installing#External_software_supported_by_FreeCAD"
 	optfeature_header "Computational utilities"
 	optfeature "BLAS library" sci-libs/openblas
-	optfeature "statistical computation with Python" dev-python/pandas
-	optfeature "scientific computation with Python" dev-python/scipy
-	optfeature "symbolic math with Python" dev-python/sympy
+	optfeature "Statistical computation with Python" dev-python/pandas
+	optfeature "Use scientific computation with Python" dev-python/scipy
+	optfeature "Use symbolic math with Python" dev-python/sympy
 	optfeature_header "Imaging, Plotting and Rendering utilities"
-	optfeature "dependency graphs" media-gfx/graphviz
+	optfeature "Dependency graphs" media-gfx/graphviz
 	optfeature "PBR Rendering" media-gfx/povray
 	optfeature_header "Import / Export"
-	optfeature "interacting with git repositories" dev-python/GitPython
-	optfeature "working with COLLADA documents" dev-python/pycollada
+	optfeature "Interact with git repositories" dev-python/GitPython
+	optfeature "Work with COLLADA documents" dev-python/pycollada
 	optfeature "YAML importer and emitter" dev-python/pyyaml
-	optfeature "importing and exporting 2D AutoCAD DWG files" media-gfx/libredwg
-	optfeature "importing and exporting geospatial data formats" sci-libs/gdal
-	optfeature "working with projection data" sci-libs/proj
+	optfeature "Importing and exporting 2D AutoCAD DWG files" media-gfx/libredwg
+	optfeature "Importing and exporting geospatial data formats" sci-libs/gdal
+	optfeature "Working with projection data" sci-libs/proj
 	optfeature_header "Meshing and FEM"
 	optfeature "FEM mesh generator" sci-libs/gmsh
-	optfeature "triangulating meshes" sci-libs/gts
-	optfeature "visualization" sci-visualization/paraview
+	optfeature "Triangulating meshes" sci-libs/gts
+	optfeature "Visualization" sci-visualization/paraview
 }
 
 pkg_postrm() {

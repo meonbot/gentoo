@@ -1,15 +1,15 @@
-BDEPEND=sys-devel/libtool
+BDEPEND=dev-build/libtool
 DEFINED_PHASES=compile configure install prepare
-DEPEND=media-sound/sox[png] media-libs/flac[ogg]
+DEPEND=media-libs/flac:=[ogg] media-sound/sox[png]
 DESCRIPTION=Author a DVD-Audio DVD
-EAPI=7
-HOMEPAGE=http://dvd-audio.sourceforge.net
-INHERIT=desktop toolchain-funcs
+EAPI=8
+HOMEPAGE=https://dvd-audio.sourceforge.net
+INHERIT=desktop flag-o-matic toolchain-funcs
 IUSE=debug
 KEYWORDS=~amd64 ~x86
 LICENSE=GPL-3
-RDEPEND=media-sound/sox[png] media-libs/flac[ogg]
+RDEPEND=media-libs/flac:=[ogg] media-sound/sox[png]
 SLOT=0
-SRC_URI=mirror://sourceforge/dvd-audio/dvda-author-10.06-300.tar.gz
-_eclasses_=desktop	c0d27bf73aa08ca05b663dbd31fbef28	toolchain-funcs	badd6e329e1f3e6bee99b35bf8763ce8	multilib	de4beb52bfa93c4c5d96792a6b5e1784
-_md5_=ffad5fd157aa0d3909d8aec19bb6cf4b
+SRC_URI=https://downloads.sourceforge.net/dvd-audio/dvda-author-10.06-300.tar.gz
+_eclasses_=desktop	021728fdc1b03b36357dbc89489e0f0d	toolchain-funcs	e56c7649b804f051623c8bc1a1c44084	multilib	c19072c3cd7ac5cb21de013f7e9832e0	flag-o-matic	d309b9713dfc18e754cba88d3ba69653
+_md5_=8dfb2202f5e895a04ef3389cf6847848

@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
-  <maintainer type="person" proxied="yes">
-    <email>klondike@gentoo.org</email>
-    <name>Francisco Blas Izquierdo Riera</name>
-  </maintainer>
   <maintainer type="person">
     <email>mjo@gentoo.org</email>
     <name>Michael Orlitzky</name>
@@ -55,5 +51,6 @@
   </use>
   <upstream>
     <remote-id type="sourceforge">opendkim</remote-id>
+    <remote-id type="github">trusteddomainproject/OpenDKIM</remote-id>
   </upstream>
 </pkgmetadata>

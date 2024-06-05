@@ -1,7 +1,7 @@
 DEFINED_PHASES=configure postinst postrm prepare
 DEPEND=>=dev-libs/glib-2.32.0 >=sci-libs/libsigrok-0.5.0:= decode? ( >=sci-libs/libsigrokdecode-0.5.0:= ) virtual/pkgconfig
 DESCRIPTION=Command-line client for the sigrok logic analyzer software
-EAPI=7
+EAPI=8
 HOMEPAGE=https://sigrok.org/wiki/Sigrok-cli
 INHERIT=xdg-utils
 IUSE=+decode
@@ -10,5 +10,5 @@ LICENSE=GPL-3
 RDEPEND=>=dev-libs/glib-2.32.0 >=sci-libs/libsigrok-0.5.0:= decode? ( >=sci-libs/libsigrokdecode-0.5.0:= )
 SLOT=0
 SRC_URI=https://sigrok.org/download/source/sigrok-cli/sigrok-cli-0.7.2.tar.gz
-_eclasses_=xdg-utils	4f29a8b760a594a212abe9c2ba957c31
-_md5_=5f58df3c7b6c2134a1a02477972e9938
+_eclasses_=xdg-utils	baea6080dd821f5562d715887954c9d3
+_md5_=077d3b80fc81c05338c0541a0b46c71c

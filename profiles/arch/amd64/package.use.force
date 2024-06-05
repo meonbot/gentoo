@@ -1,9 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-# Georgy Yakovlev <gyakovlev@gentoo.org> (2020-06-18)
-# Force host target
-dev-libs/keystone llvm_targets_X86
+# Michał Górny <mgorny@gentoo.org> (2023-10-06)
+# Require ABIs matching MULTILIB_ABIS in gcc dependencies -- otherwise
+# sys-devel/gcc[multilib] (which is forced) will fail late in build.
+dev-libs/libatomic_ops abi_x86_32
+dev-libs/boehm-gc abi_x86_32
 
 # Michał Górny <mgorny@gentoo.org> (2017-12-30)
 # We have ready-to-use configs here.
@@ -22,6 +24,8 @@ dev-lang/rust llvm_targets_X86
 # Packages with optional 64-bit variant
 app-emulation/wine-vanilla -abi_x86_64
 app-emulation/wine-staging -abi_x86_64
+app-emulation/wine-proton -abi_x86_64
+app-emulation/wine-gecko -abi_x86_64
 virtual/wine -abi_x86_64
 
 # Michał Górny <mgorny@gentoo.org> (2017-04-08)

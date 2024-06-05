@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,12 +6,12 @@ EAPI=7
 inherit netsurf
 
 DESCRIPTION="string internment library, written in C"
-HOMEPAGE="http://www.netsurf-browser.org/projects/libwapcaplet/"
+HOMEPAGE="https://www.netsurf-browser.org/projects/libwapcaplet/"
 SRC_URI="https://download.netsurf-browser.org/libs/releases/${P}-src.tar.gz"
 
 LICENSE="MIT"
 SLOT="0/${PV}"
-KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~x86"
+KEYWORDS="amd64 ~arm ~arm64 ~ppc ~ppc64 ~riscv ~x86"
 IUSE="test"
 
 RESTRICT="!test? ( test )"
@@ -19,12 +19,7 @@ RESTRICT="!test? ( test )"
 DEPEND="
 	test? ( >=dev-libs/check-0.9.11 )"
 BDEPEND="
-	>=dev-util/netsurf-buildsystem-1.7-r1"
-
-PATCHES=(
-	# bug 664288
-	"${FILESDIR}/${PN}-0.4.1-makefile.patch"
-)
+	>=dev-build/netsurf-buildsystem-1.7-r1"
 
 _emake() {
 	netsurf_define_makeconf

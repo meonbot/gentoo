@@ -1,11 +1,16 @@
-# Copyright 2019-2021 Gentoo Authors
+# Copyright 2019-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 # Unmask the flag which corresponds to ARCH.
 -riscv
 
-# Unmask systemd
--systemd
+# Andrew Ammerlaan <andrewammerlaan@gentoo.org> (2023-07-11)
+# Unmask secureboot flag on arches where sbsigntools is keyworded
+-secureboot
+
+# matoro <matoro_gentoo@matoro.tk> (2022-09-29)
+# dev-util/google-perftools is supported here
+-tcmalloc
 
 # Yixun Lan <dlan@gentoo.org> (2021-05-19)
 # Unmask for more testing
@@ -14,6 +19,11 @@
 -gtk2
 -gtk3
 -introspection
+
+# Yongxiang Liang <tanekliang@gmail.com> (2024-01-16)
+# Requires qtwebengine, which is not ported to riscv
+pdfium
+webengine
 
 # Marek Szuba <marecki@gentoo.org> (2021-08-14)
 # sci-libs/netcdf fails tests in a way suggesting it might be completely
@@ -37,25 +47,19 @@ mono
 # No proper support for this arch yet
 java
 
-# Neither the virtual nor any of the runtimes (except mesa) keyworded here yet
-opencl
-
 # not supported / tested cards
 
 video_cards_ast
 video_cards_dummy
 video_cards_freedreno
 video_cards_geode
-video_cards_glint
 video_cards_i915
 video_cards_i965
 video_cards_intel
 video_cards_mga
-video_cards_nv
 video_cards_omap
 video_cards_qxl
 video_cards_r128
-video_cards_radeonsi
 video_cards_siliconmotion
 video_cards_tegra
 video_cards_vc4

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -14,16 +14,16 @@ MY_P_GOG="${MY_PN_GOG}_${MY_PV_GOG}"
 inherit cdrom
 
 DESCRIPTION="Duke Nukem 3D (Atomic Edition) data files"
-HOMEPAGE="http://www.3drealms.com/"
+HOMEPAGE="https://www.3drealms.com/"
 SRC_URI="
-	demo? ( "ftp://ftp.3drealms.com/share/${MY_P_DEMO}.zip" )
-	gog? ( "${MY_P_GOG}.sh" )
+	demo? ( https://archive.org/download/3dduke13/${MY_P_DEMO}.zip )
+	gog? ( ${MY_P_GOG}.sh )
 "
 S="${WORKDIR}"
 
 LICENSE="DUKE3D gog? ( GOG-EULA )"
 SLOT="0"
-KEYWORDS="~amd64 ~arm ~arm64 ~x86"
+KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~x86"
 IUSE="+demo gog"
 REQUIRED_USE="^^ ( cdinstall demo gog )"
 RESTRICT="bindist gog? ( fetch ) mirror"

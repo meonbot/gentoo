@@ -1,16 +1,27 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
+
+# Arthur Zamarin <arthurzam@gentoo.org> (2024-02-20)
+openexr
 
 # Unmask the flag which corresponds to ARCH.
 -ia64
 
+# matoro <matoro_gentoo@matoro.tk> (2023-06-17)
+# media-libs/libheif is not keyworded here
+heif
+
+# Sam James <sam@gentoo.org> (2022-07-21)
+# Untested.
+ieee1394
+
+# Matt Turner <mattst88@gentoo.org> (2022-02-21)
+# app-crypt/tpm2-tss is not keyworded here
+tpm
+
 # James Le Cuirot <chewi@gentoo.org> (2021-08-10)
 # media-video/pipewire is not keyworded. Bug #807616.
 pipewire
-
-# Matt Turner <mattst88@gentoo.org> (07-25-2021)
-# gnome-shell requires rustified librsvg.
-gnome-shell
 
 # Arfrever Frehtes Taifersar Arahesis <arfrever.fta@gmail.com> (2021-04-01)
 # sys-libs/llvm-libunwind not supported on IA64.
@@ -24,26 +35,16 @@ vulkan
 # media-libs/allegro is not keyworded.
 allegro
 
-# Sergei Trofimovich <slyfox@gentoo.org> (2020-04-13)
-# Drop support for ghc and darcs
-darcs
-
 # Sergei Trofimovich <slyfox@gentoo.org> (2020-04-12)
 # ruby-2.7 dropped ia64 support, mask ruby in Gentoo.
 ruby
 # - net-libs/gnome-online-accounts: depend on net-libs/webkit-gtk
 gnome-online-accounts
 
-# Mattéo Rossillol‑‑Laruelle <beatussum@protonmail.com> (2019‑08‑31)
-# Dependency not keyworded (dev-libs/libindicate).
-appindicator
-ayatana
-
 # Sergei Trofimovich <slyfox@gentoo.org> (2017-06-17)
 # There is no luajit support on ia64. Bug #554376
 lua_single_target_luajit
 lua_targets_luajit
-luajit
 luajittex
 
 # No hardware to test by the team
@@ -82,7 +83,6 @@ metalink
 upnp
 fdk
 valgrind
-matplotlib
 mongodb
 pgm
 scim
@@ -97,7 +97,6 @@ semantic-desktop
 fits
 libburn
 topal
-indi
 flite
 sctp
 bs2b
@@ -109,9 +108,7 @@ rtmp
 vpx
 frei0r
 lpsol
-prelude
 ladspa
-aacplus
 devil
 gts
 clang
@@ -178,10 +175,6 @@ alsa_cards_wavefront
 # media-sound/fluidsynth isn't keyworded
 fluidsynth
 
-# Anthony G. Basile <blueness@gentoo.org> (2012-04-15)
-# Pulls in net-libs/axtls which is not keyworded for arch
-curl_ssl_axtls
-
 # Alexandre Rostovtsev <tetromino@gentoo.org> (2012-12-31)
 # net-misc/connman is not keyworded, bug 348308
 connman
@@ -203,10 +196,6 @@ opencl
 # sys-devel/llvm s not keyworded, bug #320221
 llvm
 
-# Pacho Ramos <pacho@gentoo.org> (2014-01-08)
-# Unmask systemd since it is keyworded here.
--systemd
-
 # sys-libs/libseccomp has not been ported to this arch yet #524148
 seccomp
 
@@ -219,3 +208,4 @@ rbd
 # Ben de Groot <yngwin@gentoo.org> (2015-02-01)
 # please remove when keyworded
 qt5
+qt6

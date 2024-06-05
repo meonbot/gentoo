@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -17,12 +17,12 @@ RDEPEND="dev-libs/gobject-introspection
 	media-gfx/sane-backends"
 DEPEND="${RDEPEND}
 	doc? (
-		app-doc/doxygen
+		app-text/doxygen
 		dev-util/gtk-doc
 	)
 	test? (
 		dev-util/cunit
-		dev-util/valgrind
+		dev-debug/valgrind
 	)"
 
 BDEPEND="dev-util/glib-utils
@@ -33,7 +33,9 @@ BDEPEND="dev-util/glib-utils
 # https://wiki.gentoo.org/wiki/Debugging
 RESTRICT="test"
 
-PATCHES=( "${FILESDIR}"/${PN}-1.0.1-meson_options.patch )
+PATCHES=( "${FILESDIR}"/${PN}-1.0.1-meson_options.patch
+	"${FILESDIR}"/${P}-musl.patch
+	)
 
 src_prepare() {
 	vala_src_prepare

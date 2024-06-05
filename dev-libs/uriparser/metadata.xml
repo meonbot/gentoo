@@ -11,6 +11,15 @@
 		licensed under the New BSD license.
 	</longdescription>
 	<upstream>
+		<remote-id type="github">uriparser/uriparser</remote-id>
 		<remote-id type="sourceforge">uriparser</remote-id>
 	</upstream>
+	<use>
+		<flag name="unicode">
+			Add support for functions working with character type
+			wchar_t (e.g. uriParseSingleUriW with trailing "W")
+			which increases compile time and resulting binary
+			file size by roughly factor 2.
+		</flag>
+	</use>
 </pkgmetadata>

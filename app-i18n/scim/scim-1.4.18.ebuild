@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
@@ -11,7 +11,7 @@ SRC_URI="https://github.com/scim-im/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ppc ppc64 ~riscv sparc x86"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~loong ppc ppc64 ~riscv sparc x86"
 IUSE="doc gtk3"
 
 RDEPEND="x11-libs/libX11
@@ -21,12 +21,12 @@ RDEPEND="x11-libs/libX11
 	>=dev-libs/atk-1
 	>=x11-libs/pango-1"
 DEPEND="${RDEPEND}
-	doc? ( app-doc/doxygen
+	doc? ( app-text/doxygen
 		>=app-text/docbook-xsl-stylesheets-1.73.1 )
 	dev-lang/perl
 	virtual/pkgconfig
 	>=dev-util/intltool-0.33
-	sys-devel/libtool"
+	dev-build/libtool"
 DOCS=(
 	README
 	AUTHORS

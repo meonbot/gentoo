@@ -1,15 +1,15 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 PV_COMMIT=77bb2ba5eadfb95b67abccd22b298cfb75dd3328
 
-PYTHON_COMPAT=( python3_{7,8,9} )
+PYTHON_COMPAT=( python3_{9..11} )
 
 inherit cmake flag-o-matic python-single-r1
 
-PATCHSET_VER="1"
+PATCHSET_VER="3"
 
 DESCRIPTION="YAP is a high-performance Prolog compiler"
 HOMEPAGE="http://www.dcc.fc.up.pt/~vsc/Yap/"
@@ -25,7 +25,7 @@ REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 RDEPEND="dev-libs/libutf8proc
 	sys-libs/zlib
-	dev-libs/gmp:0
+	dev-libs/gmp:0[cxx]
 	java? ( >=virtual/jdk-1.8:* )
 	mpi? ( virtual/mpi )
 	mysql? ( dev-db/mysql-connector-c:0= )
@@ -43,7 +43,7 @@ RDEPEND="dev-libs/libutf8proc
 	xml? ( dev-libs/libxml2 )"
 
 DEPEND="${RDEPEND}
-	doc? ( app-doc/doxygen[dot] )
+	doc? ( app-text/doxygen[dot] )
 	java? ( dev-lang/swig )
 	python? ( >=dev-lang/swig-4.0.0 )"
 

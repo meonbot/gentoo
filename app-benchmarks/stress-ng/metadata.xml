@@ -14,7 +14,7 @@
 		and over 20 virtual memory stress tests.
 	</longdescription>
 	<use>
-		<flag name="apparmor">Add support for AppArmor.</flag>
+		<flag name="keyutils">Stress test the kernel's key generation facilities via <pkg>sys-apps/keyutils</pkg></flag>
 	</use>
 	<upstream>
 		<bugs-to>https://github.com/ColinIanKing/stress-ng/issues</bugs-to>

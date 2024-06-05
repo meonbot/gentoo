@@ -1,19 +1,19 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-inherit cmake prefix
+inherit cmake flag-o-matic prefix
 
-DESCRIPTION="A validating XML parser written in a portable subset of C++"
+DESCRIPTION="Validating XML parser written in a portable subset of C++"
 HOMEPAGE="https://xerces.apache.org/xerces-c/"
 
 if [[ ${PV} == *9999 ]] ; then
 	ESVN_REPO_URI="https://svn.apache.org/repos/asf/xerces/c/trunk"
 	inherit subversion
 else
-	SRC_URI="mirror://apache/xerces/c/3/sources/${P}.tar.gz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-macos"
+	SRC_URI="mirror://apache/xerces/c/3/sources/${P}.tar.xz"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~x64-macos"
 fi
 
 LICENSE="Apache-2.0"
@@ -28,10 +28,14 @@ RDEPEND="
 	virtual/libiconv"
 DEPEND="${RDEPEND}"
 BDEPEND="
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 	test? ( dev-lang/perl )"
 
 DOCS=( CREDITS KEYS NOTICE README )
+
+PATCHES=(
+	"${FILESDIR}"/${PN}-3.2.4-strict-aliasing.patch
+)
 
 pkg_setup() {
 	export ICUROOT="${EPREFIX}/usr"
@@ -43,6 +47,10 @@ pkg_setup() {
 }
 
 src_configure() {
+	# bug #856100
+	filter-lto
+	append-flags -fno-strict-aliasing
+
 	# 'cfurl' is only available on OSX and 'socket' isn't supposed to work.
 	# But the docs aren't clear about it, so we would need some testing...
 	local netaccessor
@@ -71,7 +79,6 @@ src_configure() {
 	else
 		transcoder="gnuiconv"
 	fi
-	# for interix maybe: transcoder="windows"
 
 	local mycmakeargs=(
 		-DCMAKE_INSTALL_DOCDIR="${EPREFIX}/usr/share/doc/${PF}"

@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,7 +7,7 @@ DESCRIPTION="Web caching proxy suitable for non-permanent Internet connections"
 HOMEPAGE="https://www.gedanken.org.uk/software/wwwoffle/"
 SRC_URI="https://www.gedanken.org.uk/software/${PN}/download/${P}.tgz"
 
-KEYWORDS="amd64 ppc ppc64 sparc x86"
+KEYWORDS="amd64 ppc ppc64 ~riscv sparc x86"
 SLOT="0"
 LICENSE="GPL-2"
 IUSE="gnutls ipv6 zlib"
@@ -20,7 +20,7 @@ RDEPEND="
 "
 DEPEND="
 	dev-lang/perl
-	sys-devel/flex
+	app-alternatives/lex
 	${RDEPEND}
 "
 # Unsure whether to depend on >=www-misc/htdig-3.1.6-r4 or not

@@ -1,4 +1,4 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,13 +8,13 @@ inherit multilib toolchain-funcs wrapper wxwidgets xdg
 
 DESCRIPTION="Port of 7-Zip archiver for Unix"
 HOMEPAGE="http://p7zip.sourceforge.net/"
-SRC_URI="mirror://sourceforge/${PN}/${PN}_${PV}_src_all.tar.bz2"
+SRC_URI="https://downloads.sourceforge.net/${PN}/${PN}_${PV}_src_all.tar.bz2"
 S="${WORKDIR}/${PN}_${PV}"
 
 LICENSE="LGPL-2.1 rar? ( unRAR )"
 SLOT="0"
-KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris"
-IUSE="abi_x86_x32 doc kde +pch rar static wxwidgets"
+KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv ~s390 sparc x86 ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos"
+IUSE="abi_x86_x32 kde +pch rar static wxwidgets"
 REQUIRED_USE="kde? ( wxwidgets )"
 
 RDEPEND="wxwidgets? ( x11-libs/wxGTK:${WX_GTK_VER}[X] )"
@@ -88,14 +88,14 @@ src_prepare() {
 	if use kde || use wxwidgets; then
 		setup-wxwidgets unicode
 		einfo "Preparing dependency list"
-		emake CC=$(tc-getCC) CXX=$(tc-getCXX) depend
+		emake CC="$(tc-getCC)" CXX="$(tc-getCXX)" depend
 	fi
 }
 
 src_compile() {
-	emake CC=$(tc-getCC) CXX=$(tc-getCXX) all3
+	emake CC="$(tc-getCC)" CXX="$(tc-getCXX)" all3
 	if use kde || use wxwidgets; then
-		emake CC=$(tc-getCC) CXX=$(tc-getCXX) -- 7zG
+		emake CC="$(tc-getCC)" CXX="$(tc-getCXX)" -- 7zG
 	fi
 }
 
@@ -143,9 +143,7 @@ src_install() {
 	doman man1/7z.1 man1/7za.1 man1/7zr.1
 
 	dodoc ChangeLog README TODO
-	if use doc; then
-		dodoc DOC/*.txt
-		docinto html
-		dodoc -r DOC/MANUAL/.
-	fi
+	dodoc DOC/*.txt
+	docinto html
+	dodoc -r DOC/MANUAL/.
 }

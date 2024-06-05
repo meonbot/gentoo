@@ -1,7 +1,7 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI="7"
+EAPI="8"
 
 inherit fixheadtails
 
@@ -20,6 +20,8 @@ DEPEND="${RDEPEND}"
 PATCHES=(
 	"${FILESDIR}"/${PN}-doc-encoding.patch
 	"${FILESDIR}"/${PN}-gauche-0.9.patch
+	"${FILESDIR}"/${PN}-gauche-0.9.10.patch
+	"${FILESDIR}"/${PN}-parallel-make.patch
 	"${FILESDIR}"/${PN}-undefined-reference.patch
 )
 HTML_DOCS=( doc/{${PN},scbayes}{,-ja}.html )
@@ -39,8 +41,4 @@ src_install() {
 		DATADIR="${ED}/usr/share/doc/${P}" \
 		install
 	einstalldocs
-}
-
-src_test() {
-	emake -j1 -s check
 }

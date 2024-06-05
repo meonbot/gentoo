@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,9 +7,9 @@ LUA_COMPAT=( lua5-1 )
 
 inherit cmake desktop lua-single
 
-DESCRIPTION="An open-source platform game with a sketched and minimalistic look"
-HOMEPAGE="http://jvgs.sourceforge.net/"
-SRC_URI="mirror://sourceforge/jvgs/${P}-src.tar.gz"
+DESCRIPTION="Open-source platform game with a sketched and minimalistic look"
+HOMEPAGE="https://jvgs.sourceforge.net/"
+SRC_URI="https://downloads.sourceforge.net/jvgs/${P}-src.tar.gz"
 S="${WORKDIR}/${P}-src"
 
 LICENSE="WTFPL-2"

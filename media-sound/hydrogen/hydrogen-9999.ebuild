@@ -1,12 +1,12 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 inherit cmake xdg
 
 DESCRIPTION="Advanced drum machine"
-HOMEPAGE="http://www.hydrogen-music.org/"
+HOMEPAGE="http://hydrogen-music.org/"
 
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
@@ -27,19 +27,20 @@ REQUIRED_USE="lash? ( alsa )"
 BDEPEND="
 	dev-qt/linguist-tools:5
 	virtual/pkgconfig
-	doc? ( app-doc/doxygen )
+	doc? ( app-text/doxygen )
 "
 CDEPEND="
 	dev-qt/qtcore:5
 	dev-qt/qtgui:5
 	dev-qt/qtnetwork:5
+	dev-qt/qtsvg:5
 	dev-qt/qtwidgets:5
 	dev-qt/qtxml:5
 	dev-qt/qtxmlpatterns:5
-	>=media-libs/libsndfile-1.0.18
+	media-libs/libsndfile
 	alsa? ( media-libs/alsa-lib )
 	archive? ( app-arch/libarchive )
-	!archive? ( >=dev-libs/libtar-1.2.11-r3 )
+	!archive? ( dev-libs/libtar )
 	doc? ( dev-texlive/texlive-fontutils )
 	jack? ( virtual/jack )
 	ladspa? ( media-libs/liblrdf )
@@ -47,7 +48,7 @@ CDEPEND="
 	osc? ( media-libs/liblo )
 	portaudio? ( media-libs/portaudio )
 	portmidi? ( media-libs/portmidi )
-	pulseaudio? ( media-sound/pulseaudio )
+	pulseaudio? ( media-libs/libpulse )
 "
 DEPEND="
 	${CDEPEND}
@@ -55,10 +56,11 @@ DEPEND="
 "
 RDEPEND="${CDEPEND}"
 
-DOCS=( AUTHORS ChangeLog DEVELOPERS README.txt )
+DOCS=( AUTHORS ChangeLog DEVELOPERS.md README.md )
 
 PATCHES=(
-	"${FILESDIR}/${PN}-1.1.0-gnuinstalldirs.patch"
+	"${FILESDIR}/${PN}-1.3.0-gnuinstalldirs.patch"
+	"${FILESDIR}/${PN}-1.3.0-cflags.patch"
 )
 
 src_prepare() {

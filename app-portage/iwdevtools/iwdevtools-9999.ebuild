@@ -1,4 +1,4 @@
-# Copyright 2021-2022 Gentoo Authors
+# Copyright 2021-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=8
@@ -11,21 +11,25 @@ EGIT_REPO_URI="https://github.com/ionenwks/iwdevtools.git"
 
 LICENSE="BSD-2"
 SLOT="0"
-KEYWORDS=""
 IUSE="test"
 RESTRICT="!test? ( test )"
 
 RDEPEND="
 	app-misc/pax-utils
 	app-portage/portage-utils
+	>=app-shells/bash-5.1:0[readline]
+	dev-libs/libxml2:2
+	sys-apps/coreutils
 	sys-apps/diffutils
 	sys-apps/file
 	sys-apps/portage
-	|| ( sys-apps/util-linux app-misc/getopt )"
+	|| ( sys-apps/util-linux app-misc/getopt )
+"
 BDEPEND="
 	sys-apps/help2man
 	|| ( sys-apps/util-linux app-misc/getopt )
-	test? ( ${RDEPEND} )"
+	test? ( ${RDEPEND} )
+"
 
 src_configure() {
 	local emesonargs=(
@@ -58,11 +62,5 @@ pkg_postinst() {
 		elog '    PORTAGE_ELOG_CLASSES="${PORTAGE_ELOG_CLASSES} qa"'
 		elog
 		elog "See ${EROOT}/usr/share/doc/${PF}/README.rst* for information on tools."
-	fi
-
-	if [[ ${REPLACING_VERSIONS} ]] &&
-		ver_test ${REPLACING_VERSIONS} -le 0.7.0; then
-		elog "qa-* bashrcs now use \`eqawarn\` for portage output. If no longer"
-		elog "seeing messages post-emerge, ensure 'qa' is in PORTAGE_ELOG_CLASSES."
 	fi
 }

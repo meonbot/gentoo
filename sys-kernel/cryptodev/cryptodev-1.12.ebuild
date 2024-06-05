@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -11,10 +11,9 @@ HOMEPAGE="http://cryptodev-linux.org/"
 if [[ ${PV} == 9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/cryptodev-linux/cryptodev-linux.git"
-	S="${WORKDIR}/${PN}-${PV}"
 else
 	SRC_URI="https://github.com/cryptodev-linux/cryptodev-linux/archive/${PN}-linux-${PV}.tar.gz"
-	KEYWORDS="~amd64 ~arm ~x86"
+	KEYWORDS="amd64 ~arm x86"
 	S=${WORKDIR}/${PN}-linux-${PN}-linux-${PV}
 fi
 

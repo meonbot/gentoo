@@ -1,28 +1,36 @@
-# Copyright 2014-2021 Gentoo Authors
+# Copyright 2014-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 if [[ ${PV} == 9999* ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://anongit.gentoo.org/git/proj/gentoo-functions.git"
 else
-	SRC_URI="https://gitweb.gentoo.org/proj/gentoo-functions.git/snapshot/${P}.tar.gz"
-	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~x64-cygwin ~amd64-linux ~x86-linux ~ppc-macos ~x64-macos ~sparc-solaris ~sparc64-solaris ~x64-solaris ~x86-solaris ~x86-winnt"
+	SRC_URI="https://gitweb.gentoo.org/proj/gentoo-functions.git/snapshot/${P}.tar.bz2"
+	KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~loong ~m68k ~mips ~ppc ~ppc64 ~riscv ~s390 ~sparc ~x86 ~amd64-linux ~x86-linux ~arm64-macos ~ppc-macos ~x64-macos ~x64-solaris"
 fi
 
-inherit toolchain-funcs flag-o-matic
+inherit meson
 
-DESCRIPTION="base functions required by all Gentoo systems"
+DESCRIPTION="Base functions required by all Gentoo systems"
 HOMEPAGE="https://gitweb.gentoo.org/proj/gentoo-functions.git"
 
-LICENSE="GPL-2"
+LICENSE="GPL-2 public-domain"
 SLOT="0"
-IUSE=""
+IUSE="test"
+RESTRICT="!test? ( test )"
+
+# Specifically needs GNU find, as well.
+RDEPEND=">=sys-apps/findutils-4.9"
 
 src_configure() {
-	tc-export CC
-	append-lfs-flags
-	export ROOTPREFIX="${EPREFIX}"
-	export PREFIX="${EPREFIX}/usr"
+	local emesonargs=(
+		# Deliberately avoid /usr as consumers assume we're at /lib/gentoo.
+		--prefix="${EPREFIX:-/}"
+		--mandir="${EPREFIX}/usr/share/man"
+		$(meson_use test tests)
+	)
+
+	meson_src_configure
 }

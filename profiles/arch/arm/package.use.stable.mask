@@ -1,5 +1,44 @@
-# Copyright 1999-2022 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
+
+# Andrew Ammerlaan <andrewammerlaan@gentoo.org> (2024-03-21)
+# Experimental, virt-firmware is keyworded only unstable
+sys-kernel/installkernel efistub
+
+# Sam James <sam@gentoo.org> (2024-02-07)
+# grpc not stable here
+app-admin/syslog-ng grpc
+
+# Petr Vaněk <arkamar@gentoo.org> (2024-01-10)
+# Destabilize dev-db/redis for ~arm due to a lack of security stabilization
+# almost one year to this this date. bug 915548#c6
+dev-libs/hiredis test
+dev-python/redis test
+dev-python/sentry-sdk test
+
+# Matt Turner <mattst88@gentoo.org> (2023-10-30)
+# libei not stable yet
+x11-base/xwayland libei
+
+# Sam James <sam@gentoo.org> (2023-07-28)
+# media-libs/libffado not marked stable here
+media-video/pipewire ieee1394
+
+# Michał Górny <mgorny@gentoo.org> (2023-04-22)
+# Needs unkeyworded dev-python/sympy
+dev-python/nbval test
+
+# Hans de Graaff <graaff@gentoo.org> (2023-03-28)
+# dev-ruby/stringex is not marked stable here yet
+dev-ruby/kramdown unicode
+
+# Sam James <sam@gentoo.org> (2023-03-23)
+# app-emacs/flycheck is not marked stable here yet
+dev-util/pkgcheck emacs
+
+# Sam James <sam@gentoo.org> (2022-07-06)
+# sci-libs/sundials is not marked stable on arm
+sci-mathematics/octave sundials
 
 # Sam James <sam@gentoo.org> (2022-01-16)
 # net-libs/gnome-online-accounts is not marked stable on arm yet
@@ -50,14 +89,11 @@ media-libs/phonon vlc
 net-misc/openssh security-key
 dev-util/geany-plugins markdown
 app-arch/rpm test
-net-misc/openssh security-key
-dev-util/geany-plugins markdown
 net-misc/unison gtk
 
 # Michał Górny <mgorny@gentoo.org> (2019-09-08)
 # virtual/jdk is not stable here.
 sci-mathematics/z3 java
-media-libs/portmidi java
 
 # Andreas Sturmlechner <asturm@gentoo.org> (2019-02-10)
 # Needs kde-frameworks/{kwallet,ki18n,kconfig} stable
@@ -84,7 +120,6 @@ app-text/dblatex inkscape
 # Andreas Sturmlechner <asturm@gentoo.org> (2018-05-07)
 # Requires not stabilised dev-python/matplotlib
 dev-python/numpydoc test
-dev-python/ipython matplotlib
 
 # Andreas Sturmlechner <asturm@gentoo.org> (2018-01-25)
 # Requires not stabilised app-text/libexttextcat, bug #637086
@@ -144,10 +179,6 @@ media-video/mpv raspberry-pi
 # net-misc/libteam is not yet stable on arm
 net-misc/networkmanager teamd
 
-# Pacho Ramos <pacho@gentoo.org> (2015-10-03)
-# Missing stable, bug #529462
-media-gfx/graphviz java
-
 # Markus Meier <maekke@gentoo.org> (2015-07-19)
 # Missing stable
 media-libs/gegl umfpack
@@ -155,7 +186,3 @@ media-libs/gegl umfpack
 # Pacho Ramos <pacho@gentoo.org> (2015-06-02)
 # Missing stable
 net-misc/connman l2tp pptp
-
-# Pacho Ramos <pacho@gentoo.org> (2014-07-02)
-# net-libs/rest is not stable on arm yet
->=x11-libs/gtk+-3.12.2 cloudprint

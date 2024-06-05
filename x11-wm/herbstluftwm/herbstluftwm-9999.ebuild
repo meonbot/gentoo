@@ -1,12 +1,13 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
-PYTHON_COMPAT=( python3_{7..10} )
+PYTHON_COMPAT=( python3_{9..12} )
+DISTUTILS_USE_PEP517=setuptools
 DISTUTILS_OPTIONAL=1
 
-inherit cmake distutils-r1 toolchain-funcs
+inherit cmake desktop distutils-r1
 
 DESCRIPTION="A manual tiling window manager for X"
 HOMEPAGE="https://herbstluftwm.org/"
@@ -23,15 +24,19 @@ LICENSE="BSD-2"
 SLOT="0"
 IUSE="+doc python test"
 RESTRICT="!test? ( test )"
-REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
+REQUIRED_USE="
+	python? ( ${PYTHON_REQUIRED_USE} )
+	test? ( python )
+"
 
 COMMON_DEPEND="
-	media-libs/freetype
 	x11-libs/libX11
 	x11-libs/libXext
+	x11-libs/libXfixes
 	x11-libs/libXft
 	x11-libs/libXinerama
 	x11-libs/libXrandr
+	x11-libs/libXrender
 "
 DEPEND="
 	${COMMON_DEPEND}
@@ -50,7 +55,7 @@ RDEPEND="
 	python? ( ${PYTHON_DEPS} )
 "
 BDEPEND="
-	${PYTHON_DEPS}
+	${DISTUTILS_DEPS}
 	virtual/pkgconfig
 "
 
@@ -70,6 +75,11 @@ src_prepare() {
 		-e '/^install.*LICENSEDIR/d' \
 		-e '/set(DOCDIR / s#.*#set(DOCDIR ${CMAKE_INSTALL_DOCDIR})#' \
 		CMakeLists.txt || die
+
+	# Do not install MAN pages, we use doman in src_install() for that.
+	sed -i '/MANDIR/d' \
+		doc/CMakeLists.txt || die
+
 	cmake_src_prepare
 
 	if use python; then
@@ -83,7 +93,7 @@ src_configure() {
 	# Ensure that 'python3' is in PATH. #765118
 	python_setup
 
-	mycmakeargs=(
+	local mycmakeargs=(
 		-DWITH_DOCUMENTATION=$(usex doc)
 	)
 	cmake_src_configure
@@ -126,17 +136,14 @@ src_install() {
 			doman "doc/${man_page}"
 		done
 	fi
+
+	# Do not only install the herbstluftwm.desktop file in xsessions/ but
+	# also in applications/. This allows herbstluftwm to be used as
+	# window manager of a Gnome flashback session.
+	domenu "${ED}"/usr/share/xsessions/herbstluftwm.desktop
 }
 
 distutils_enable_tests pytest
-
-python_test() {
-	pushd python > /dev/null || die
-	distutils_install_for_testing
-	popd > /dev/null || die
-
-	distutils-r1_python_test
-}
 
 src_test() {
 	if [[ -n "${EGIT_REPO_URI}" ]]; then

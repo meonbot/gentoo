@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -9,8 +9,8 @@ if [[ ${PV} == *9999 ]]; then
 	inherit autotools git-r3
 	EGIT_REPO_URI="https://github.com/mstorsjo/vo-amrwbenc.git"
 else
-	SRC_URI="mirror://sourceforge/opencore-amr/${P}.tar.gz"
-	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ppc ppc64 ~riscv sparc x86 ~x64-macos"
+	SRC_URI="https://downloads.sourceforge.net/opencore-amr/${P}.tar.gz"
+	KEYWORDS="~alpha amd64 arm arm64 ~hppa ~ia64 ~loong ~mips ppc ppc64 ~riscv sparc x86 ~x64-macos"
 fi
 
 DESCRIPTION="VisualOn AMR-WB encoder library"
@@ -27,7 +27,7 @@ src_prepare() {
 
 multilib_src_configure() {
 	ECONF_SOURCE="${S}" econf \
-		$(use_enable examples example) \
+		$(multilib_native_use_enable examples example) \
 		$(use_enable static-libs static)
 }
 

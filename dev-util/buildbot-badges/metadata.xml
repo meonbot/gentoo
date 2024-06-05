@@ -2,8 +2,8 @@
 <!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer type="person">
-		<email>dolsen@gentoo.org</email>
-		<name>Brian Dolbec</name>
+		<email>zorry@gentoo.org</email>
+		<name>Magnus Granberg</name>
 	</maintainer>
 	<longdescription lang="en">
 		The Buildbot badges plugin produces an image in SVG or PNG format with
@@ -16,7 +16,7 @@
 			<email>devel@buildbot.net</email>
 			<name>Developers List</name>
 		</maintainer>
-		<remote-id type="pypi">buildbot-grid-view</remote-id>
+		<remote-id type="pypi">buildbot-badges</remote-id>
 		<remote-id type="github">buildbot/buildbot</remote-id>
 	</upstream>
 </pkgmetadata>

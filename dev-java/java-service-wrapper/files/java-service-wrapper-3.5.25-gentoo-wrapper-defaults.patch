@@ -10,7 +10,7 @@
 |  it is run directly as they have a check to make sure it is launched via a
 |  symbolic link.
 |
-
+# https://bugs.gentoo.org/878869
 --- a/src/c/wrapper.c.old	2014-07-21 09:12:55.000000000 +0200
 +++ b/src/c/wrapper.c	2014-07-21 09:13:22.000000000 +0200
 @@ -4908,7 +4908,7 @@

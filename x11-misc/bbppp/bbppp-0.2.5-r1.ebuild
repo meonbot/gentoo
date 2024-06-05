@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -7,14 +7,16 @@ inherit autotools
 
 DESCRIPTION="blackbox ppp frontend/monitor"
 HOMEPAGE="https://sourceforge.net/projects/bbtools/"
-SRC_URI="mirror://sourceforge/bbtools/${PN}/${P}/${P}.tar.gz"
+SRC_URI="https://downloads.sourceforge.net/bbtools/${PN}/${P}/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
 KEYWORDS="amd64 ppc x86"
 
-DEPEND="x11-libs/libX11"
-RDEPEND="${DEPEND}
+COMMON_DEPEND="x11-libs/libX11"
+DEPEND="${COMMON_DEPEND}
+	elibc_musl? ( net-libs/ppp-defs )"
+RDEPEND="${COMMON_DEPEND}
 	media-fonts/font-adobe-100dpi"
 
 PATCHES=(
@@ -26,6 +28,9 @@ PATCHES=(
 src_prepare() {
 	default
 	mv configure.{in,ac} || die
+	sed -i \
+		-e 's|register ||' \
+		Image.cc LinkedList.cc || die
 	eautoreconf
 }
 

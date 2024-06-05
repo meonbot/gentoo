@@ -1,17 +1,17 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
 inherit desktop xdg
 
-DESCRIPTION="A racing game starring Tux, the Linux penguin"
-HOMEPAGE="http://tuxkart.sourceforge.net/"
-SRC_URI="mirror://sourceforge/tuxkart/${P}.tar.gz"
+DESCRIPTION="Racing game starring Tux, the Linux penguin"
+HOMEPAGE="https://tuxkart.sourceforge.net/"
+SRC_URI="https://downloads.sourceforge.net/tuxkart/${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
-KEYWORDS="~alpha ~amd64 ~x86"
+KEYWORDS="~amd64 ~x86"
 
 RDEPEND="
 	>=media-libs/plib-1.8.0

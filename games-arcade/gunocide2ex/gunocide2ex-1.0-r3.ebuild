@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,8 +6,8 @@ EAPI=7
 inherit desktop edos2unix toolchain-funcs unpacker
 
 DESCRIPTION="Fast-paced 2D shoot'em'up"
-HOMEPAGE="http://g2ex.sourceforge.net/"
-SRC_URI="mirror://sourceforge/g2ex/g2ex-setup.run"
+HOMEPAGE="https://sourceforge.net/projects/g2ex/"
+SRC_URI="https://downloads.sourceforge.net/g2ex/g2ex-setup.run"
 S="${WORKDIR}"
 
 LICENSE="GPL-2"

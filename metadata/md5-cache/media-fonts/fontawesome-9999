@@ -1,13 +1,13 @@
 BDEPEND=X? ( >=x11-apps/mkfontscale-1.2.0 media-fonts/encodings ) >=dev-vcs/git-1.8.2.1[curl]
 DEFINED_PHASES=install postinst postrm setup unpack
 DESCRIPTION=The iconic font
-EAPI=7
+EAPI=8
 HOMEPAGE=https://fontawesome.com
 INHERIT=font git-r3
 IUSE=+otf ttf X
 LICENSE=CC-BY-4.0 OFL-1.1
 PROPERTIES=live
 REQUIRED_USE=|| ( otf ttf )
-SLOT=0/5
-_eclasses_=font	0667878c2b594871023dd1833d05996f	git-r3	cc875b0c1e9b3bdac1af0f82f3ba29da
-_md5_=e0893ade2de0674867a58e8874028e69
+SLOT=0/6
+_eclasses_=font	aa113a3df9cd0a9693a1c1ee7c34a6eb	git-r3	fbb2889c81f3a05910c1524db69425c1
+_md5_=81294a0c6e10f9b615be988c964ddc41

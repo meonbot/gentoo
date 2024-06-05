@@ -1,11 +1,11 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=7
+EAPI=8
 
 DISTUTILS_OPTIONAL=1
-DISTUTILS_USE_SETUPTOOLS=manual
-PYTHON_COMPAT=( python3_{8,9,10} )
+DISTUTILS_USE_PEP517=setuptools
+PYTHON_COMPAT=( python3_{10..12} )
 
 inherit autotools bash-completion-r1 dist-kernel-utils distutils-r1 flag-o-matic linux-info pam systemd udev usr-ldscript
 
@@ -13,19 +13,19 @@ DESCRIPTION="Userland utilities for ZFS Linux kernel module"
 HOMEPAGE="https://github.com/openzfs/zfs"
 
 if [[ ${PV} == "9999" ]]; then
-	inherit git-r3 linux-mod
+	inherit git-r3
 	EGIT_REPO_URI="https://github.com/openzfs/zfs.git"
 else
-	VERIFY_SIG_OPENPGP_KEY_PATH=${BROOT}/usr/share/openpgp-keys/openzfs.asc
+	VERIFY_SIG_OPENPGP_KEY_PATH=/usr/share/openpgp-keys/openzfs.asc
 	inherit verify-sig
 
 	MY_P="${P/_rc/-rc}"
 	SRC_URI="https://github.com/openzfs/${PN}/releases/download/${MY_P}/${MY_P}.tar.gz"
 	SRC_URI+=" verify-sig? ( https://github.com/openzfs/${PN}/releases/download/${MY_P}/${MY_P}.tar.gz.asc )"
-	S="${WORKDIR}/${P%_rc?}"
+	S="${WORKDIR}/${MY_P}"
 
 	if [[ ${PV} != *_rc* ]]; then
-		KEYWORDS="~amd64 ~arm64 ~ppc64 ~riscv"
+		KEYWORDS="~amd64 ~arm64 ~loong ~ppc64 ~riscv ~sparc"
 	fi
 fi
 
@@ -34,26 +34,27 @@ LICENSE="BSD-2 CDDL MIT"
 # possible candidates: libuutil, libzpool, libnvpair. Those do not provide stable abi, but are considered.
 # see libsoversion_check() below as well
 SLOT="0/5"
-IUSE="custom-cflags debug dist-kernel kernel-builtin minimal nls pam python +rootfs test-suite"
+IUSE="custom-cflags debug dist-kernel kernel-builtin minimal nls pam python +rootfs selinux test-suite"
 
 DEPEND="
+	dev-libs/openssl:=
 	net-libs/libtirpc:=
 	sys-apps/util-linux
 	sys-libs/zlib
 	virtual/libudev:=
-	dev-libs/openssl:0=
 	!minimal? ( ${PYTHON_DEPS} )
 	pam? ( sys-libs/pam )
 	python? (
-		virtual/python-cffi[${PYTHON_USEDEP}]
+		$(python_gen_cond_dep 'dev-python/cffi[${PYTHON_USEDEP}]' 'python*')
 	)
 "
 
-BDEPEND="virtual/awk
+BDEPEND="
+	app-alternatives/awk
 	virtual/pkgconfig
 	nls? ( sys-devel/gettext )
 	python? (
-		dev-python/setuptools[${PYTHON_USEDEP}]
+		${DISTUTILS_DEPS}
 		|| (
 			dev-python/packaging[${PYTHON_USEDEP}]
 			dev-python/distlib[${PYTHON_USEDEP}]
@@ -66,22 +67,23 @@ if [[ ${PV} != "9999" ]] ; then
 fi
 
 # awk is used for some scripts, completions, and the Dracut module
-RDEPEND="${DEPEND}
+RDEPEND="
+	${DEPEND}
 	!kernel-builtin? ( ~sys-fs/zfs-kmod-${PV}:= )
 	!prefix? ( virtual/udev )
+	app-alternatives/awk
 	sys-fs/udev-init-scripts
-	virtual/awk
 	dist-kernel? ( virtual/dist-kernel:= )
 	rootfs? (
-		app-arch/cpio
+		app-alternatives/cpio
 		app-misc/pax-utils
-		!<sys-kernel/genkernel-3.5.1.1
 	)
+	selinux? ( sec-policy/selinux-zfs )
 	test-suite? (
 		app-shells/ksh
 		sys-apps/kmod[tools]
 		sys-apps/util-linux
-		sys-devel/bc
+		app-alternatives/bc
 		sys-block/parted
 		sys-fs/lsscsi
 		sys-fs/mdadm
@@ -100,6 +102,10 @@ REQUIRED_USE="
 "
 
 RESTRICT="test"
+
+PATCHES=(
+	"${FILESDIR}"/2.1.5-dracut-zfs-missing.patch
+)
 
 pkg_pretend() {
 	use rootfs || return 0
@@ -175,6 +181,9 @@ src_prepare() {
 		popd >/dev/null || die
 	fi
 
+	# Tries to use /etc/conf.d which we reserve for OpenRC
+	sed -i -e '/EnvironmentFile/d' etc/systemd/system/zfs*.in || die
+
 	# prevent errors showing up on zfs-mount stop, #647688
 	# openrc will unmount all filesystems anyway.
 	sed -i "/^ZFS_UNMOUNT=/ s/yes/no/" "etc/default/zfs.in" || die
@@ -203,6 +212,9 @@ src_configure() {
 		# Building zfs-mount-generator.c on musl breaks as strndupa
 		# isn't available. But systemd doesn't support musl anyway, so
 		# just disable building it.
+		# UPDATE: it has been fixed since,
+		# https://github.com/openzfs/zfs/commit/1f19826c9ac85835cbde61a7439d9d1fefe43a4a
+		# but we still leave it as this for now.
 		$(use_enable !elibc_musl systemd)
 		$(use_enable debug)
 		$(use_enable nls)
@@ -252,6 +264,8 @@ src_install() {
 }
 
 pkg_postinst() {
+	udev_reload
+
 	# we always need userspace utils in sync with zfs-kmod
 	# so force initrd update for userspace as well, to avoid
 	# situation when zfs-kmod trigger initrd rebuild before
@@ -268,12 +282,6 @@ pkg_postinst() {
 			elog "  sys-kernel/dracut ( preferred, module maintained by zfs developers )"
 			elog "  sys-kernel/genkernel"
 		fi
-	fi
-
-	if ! use kernel-builtin && [[ ${PV} == "9999" ]]; then
-		einfo "Adding ${P} to the module database to ensure that the"
-		einfo "kernel modules and userland utilities stay in sync."
-		update_moduledb
 	fi
 
 	if systemd_is_booted || has_version sys-apps/systemd; then
@@ -294,7 +302,5 @@ pkg_postinst() {
 }
 
 pkg_postrm() {
-	if ! use kernel-builtin && [[ ${PV} == "9999" ]]; then
-		remove_moduledb
-	fi
+	udev_reload
 }

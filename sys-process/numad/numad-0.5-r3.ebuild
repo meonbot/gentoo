@@ -1,4 +1,4 @@
-# Copyright 1999-2021 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -10,8 +10,8 @@ if [[ ${PV} == "9999" ]]; then
 	inherit git-r3
 else
 	EGIT_COMMIT="334278ff3d774d105939743436d7378a189e8693"
-	SRC_URI="mirror://gentoo/numad-0.5-${EGIT_COMMIT:0:7}.tar.bz2"
-	KEYWORDS="amd64 -arm arm64 ~ppc64 ~s390 x86"
+	SRC_URI="mirror://gentoo/numad-${PV}-${EGIT_COMMIT:0:7}.tar.bz2"
+	KEYWORDS="amd64 -arm arm64 ppc64 ~s390 x86"
 	S="${WORKDIR}/${PN}-${EGIT_COMMIT:0:7}"
 fi
 

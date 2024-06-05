@@ -1,13 +1,14 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2024 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
 
-inherit desktop toolchain-funcs
+inherit desktop flag-o-matic toolchain-funcs
 
 DESCRIPTION="Multiplayer Gauntlet-style arcade game"
-HOMEPAGE="http://xtux.sourceforge.net/"
-SRC_URI="mirror://sourceforge/xtux/xtux-src-${PV}.tar.gz"
+HOMEPAGE="https://xtux.sourceforge.net/"
+SRC_URI="https://downloads.sourceforge.net/xtux/xtux-src-${PV}.tar.gz"
+S="${WORKDIR}/${PN}"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -16,8 +17,6 @@ KEYWORDS="~amd64 ~x86"
 DEPEND="x11-libs/libXpm"
 RDEPEND="${DEPEND}
 	media-fonts/font-adobe-75dpi"
-
-S="${WORKDIR}/${PN}"
 
 PATCHES=(
 	"${FILESDIR}"/${P}-Makefile.patch
@@ -32,6 +31,9 @@ src_prepare() {
 }
 
 src_configure() {
+	# bug #858605
+	filter-lto
+
 	tc-export AR CC RANLIB
 }
 

@@ -1,4 +1,4 @@
-# Copyright 2021 Gentoo Authors
+# Copyright 2021-2023 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -13,11 +13,13 @@ SLOT="0"
 KEYWORDS="amd64 ~arm64 x86"
 
 DEPEND=""
-RDEPEND="!<x11-misc/i3blocks-1.5
-	>=x11-misc/i3blocks-1.5"
+RDEPEND=">=x11-misc/i3blocks-1.5"
 BDEPEND=""
 
-PATCHES=( "${FILESDIR}"/${P}-respect-CFLAGS.patch )
+PATCHES=(
+	"${FILESDIR}"/${P}-respect-CFLAGS.patch
+	"${FILESDIR}"/${P}-fix-build-on-clang-llvm.patch
+)
 
 src_prepare() {
 	sed -i -e '/^$(_BLOCKS):/ s/$/ installdirs/' Makefile
@@ -53,5 +55,5 @@ pkg_postinst() {
 	optfeature "rofi-calendar" x11-misc/rofi
 	optfeature "ssid and wlan-dbm" net-wireless/iw
 	optfeature "temperature" sys-apps/lm-sensors
-	optfeature "ytdl-mpv" "media-fonts/fontawesome media-video/mpv x11-misc/xclip net-misc/youtube-dl"
+	optfeature "ytdl-mpv" "media-fonts/fontawesome media-video/mpv[lua] x11-misc/xclip net-misc/yt-dlp"
 }
